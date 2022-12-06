@@ -1577,7 +1577,7 @@ class NXOSDriver(NXOSDriverBase):
                         psinfo.get("watts", -1.0)
                     )
                 else:
-                # When the power output is keyed by actual_out, it appears like "99 W"
+                    # When the power output is keyed by actual_out, it appears like "99 W"
                     normalized[psinfo["psnum"]]["output"] = float(
                         psinfo.get("actual_out", -1.0).split()[0]
                     )
