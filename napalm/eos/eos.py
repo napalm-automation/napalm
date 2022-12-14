@@ -98,7 +98,7 @@ class EOSDriver(NetworkDriver):
                 management).
             * enable_password (True/False): Enable password for privilege elevation
             * eos_autoComplete (True/False): Allow for shortening of cli commands
-            * transport (string): transport, defaults to eos_transport if set
+            * transport (string): transport, eos_transport is a fallback for compatibility.
                 - ssh (uses Netmiko)
                 - socket
                 - http_local
