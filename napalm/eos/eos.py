@@ -274,15 +274,9 @@ class EOSDriver(NetworkDriver):
 
                 cmd_pipe = command + " | json"
                 cmd_txt = self._netmiko_device.send_command(cmd_pipe)
-                print(cmd_pipe)
-                print(cmd_txt)
                 try:
                     cmd_json = json.loads(cmd_txt)
                 except json.decoder.JSONDecodeError:
-                    print("JSON error...")
-                    import pdbr
-
-                    pdbr.set_trace()
                     cmd_json = {}
                 ret.append(cmd_json)
             return ret
