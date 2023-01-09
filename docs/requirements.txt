@@ -1,4 +1,4 @@
-sphinx==1.8.6
+sphinx==6.1.2
 sphinx-rtd-theme==1.0.0
 sphinxcontrib-napoleon==0.7
 invoke==1.7.1
