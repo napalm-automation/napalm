@@ -33,10 +33,11 @@ from collections import defaultdict
 # third party libs
 import pyeapi
 from pyeapi.eapilib import ConnectionError, EapiConnection
-from netmiko import BaseConnection, ConfigInvalidException
+from netmiko import ConfigInvalidException
 
 # NAPALM base
 import napalm.base.helpers
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import string_parsers
 from napalm.base.exceptions import (
@@ -97,7 +98,8 @@ class EOSDriver(NetworkDriver):
                 management).
             * enable_password (True/False): Enable password for privilege elevation
             * eos_autoComplete (True/False): Allow for shortening of cli commands
-            * transport (string): pyeapi transport, defaults to eos_transport if set
+            * transport (string): transport, eos_transport is a fallback for compatibility.
+                - ssh (uses Netmiko)
                 - socket
                 - http_local
                 - http
@@ -123,45 +125,44 @@ class EOSDriver(NetworkDriver):
 
         self.platform = "eos"
         self.profile = [self.platform]
+        self.optional_args = optional_args or {}
 
-        self._process_optional_args(optional_args or {})
+        self.enablepwd = self.optional_args.pop("enable_password", "")
+        self.eos_autoComplete = self.optional_args.pop("eos_autoComplete", None)
+        self.fn0039_config = self.optional_args.pop("eos_fn0039_config", False)
 
-    def _process_optional_args(self, optional_args):
         # Define locking method
-        self.lock_disable = optional_args.get("lock_disable", False)
+        self.lock_disable = self.optional_args.pop("lock_disable", False)
 
-        self.enablepwd = optional_args.pop("enable_password", "")
-        self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
         # eos_transport is there for backwards compatibility, transport is the preferred method
-        transport = optional_args.get(
-            "transport", optional_args.get("eos_transport", "https")
+        transport = self.optional_args.get(
+            "transport", self.optional_args.get("eos_transport", "https")
         )
-        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
         self.transport = transport
-        if transport == "ssh":
-            self.transport_class = "ssh"
-            init_args = ["port"]
-        else:
-            # Parse pyeapi transport class
-            self.transport_class = self._parse_transport(transport)
-            # ([1:]) to omit self
-            init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
-
-        filter_args = ["host", "username", "password", "timeout", "lock_disable"]
 
         if transport == "ssh":
-            self.netmiko_optional_args = {
-                k: v
-                for k, v in optional_args.items()
-                if k in init_args and k not in filter_args
-            }
+            self._process_optional_args_ssh(self.optional_args)
         else:
-            init_args.append("enforce_verification")  # Not an arg for unknown reason
-            self.eapi_kwargs = {
-                k: v
-                for k, v in optional_args.items()
-                if k in init_args and k not in filter_args
-            }
+            self._process_optional_args_eapi(self.optional_args)
+
+    def _process_optional_args_ssh(self, optional_args):
+        self.transport_class = None
+        self.netmiko_optional_args = netmiko_args(optional_args)
+
+    def _process_optional_args_eapi(self, optional_args):
+
+        # Parse pyeapi transport class
+        self.transport_class = self._parse_transport(self.transport)
+
+        # ([1:]) to omit self
+        init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
+        filter_args = ["host", "username", "password", "timeout"]
+        init_args.append("enforce_verification")  # Not an arg for unknown reason
+        self.eapi_kwargs = {
+            k: v
+            for k, v in optional_args.items()
+            if k in init_args and k not in filter_args
+        }
 
     def _parse_transport(self, transport):
         if inspect.isclass(transport) and issubclass(transport, EapiConnection):
@@ -192,7 +193,8 @@ class EOSDriver(NetworkDriver):
         """Implementation of NAPALM method open."""
         if self.transport == "ssh":
             self.device = self._netmiko_open(
-                "arista_eos", netmiko_optional_args=self.netmiko_optional_args
+                device_type="arista_eos",
+                netmiko_optional_args=self.netmiko_optional_args,
             )
             # let's try to determine if we need to use new EOS cli syntax
             sh_ver = self._run_commands(["show version"])
@@ -205,7 +207,7 @@ class EOSDriver(NetworkDriver):
                     username=self.username,
                     password=self.password,
                     timeout=self.timeout,
-                    **self.eapi_kwargs
+                    **self.eapi_kwargs,
                 )
 
                 if self.device is None:
@@ -228,7 +230,7 @@ class EOSDriver(NetworkDriver):
     def close(self):
         """Implementation of NAPALM method close."""
         self.discard_config()
-        if isinstance(self.device, BaseConnection):
+        if self.transport == "ssh":
             self._netmiko_close()
         elif hasattr(self.device.connection, "close") and callable(
             self.device.connection.close
@@ -280,6 +282,27 @@ class EOSDriver(NetworkDriver):
             return ret
         else:
             return self.device.run_commands(commands, **kwargs)
+
+    def _obtain_lock(self, wait_time=None):
+        """
+        EOS internally creates config sessions when using commit-confirm.
+
+        This can cause issues obtaining the configuration lock:
+
+        cfg-2034--574620864-0 completed
+        cfg-2034--574620864-1 pending
+        """
+        if wait_time:
+            start_time = time.time()
+            while time.time() - start_time < wait_time:
+                try:
+                    self._lock()
+                    return
+                except SessionLockedException:
+                    time.sleep(1)
+
+        # One last try
+        return self._lock()
 
     def _lock(self):
         sess = self._run_commands(["show configuration sessions"])[0]["sessions"]
@@ -384,7 +407,7 @@ class EOSDriver(NetworkDriver):
             self.config_session = "napalm_{}".format(datetime.now().microsecond)
 
         if not self.lock_disable:
-            self._lock()
+            self._obtain_lock(wait_time=10)
 
         commands = []
         commands.append("configure session {}".format(self.config_session))
@@ -520,13 +543,8 @@ class EOSDriver(NetworkDriver):
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
-            commands = ["configure session {}".format(self.config_session), "abort"]
-            if self.transport == "ssh":
-                # For some reason when testing with vEOS 4.26.1F this
-                # doesn't work with the normal wrapper.
-                self._run_commands(["", commands[0]])
-            else:
-                self.device.run_commands(commands)
+            commands = [f"configure session {self.config_session} abort"]
+            self._run_commands(commands, encoding="text")
             self.config_session = None
 
     def rollback(self):
