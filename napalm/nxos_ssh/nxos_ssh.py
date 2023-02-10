@@ -795,15 +795,17 @@ class NXOSSSHDriver(NXOSDriverBase):
             cli_output[str(command)] = output
         return cli_output
 
-		def get_network_instances(self, name=""):
-        """get_network_instances implementation for NX-OS"""
+    def get_network_instances(self, name=""):
+        """
+        get_network_instances implementation for NX-OS
+        """
 
         # command 'show vrf detail | json' returns all VRFs with detailed information in JSON format
         # format: list of dictionaries with keys such as 'vrf_name' and 'rd'
         vrf_table_raw = self._get_command_table("show vrf detail | json", "TABLE_vrf", "ROW_vrf")
 
-				# command 'show vrf interface' returns all interfaces including their assigned VRF
-				# format: list of dictionaries with keys 'if_name', 'vrf_name', 'vrf_id' and 'soo'
+        # command 'show vrf interface' returns all interfaces including their assigned VRF
+        # format: list of dictionaries with keys 'if_name', 'vrf_name', 'vrf_id' and 'soo'
         intf_table_raw = self._get_command_table("show vrf interface | json", "TABLE_if", "ROW_if")
 
         # create a dictionary with key = 'vrf_name' and value = list of interfaces
