@@ -795,7 +795,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             cli_output[str(command)] = output
         return cli_output
 
-		def get_network_instances(self, name: str = ""):
+		def get_network_instances(self, name=""):
         """get_network_instances implementation for NX-OS"""
 
         # command 'show vrf detail | json' returns all VRFs with detailed information in JSON format
