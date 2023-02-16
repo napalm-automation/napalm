@@ -985,9 +985,10 @@ class IOSDriver(NetworkDriver):
                 hostname = lldp_entry["remote_system_name"]
                 port = lldp_entry["remote_port"]
                 # Match IOS behaviour of taking remote chassis ID
-                # When lacking a system name (in show lldp neighbors)
-                # This implementation is compliant with the spec, as we can't assume remote_chassis_id or remote_port
-                # are mac address. See IEEE 802.1AB-2005 and rfc2922, specifically PtopoChassisId
+                # when lacking a system name (in show lldp neighbors)
+
+                # We can't assume remote_chassis_id or remote_port are MAC Addresses
+                # See IEEE 802.1AB-2005 and rfc2922, specifically PtopoChassisId
                 if not hostname:
                     try:
                         hostname = napalm.base.helpers.mac(
@@ -996,10 +997,12 @@ class IOSDriver(NetworkDriver):
                     except AddrFormatError:
                         hostname = lldp_entry["remote_chassis_id"]
 
-                    try:
-                        port = napalm.base.helpers.mac(port)
-                    except AddrFormatError:
-                        pass
+                # If port is a mac-address, normalize it.
+                try:
+                    port = napalm.base.helpers.mac(port)
+                except AddrFormatError:
+                    pass
+
                 lldp_dict = {"port": port, "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
 
