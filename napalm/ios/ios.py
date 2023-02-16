@@ -44,6 +44,7 @@ from napalm.base.helpers import (
     generate_regex_or,
     sanitize_configs,
 )
+from netaddr.core import AddrFormatError
 from napalm.base.netmiko_helpers import netmiko_args
 
 # Easier to store these as constants
@@ -985,9 +986,20 @@ class IOSDriver(NetworkDriver):
                 port = lldp_entry["remote_port"]
                 # Match IOS behaviour of taking remote chassis ID
                 # When lacking a system name (in show lldp neighbors)
+                # This implementation is compliant with the spec, as we can't assume remote_chassis_id or remote_port
+                # are mac address. See IEEE 802.1AB-2005 and rfc2922, specifically PtopoChassisId
                 if not hostname:
-                    hostname = napalm.base.helpers.mac(lldp_entry["remote_chassis_id"])
-                    port = napalm.base.helpers.mac(port)
+                    try:
+                        hostname = napalm.base.helpers.mac(
+                            lldp_entry["remote_chassis_id"]
+                        )
+                    except AddrFormatError:
+                        hostname = lldp_entry["remote_chassis_id"]
+
+                    try:
+                        port = napalm.base.helpers.mac(port)
+                    except AddrFormatError:
+                        pass
                 lldp_dict = {"port": port, "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
 
