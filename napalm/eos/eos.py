@@ -452,7 +452,7 @@ class EOSDriver(NetworkDriver):
             return None
 
         try:
-            if not any(l == "end" for l in commands):
+            if not any(cmd == "end" for cmd in commands):
                 commands.append("end")  # exit config mode
             if self.eos_autoComplete is not None:
                 self._run_commands(
