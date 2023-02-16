@@ -998,7 +998,7 @@ class IOSDriver(NetworkDriver):
                         hostname = lldp_entry["remote_chassis_id"]
 
                 # If port is a mac-address, normalize it.
-                # The MAC helper library will normalize "15" to "00:00:00:00:00:0F" 
+                # The MAC helper library will normalize "15" to "00:00:00:00:00:0F"
                 if port.count(":") == 5 or port.count("-") == 5 or port.count(".") == 2:
                     try:
                         port = napalm.base.helpers.mac(port)
