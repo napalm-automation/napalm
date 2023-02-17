@@ -3,6 +3,6 @@ sphinx-rtd-theme==1.0.0
 sphinxcontrib-napoleon==0.7
 invoke==1.7.1
 jinja2==2.11.3
-MarkupSafe==2.0.1
+MarkupSafe==2.1.2
 pytest==7.1.2
 ansible==4.10.0
