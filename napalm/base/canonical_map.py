@@ -120,9 +120,9 @@ base_interfaces = {
     "Vi": "Virtual-Access",
     "Virtual-Template": "Virtual-Template",
     "Vt": "Virtual-Template",
-    "VLAN": "VLAN",
-    "V": "VLAN",
-    "Vl": "VLAN",
+    "VLAN": "Vlan",
+    "V": "Vlan",
+    "Vl": "Vlan",
     "Wlan-GigabitEthernet": "Wlan-GigabitEthernet",
 }
 
@@ -148,6 +148,6 @@ reverse_mapping = {
     "TwentyFiveGigE": "Twe",
     "Virtual-Access": "Vi",
     "Virtual-Template": "Vt",
-    "VLAN": "Vl",
+    "Vlan": "Vl",
     "Wlan-GigabitEthernet": "Wl-Gi",
 }
