@@ -18,6 +18,7 @@ from builtins import super
 import ipaddress
 import re
 import socket
+from collections import defaultdict
 
 # import NAPALM Base
 from napalm.base import helpers
@@ -793,6 +794,61 @@ class NXOSSSHDriver(NXOSDriverBase):
             output = self._send_command(command)
             cli_output[str(command)] = output
         return cli_output
+
+    def get_network_instances(self, name=""):
+        """
+        get_network_instances implementation for NX-OS
+        """
+
+        # command 'show vrf detail | json' returns all VRFs with detailed information in JSON format
+        # format: list of dictionaries with keys such as 'vrf_name' and 'rd'
+        vrf_table_raw = self._get_command_table(
+            "show vrf detail | json", "TABLE_vrf", "ROW_vrf"
+        )
+
+        # command 'show vrf interface' returns all interfaces including their assigned VRF
+        # format: list of dictionaries with keys 'if_name', 'vrf_name', 'vrf_id' and 'soo'
+        intf_table_raw = self._get_command_table(
+            "show vrf interface | json", "TABLE_if", "ROW_if"
+        )
+
+        # create a dictionary with key = 'vrf_name' and value = list of interfaces
+        vrf_intfs = defaultdict(list)
+        for intf in intf_table_raw:
+            vrf_intfs[intf["vrf_name"]].append(str(intf["if_name"]))
+
+        vrfs = {}
+        for vrf in vrf_table_raw:
+            vrf_name = str(vrf.get("vrf_name"))
+            vrfs[vrf_name] = {}
+            vrfs[vrf_name]["name"] = vrf_name
+
+            # differentiate between VRF type 'DEFAULT_INSTANCE' and 'L3VRF'
+            if vrf_name == "default":
+                vrfs[vrf_name]["type"] = "DEFAULT_INSTANCE"
+            else:
+                vrfs[vrf_name]["type"] = "L3VRF"
+
+            vrfs[vrf_name]["state"] = {"route_distinguisher": str(vrf.get("rd"))}
+
+            # convert list of interfaces (vrf_intfs[vrf_name]) to expected format
+            # format = dict with key = interface name and empty values
+            vrfs[vrf_name]["interfaces"] = {}
+            vrfs[vrf_name]["interfaces"]["interface"] = dict.fromkeys(
+                vrf_intfs[vrf_name], {}
+            )
+
+        # if name of a specific VRF was passed as an argument
+        # only return results for this particular VRF
+
+        if name:
+            if name in vrfs.keys():
+                return {str(name): vrfs[name]}
+            else:
+                return {}
+        # else return results for all VRFs
+        else:
+            return vrfs
 
     def get_environment(self):
         """
