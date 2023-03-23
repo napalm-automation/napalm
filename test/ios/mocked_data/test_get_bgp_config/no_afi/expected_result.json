@@ -2,7 +2,7 @@
     "_": {
         "apply_groups": [],
         "description": "",
-        "local_as": 0,
+        "local_as": 42,
         "type": "",
         "import_policy": "",
         "export_policy": "",

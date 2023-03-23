@@ -1565,29 +1565,28 @@ class IOSDriver(NetworkDriver):
                 "route_reflector_client": route_reflector_client,
             }
 
+        bgp_config["_"] = {
+            "apply_groups": [],
+            "description": "",
+            "local_as": bgp_asn,
+            "type": "",
+            "import_policy": "",
+            "export_policy": "",
+            "local_address": "",
+            "multipath": False,
+            "multihop_ttl": 0,
+            "remote_as": 0,
+            "remove_private_as": False,
+            "prefix_limit": {},
+            "neighbors": bgp_group_neighbors.get("_", {}),
+        }
         # Get the peer-group level config for each group
         for group_name in bgp_group_neighbors.keys():
             # If a group is passed in params, only continue on that group
             if group:
                 if group_name != group:
                     continue
-            # Default no group
             if group_name == "_":
-                bgp_config["_"] = {
-                    "apply_groups": [],
-                    "description": "",
-                    "local_as": 0,
-                    "type": "",
-                    "import_policy": "",
-                    "export_policy": "",
-                    "local_address": "",
-                    "multipath": False,
-                    "multihop_ttl": 0,
-                    "remote_as": 0,
-                    "remove_private_as": False,
-                    "prefix_limit": {},
-                    "neighbors": bgp_group_neighbors.get("_", {}),
-                }
                 continue
             neighbor_config = napalm.base.helpers.netutils_parse_objects(
                 group_name, bgp_config_list

@@ -75,7 +75,7 @@
     "export_policy": "",
     "import_policy": "",
     "local_address": "",
-    "local_as": 0,
+    "local_as": 65001,
     "multihop_ttl": 0,
     "multipath": false,
     "neighbors": {
