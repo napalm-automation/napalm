@@ -20,7 +20,7 @@
                 "export_policy": "",
                 "import_policy": "",
                 "local_address": "",
-                "local_as": 0,
+                "local_as": 42,
                 "authentication_key": "",
                 "nhs": false,
                 "route_reflector_client": false

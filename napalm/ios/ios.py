@@ -1531,7 +1531,9 @@ class IOSDriver(NetworkDriver):
                 r" update-source (\w+)", neighbor_config
             )
             local_as = napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, default=0
+                r"local-as (\d+)",
+                neighbor_config,
+                default=bgp_asn,
             )
             password = napalm.base.helpers.regex_find_txt(
                 r"password (?:[0-9] )?([^\']+\')", neighbor_config
@@ -1608,7 +1610,7 @@ class IOSDriver(NetworkDriver):
                 r" description ([^\']+)\'", neighbor_config
             )
             local_as = napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, default=0
+                r"local-as (\d+)", neighbor_config, default=bgp_asn
             )
             import_policy = napalm.base.helpers.regex_find_txt(
                 r"route-map ([^\s]+) in", neighbor_config
