@@ -1,4 +1,19 @@
 {
+    "_": {
+        "apply_groups": [],
+        "description": "",
+        "export_policy": "",
+        "import_policy": "",
+        "local_address": "",
+        "local_as": 65172,
+        "multihop_ttl": 0,
+        "multipath": false,
+        "neighbors": {},
+        "prefix_limit": {},
+        "remote_as": 0,
+        "remove_private_as": false,
+        "type": ""
+    },
     "EBGP": {
         "apply_groups": [],
         "description": "",
