@@ -10,7 +10,7 @@
     "remove_private_as": false,
     "remote_as": 0,
     "multihop_ttl": 0,
-    "local_as": 0,
+    "local_as": 65900,
     "apply_groups": [],
     "neighbors": {
       "10.255.255.2": {

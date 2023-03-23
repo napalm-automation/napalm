@@ -1,4 +1,19 @@
 {
+  "_": {
+    "local_as": 13335,
+    "remove_private_as": false,
+    "import_policy": "",
+    "multihop_ttl": 0,
+    "neighbors": {},
+    "multipath": false,
+    "export_policy": "",
+    "type": "",
+    "apply_groups": [],
+    "remote_as": 0,
+    "prefix_limit": {},
+    "description": "",
+    "local_address": ""
+  },
   "4-public-anycast-peers": {
     "local_as": 0,
     "remove_private_as": true,

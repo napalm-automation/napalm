@@ -8,7 +8,7 @@
         "description": "",
         "route_reflector_client": false,
         "nhs": false,
-        "local_as": 0,
+        "local_as": 65900,
         "import_policy": "pass-all",
         "local_address": "",
         "prefix_limit": {
