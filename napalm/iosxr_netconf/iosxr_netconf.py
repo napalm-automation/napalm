@@ -1440,7 +1440,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = local_as_x * 65536 + local_as_y
+            local_as = (local_as_x * 65536 + local_as_y) or bgp_asn
             af_table = self._find_txt(
                 bgp_neighbor,
                 "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:af-name",
@@ -1607,7 +1607,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = local_as_x * 65536 + local_as_y
+            local_as = (local_as_x * 65536 + local_as_y) or bgp_asn
             multihop_ttl = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
