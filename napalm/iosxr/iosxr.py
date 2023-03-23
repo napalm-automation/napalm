@@ -1019,7 +1019,9 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(bgp_neighbor, "RemoteAS/AS_YY"), 0
             )
             local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_neighbor, "LocalAS/AS_YY"), 0
+                int,
+                napalm.base.helpers.find_txt(bgp_neighbor, "LocalAS/AS_YY"),
+                bgp_asn,
             )
             af_table = napalm.base.helpers.find_txt(
                 bgp_neighbor, "NeighborAFTable/NeighborAF/Naming/AFName"
@@ -1111,7 +1113,7 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(bgp_group, "RemoteAS/AS_YY"), 0
             )
             local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_group, "LocalAS/AS_YY"), 0
+                int, napalm.base.helpers.find_txt(bgp_group, "LocalAS/AS_YY"), bgp_asn
             )
             multihop_ttl = napalm.base.helpers.convert(
                 int,

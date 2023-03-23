@@ -30,7 +30,7 @@
         "description": "",
         "route_reflector_client": false,
         "nhs": false,
-        "local_as": 0,
+        "local_as": 65900,
         "import_policy": "pass-all",
         "local_address": "",
         "prefix_limit": {
@@ -54,7 +54,7 @@
     "remove_private_as": false,
     "description": "",
     "export_policy": "",
-    "local_as": 0,
+    "local_as": 65900,
     "apply_groups": [],
     "multipath": false,
     "prefix_limit": {}
@@ -68,7 +68,7 @@
         "description": "",
         "route_reflector_client": false,
         "nhs": false,
-        "local_as": 0,
+        "local_as": 65900,
         "import_policy": "RP-SPECIAL-SNOWFLAKE-IN",
         "local_address": "",
         "prefix_limit": {
@@ -90,7 +90,7 @@
         "description": "",
         "route_reflector_client": false,
         "nhs": false,
-        "local_as": 0,
+        "local_as": 65900,
         "import_policy": "",
         "local_address": "",
         "prefix_limit": {},
@@ -104,7 +104,7 @@
     "remove_private_as": true,
     "description": "",
     "export_policy": "",
-    "local_as": 0,
+    "local_as": 65900,
     "apply_groups": [],
     "multipath": false,
     "prefix_limit": {}
