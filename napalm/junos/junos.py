@@ -1250,6 +1250,30 @@ class JunOSDriver(NetworkDriver):
 
         bgp_config = {}
 
+        routing_options = junos_views.junos_routing_config_table(self.device)
+        routing_options.get(options=self.junos_config_options)
+
+        bgp_asn = int(
+            routing_options.xml.find(
+                "./routing-options/autonomous-system/as-number"
+            ).text
+        )
+
+        bgp_config["_"] = {
+            "apply_groups": [],
+            "description": "",
+            "local_as": bgp_asn,
+            "type": "",
+            "import_policy": "",
+            "export_policy": "",
+            "local_address": "",
+            "multipath": False,
+            "multihop_ttl": 0,
+            "remote_as": 0,
+            "remove_private_as": False,
+            "prefix_limit": {},
+            "neighbors": {},
+        }
         if group:
             bgp = junos_views.junos_bgp_config_group_table(self.device)
             bgp.get(group=group, options=self.junos_config_options)
