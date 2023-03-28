@@ -1256,7 +1256,7 @@ class JunOSDriver(NetworkDriver):
         bgp_asn_obj = routing_options.xml.find(
             "./routing-options/autonomous-system/as-number"
         )
-        bgp_asn = int(bgp_asn_obj.text) if bgp_asn_obj else 0
+        bgp_asn = int(bgp_asn_obj.text) if bgp_asn_obj is not None else 0
 
         bgp_config["_"] = {
             "apply_groups": [],
