@@ -1187,6 +1187,8 @@ class EOSDriver(NetworkDriver):
                     bgp_config[group_name] = default_group_dict(local_as)
                 bgp_config[group_name].update(parse_options(options, default_value))
 
+        bgp_config["_"] = default_group_dict(local_as)
+
         for peer, peer_details in bgp_neighbors.items():
             peer_group = peer_details.pop("__group", None)
             if not peer_group:
