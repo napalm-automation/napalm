@@ -1253,11 +1253,10 @@ class JunOSDriver(NetworkDriver):
         routing_options = junos_views.junos_routing_config_table(self.device)
         routing_options.get(options=self.junos_config_options)
 
-        bgp_asn = int(
-            routing_options.xml.find(
-                "./routing-options/autonomous-system/as-number"
-            ).text
+        bgp_asn_obj = routing_options.xml.find(
+            "./routing-options/autonomous-system/as-number"
         )
+        bgp_asn = int(bgp_asn_obj.text) if bgp_asn_obj else 0
 
         bgp_config["_"] = {
             "apply_groups": [],
