@@ -1258,28 +1258,32 @@ class JunOSDriver(NetworkDriver):
         )
         bgp_asn = int(bgp_asn_obj.text) if bgp_asn_obj is not None else 0
 
-        bgp_config["_"] = {
-            "apply_groups": [],
-            "description": "",
-            "local_as": bgp_asn,
-            "type": "",
-            "import_policy": "",
-            "export_policy": "",
-            "local_address": "",
-            "multipath": False,
-            "multihop_ttl": 0,
-            "remote_as": 0,
-            "remove_private_as": False,
-            "prefix_limit": {},
-            "neighbors": {},
-        }
-        if group:
+        # No BGP peer-group i.e. "_" key is a special case.
+        if group and group != "_":
             bgp = junos_views.junos_bgp_config_group_table(self.device)
             bgp.get(group=group, options=self.junos_config_options)
         else:
             bgp = junos_views.junos_bgp_config_table(self.device)
             bgp.get(options=self.junos_config_options)
             neighbor = ""  # if no group is set, no neighbor should be set either
+
+            # Only set no peer-group if BGP is actually configured.
+            if bgp.items() or bgp_asn:
+                bgp_config["_"] = {
+                    "apply_groups": [],
+                    "description": "",
+                    "local_as": bgp_asn,
+                    "type": "",
+                    "import_policy": "",
+                    "export_policy": "",
+                    "local_address": "",
+                    "multipath": False,
+                    "multihop_ttl": 0,
+                    "remote_as": 0,
+                    "remove_private_as": False,
+                    "prefix_limit": {},
+                    "neighbors": {},
+                }
         bgp_items = bgp.items()
 
         if neighbor:
