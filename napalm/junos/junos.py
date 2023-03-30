@@ -1256,7 +1256,7 @@ class JunOSDriver(NetworkDriver):
         bgp_asn_obj = routing_options.xml.find(
             "./routing-options/autonomous-system/as-number"
         )
-        bgp_asn = int(bgp_asn_obj.text) if bgp_asn_obj is not None else 0
+        system_bgp_asn = int(bgp_asn_obj.text) if bgp_asn_obj is not None else 0
 
         # No BGP peer-group i.e. "_" key is a special case.
         if group and group != "_":
@@ -1268,11 +1268,11 @@ class JunOSDriver(NetworkDriver):
             neighbor = ""  # if no group is set, no neighbor should be set either
 
             # Only set no peer-group if BGP is actually configured.
-            if bgp.items() or bgp_asn:
+            if bgp.items() or system_bgp_asn:
                 bgp_config["_"] = {
                     "apply_groups": [],
                     "description": "",
-                    "local_as": bgp_asn,
+                    "local_as": system_bgp_asn,
                     "type": "",
                     "import_policy": "",
                     "export_policy": "",
@@ -1310,13 +1310,17 @@ class JunOSDriver(NetworkDriver):
                 for field, datatype in _GROUP_FIELDS_DATATYPE_MAP_.items()
                 if "_prefix_limit" not in field
             }
-            for elem in bgp_group_details:
-                if not ("_prefix_limit" not in elem[0] and elem[1] is not None):
+
+            # Always overwrite with the system local_as (this will either be
+            # valid or will be zero i.e. the same as the default value).
+            bgp_config[bgp_group_name]["local_as"] = system_bgp_asn
+
+            for key, value in bgp_group_details:
+                if "_prefix_limit" in key or value is None:
                     continue
-                datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
+                datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(key)
                 default = _DATATYPE_DEFAULT_.get(datatype)
-                key = elem[0]
-                value = elem[1]
+
                 if key in ["export_policy", "import_policy"]:
                     if isinstance(value, list):
                         value = " ".join(value)
@@ -1324,6 +1328,10 @@ class JunOSDriver(NetworkDriver):
                     value = napalm.base.helpers.convert(
                         napalm.base.helpers.ip, value, value
                     )
+                if key == "apply_groups":
+                    # Ensure apply_groups value is wrapped in a list
+                    if isinstance(value, str):
+                        value = [value]
                 if key == "neighbors":
                     bgp_group_peers = value
                     continue
@@ -1331,15 +1339,15 @@ class JunOSDriver(NetworkDriver):
                     {key: napalm.base.helpers.convert(datatype, value, default)}
                 )
             prefix_limit_fields = {}
-            for elem in bgp_group_details:
-                if "_prefix_limit" in elem[0] and elem[1] is not None:
-                    datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
+            for key, value in bgp_group_details:
+                if "_prefix_limit" in key and value is not None:
+                    datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(key)
                     default = _DATATYPE_DEFAULT_.get(datatype)
                     prefix_limit_fields.update(
                         {
-                            elem[0].replace(
+                            key.replace(
                                 "_prefix_limit", ""
-                            ): napalm.base.helpers.convert(datatype, elem[1], default)
+                            ): napalm.base.helpers.convert(datatype, value, default)
                         }
                     )
             bgp_config[bgp_group_name]["prefix_limit"] = build_prefix_limit(
@@ -1353,23 +1361,31 @@ class JunOSDriver(NetworkDriver):
                     bgp_config[bgp_group_name]["multihop_ttl"] = 64
 
             bgp_config[bgp_group_name]["neighbors"] = {}
+            bgp_group_remote_as = bgp_config[bgp_group_name]["remote_as"]
             for bgp_group_neighbor in bgp_group_peers.items():
                 bgp_peer_address = napalm.base.helpers.ip(bgp_group_neighbor[0])
                 if neighbor and bgp_peer_address != neighbor:
                     continue  # if filters applied, jump over all other neighbors
                 bgp_group_details = bgp_group_neighbor[1]
+
+                # Set defaults for this BGP peer
                 bgp_peer_details = {
                     field: _DATATYPE_DEFAULT_.get(datatype)
                     for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.items()
                     if "_prefix_limit" not in field
                 }
-                for elem in bgp_group_details:
-                    if not ("_prefix_limit" not in elem[0] and elem[1] is not None):
+
+                # Always overwrite with the system local_as (this will either be
+                # valid or will be zero i.e. the same as the default value).
+                bgp_peer_details["local_as"] = system_bgp_asn
+                # Always set the default remote-as as the Peer-Group remote-as
+                bgp_peer_details["remote_as"] = bgp_group_remote_as
+
+                for key, value in bgp_group_details:
+                    if "_prefix_limit" in key or value is None:
                         continue
-                    datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
+                    datatype = _PEER_FIELDS_DATATYPE_MAP_.get(key)
                     default = _DATATYPE_DEFAULT_.get(datatype)
-                    key = elem[0]
-                    value = elem[1]
                     if key in ["export_policy"]:
                         # next-hop self is applied on export IBGP sessions
                         bgp_peer_details["nhs"] = _check_nhs(value, nhs_policies)
@@ -1397,17 +1413,15 @@ class JunOSDriver(NetworkDriver):
                 if "cluster" in bgp_config[bgp_group_name].keys():
                     bgp_peer_details["route_reflector_client"] = True
                 prefix_limit_fields = {}
-                for elem in bgp_group_details:
-                    if "_prefix_limit" in elem[0] and elem[1] is not None:
-                        datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
+                for key, value in bgp_group_details:
+                    if "_prefix_limit" in key and value is not None:
+                        datatype = _PEER_FIELDS_DATATYPE_MAP_.get(key)
                         default = _DATATYPE_DEFAULT_.get(datatype)
                         prefix_limit_fields.update(
                             {
-                                elem[0].replace(
+                                key.replace(
                                     "_prefix_limit", ""
-                                ): napalm.base.helpers.convert(
-                                    datatype, elem[1], default
-                                )
+                                ): napalm.base.helpers.convert(datatype, value, default)
                             }
                         )
                 bgp_peer_details["prefix_limit"] = build_prefix_limit(
