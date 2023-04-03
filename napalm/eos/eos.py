@@ -994,6 +994,7 @@ class EOSDriver(NetworkDriver):
             "local-v4-addr": "local_address",
             "local-v6-addr": "local_address",
             "local-as": "local_as",
+            "next-hop-self": "nhs",
             "description": "description",
             "import-policy": "import_policy",
             "export-policy": "export_policy",
@@ -1051,7 +1052,7 @@ class EOSDriver(NetworkDriver):
             )  # few more default values
             return group_dict
 
-        def default_neighbor_dict(local_as):
+        def default_neighbor_dict(local_as, group_dict):
             neighbor_dict = {}
             neighbor_dict.update(
                 {
@@ -1062,6 +1063,13 @@ class EOSDriver(NetworkDriver):
             neighbor_dict.update(
                 {"prefix_limit": {}, "local_as": local_as, "authentication_key": ""}
             )  # few more default values
+            neighbor_dict.update(
+                {
+                    key: group_dict.get(key)
+                    for key in _GROUP_FIELD_MAP_.values()
+                    if key in group_dict and key in _PEER_FIELD_MAP_.values()
+                }
+            )  # copy in values from group dict if present
             return neighbor_dict
 
         def parse_options(options, default_value=False):
@@ -1152,14 +1160,20 @@ class EOSDriver(NetworkDriver):
                 ipaddress.ip_address(group_or_neighbor)
                 # if passes the test => it is an IP Address, thus a Neighbor!
                 peer_address = group_or_neighbor
-                if peer_address not in bgp_neighbors:
-                    bgp_neighbors[peer_address] = default_neighbor_dict(local_as)
+                group_name = None
                 if options[0] == "peer-group":
-                    bgp_neighbors[peer_address]["__group"] = options[1]
+                    group_name = options[1]
                 # EOS > 4.23.0 only supports the new syntax
                 # https://www.arista.com/en/support/advisories-notices/fieldnotices/7097-field-notice-39
                 elif options[0] == "peer" and options[1] == "group":
-                    bgp_neighbors[peer_address]["__group"] = options[2]
+                    group_name = options[2]
+                if peer_address not in bgp_neighbors:
+                    bgp_neighbors[peer_address] = default_neighbor_dict(
+                        local_as, bgp_config.get(group_name, {})
+                    )
+
+                if group_name:
+                    bgp_neighbors[peer_address]["__group"] = group_name
 
                 # in the config, neighbor details are lister after
                 # the group is specified for the neighbor:
@@ -1196,6 +1210,10 @@ class EOSDriver(NetworkDriver):
             if peer_group not in bgp_config:
                 bgp_config[peer_group] = default_group_dict(local_as)
             bgp_config[peer_group]["neighbors"][peer] = peer_details
+
+        [
+            v.pop("nhs", None) for v in bgp_config.values()
+        ]  # remove NHS from group-level dictionary
 
         return bgp_config
 

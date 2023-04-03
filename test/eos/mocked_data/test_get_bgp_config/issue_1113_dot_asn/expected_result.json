@@ -35,8 +35,8 @@
         "local_as": 4266524237,
         "nhs": false,
         "route_reflector_client": false,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "4-public-peer-anycast-out",
         "authentication_key": "",
         "prefix_limit": {}
       },
@@ -47,8 +47,8 @@
         "local_as": 4266524237,
         "nhs": false,
         "route_reflector_client": false,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "4-public-peer-anycast-out",
         "authentication_key": "",
         "prefix_limit": {}
       }
@@ -75,8 +75,8 @@
         "local_as": 4266524237,
         "nhs": false,
         "route_reflector_client": false,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "reject-all",
         "authentication_key": "",
         "prefix_limit": {}
       },
@@ -87,8 +87,8 @@
         "local_as": 4266524237,
         "nhs": false,
         "route_reflector_client": false,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "reject-all",
         "authentication_key": "",
         "prefix_limit": {}
       }
