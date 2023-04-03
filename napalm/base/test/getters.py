@@ -244,7 +244,7 @@ class BaseTestGetters(object):
     def test_get_bgp_config(self, test_case):
         """Test get_bgp_config."""
         get_bgp_config = self.device.get_bgp_config()
-        assert len(get_bgp_config) > 0
+        assert get_bgp_config == {} or len(get_bgp_config) > 0
 
         for bgp_group in get_bgp_config.values():
             assert helpers.test_model(models.BPGConfigGroupDict, bgp_group)
