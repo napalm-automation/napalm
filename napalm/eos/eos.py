@@ -1197,6 +1197,10 @@ class EOSDriver(NetworkDriver):
                 bgp_config[peer_group] = default_group_dict(local_as)
             bgp_config[peer_group]["neighbors"][peer] = peer_details
 
+        if local_as == 0:
+            # BGP not running
+            return {}
+
         return bgp_config
 
     def get_arp_table(self, vrf=""):
