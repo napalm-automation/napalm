@@ -5,7 +5,7 @@
     "export_policy": "PASS-OUT",
     "import_policy": "PASS-IN",
     "local_address": "GigabitEthernet1",
-    "local_as": 0,
+    "local_as": 65001,
     "multihop_ttl": 0,
     "multipath": false,
     "neighbors": {
@@ -15,7 +15,7 @@
         "export_policy": "",
         "import_policy": "",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65001,
         "nhs": false,
         "prefix_limit": {
           "inet": {
@@ -37,7 +37,7 @@
         "export_policy": "",
         "import_policy": "",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65001,
         "nhs": false,
         "prefix_limit": {
           "inet": {
@@ -75,7 +75,7 @@
     "export_policy": "",
     "import_policy": "",
     "local_address": "",
-    "local_as": 0,
+    "local_as": 65001,
     "multihop_ttl": 0,
     "multipath": false,
     "neighbors": {

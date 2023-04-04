@@ -987,6 +987,15 @@ class IOSXRDriver(NetworkDriver):
         <InstanceName>default</InstanceName></Naming></Instance></BGP></Configuration></Get>"
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
+        bgp_asn = napalm.base.helpers.convert(
+            int,
+            napalm.base.helpers.find_txt(
+                result_tree,
+                "Get/Configuration/BGP/Instance[1]/InstanceAS/FourByteAS/Naming/AS",
+            ),
+            0,
+        )
+
         if not group:
             neighbor = ""
 
@@ -1010,7 +1019,9 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(bgp_neighbor, "RemoteAS/AS_YY"), 0
             )
             local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_neighbor, "LocalAS/AS_YY"), 0
+                int,
+                napalm.base.helpers.find_txt(bgp_neighbor, "LocalAS/AS_YY"),
+                bgp_asn,
             )
             af_table = napalm.base.helpers.find_txt(
                 bgp_neighbor, "NeighborAFTable/NeighborAF/Naming/AFName"
@@ -1102,7 +1113,7 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(bgp_group, "RemoteAS/AS_YY"), 0
             )
             local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_group, "LocalAS/AS_YY"), 0
+                int, napalm.base.helpers.find_txt(bgp_group, "LocalAS/AS_YY"), bgp_asn
             )
             multihop_ttl = napalm.base.helpers.convert(
                 int,
@@ -1164,22 +1175,22 @@ class IOSXRDriver(NetworkDriver):
             }
             if group and group == group_name:
                 break
-        if "" in bgp_group_neighbors.keys():
-            bgp_config["_"] = {
-                "apply_groups": [],
-                "description": "",
-                "local_as": 0,
-                "type": "",
-                "import_policy": "",
-                "export_policy": "",
-                "local_address": "",
-                "multipath": False,
-                "multihop_ttl": 0,
-                "remote_as": 0,
-                "remove_private_as": False,
-                "prefix_limit": {},
-                "neighbors": bgp_group_neighbors.get("", {}),
-            }
+
+        bgp_config["_"] = {
+            "apply_groups": [],
+            "description": "",
+            "local_as": bgp_asn,
+            "type": "",
+            "import_policy": "",
+            "export_policy": "",
+            "local_address": "",
+            "multipath": False,
+            "multihop_ttl": 0,
+            "remote_as": 0,
+            "remove_private_as": False,
+            "prefix_limit": {},
+            "neighbors": bgp_group_neighbors.get("", {}),
+        }
 
         return bgp_config
 

@@ -1369,6 +1369,16 @@ class IOSXRNETCONFDriver(NetworkDriver):
         if not group:
             neighbor = ""
 
+        bgp_asn = napalm.base.helpers.convert(
+            int,
+            self._find_txt(
+                result_tree,
+                ".//bgpc:bgp/bgpc:instance/bgpc:instance-as/bgpc:four-byte-as/bgpc:as",
+                default=0,
+                namespaces=C.NS,
+            ),
+        )
+
         bgp_group_neighbors = {}
         bgp_neighbor_xpath = ".//bgpc:bgp/bgpc:instance/bgpc:instance-as/\
              bgpc:four-byte-as/bgpc:default-vrf/bgpc:bgp-entity/bgpc:neighbors/bgpc:neighbor"
@@ -1430,7 +1440,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = local_as_x * 65536 + local_as_y
+            local_as = (local_as_x * 65536 + local_as_y) or bgp_asn
             af_table = self._find_txt(
                 bgp_neighbor,
                 "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:af-name",
@@ -1597,7 +1607,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = local_as_x * 65536 + local_as_y
+            local_as = (local_as_x * 65536 + local_as_y) or bgp_asn
             multihop_ttl = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
@@ -1679,22 +1689,22 @@ class IOSXRNETCONFDriver(NetworkDriver):
             }
             if group and group == group_name:
                 break
-        if "" in bgp_group_neighbors.keys():
-            bgp_config["_"] = {
-                "apply_groups": [],
-                "description": "",
-                "local_as": 0,
-                "type": "",
-                "import_policy": "",
-                "export_policy": "",
-                "local_address": "",
-                "multipath": False,
-                "multihop_ttl": 0,
-                "remote_as": 0,
-                "remove_private_as": False,
-                "prefix_limit": {},
-                "neighbors": bgp_group_neighbors.get("", {}),
-            }
+
+        bgp_config["_"] = {
+            "apply_groups": [],
+            "description": "",
+            "local_as": bgp_asn,
+            "type": "",
+            "import_policy": "",
+            "export_policy": "",
+            "local_address": "",
+            "multipath": False,
+            "multihop_ttl": 0,
+            "remote_as": 0,
+            "remove_private_as": False,
+            "prefix_limit": {},
+            "neighbors": bgp_group_neighbors.get("", {}),
+        }
 
         return bgp_config
 
