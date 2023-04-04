@@ -1215,6 +1215,10 @@ class EOSDriver(NetworkDriver):
             v.pop("nhs", None) for v in bgp_config.values()
         ]  # remove NHS from group-level dictionary
 
+        if local_as == 0:
+            # BGP not running
+            return {}
+
         return bgp_config
 
     def get_arp_table(self, vrf=""):
