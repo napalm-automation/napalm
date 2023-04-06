@@ -35,8 +35,8 @@
         "local_as": 64496,
         "nhs": false,
         "route_reflector_client": false,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "reject-all",
         "authentication_key": "",
         "prefix_limit": {}
       },
@@ -47,8 +47,8 @@
         "local_as": 64496,
         "nhs": false,
         "route_reflector_client": false,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "reject-all",
         "authentication_key": "",
         "prefix_limit": {}
       }

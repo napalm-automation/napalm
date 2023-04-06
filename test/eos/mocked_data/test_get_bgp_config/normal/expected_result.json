@@ -34,8 +34,8 @@
         "local_as": 13335,
         "route_reflector_client": false,
         "remote_as": 13414,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "4-public-peer-anycast-out",
         "prefix_limit": {}
       },
       "192.168.0.1": {
@@ -46,8 +46,8 @@
         "local_as": 13335,
         "route_reflector_client": false,
         "remote_as": 32934,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "4-public-peer-anycast-out",
         "prefix_limit": {}
       }
     },
@@ -74,8 +74,8 @@
         "local_as": 13335,
         "route_reflector_client": false,
         "remote_as": 54113,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "reject-all",
         "prefix_limit": {}
       },
       "2001:db8::0:1": {
@@ -86,8 +86,8 @@
         "local_as": 13335,
         "route_reflector_client": false,
         "remote_as": 8403,
-        "import_policy": "",
-        "export_policy": "",
+        "import_policy": "reject-all",
+        "export_policy": "reject-all",
         "prefix_limit": {}
       }
     },
