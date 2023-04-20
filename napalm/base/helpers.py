@@ -24,7 +24,7 @@ from netutils.interface import abbreviated_interface_name  # noqa
 from netutils.interface import canonical_interface_name  # noqa
 from netutils.constants import BASE_INTERFACES as base_interfaces  # noqa
 from netutils.constants import REVERSE_MAPPING as reverse_mapping  # noqa
-from netutils.interface import split_interface as _split_interface  # noqa
+from netutils.interface import split_interface as _split_interface
 
 try:
     from ttp import quick_parse as ttp_quick_parse
