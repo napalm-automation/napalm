@@ -42,7 +42,11 @@ from napalm.base.helpers import (
     sanitize_configs,
 )
 from netaddr.core import AddrFormatError
-from netutils.interface import abbreviated_interface_name, canonical_interface_name, split_interface
+from netutils.interface import (
+    abbreviated_interface_name,
+    canonical_interface_name,
+    split_interface,
+)
 from napalm.base.netmiko_helpers import netmiko_args
 
 # Easier to store these as constants
