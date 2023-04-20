@@ -46,6 +46,7 @@ from typing_extensions import (
 from netmiko import file_transfer
 from requests.exceptions import ConnectionError
 from netutils.config.compliance import diff_network_config
+from netutils.interface import canonical_interface_name
 
 import napalm.base.constants as c
 
@@ -682,7 +683,7 @@ class NXOSDriverBase(NetworkDriver):
                 lldp_entry["remote_system_enable_capab"]
             )
             # Turn the interfaces into their long version
-            local_intf = napalm.base.helpers.canonical_interface_name(local_intf)
+            local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
             lldp[local_intf].append(lldp_entry)  # type: ignore
 
@@ -738,13 +739,9 @@ class NXOSDriverBase(NetworkDriver):
             find = re.findall(find_regexp, vls.strip())
             if find:
                 for i in range(int(find[0][1]), int(find[0][2]) + 1):
-                    vlans.append(
-                        napalm.base.helpers.canonical_interface_name(
-                            find[0][0] + str(i)
-                        )
-                    )
+                    vlans.append(canonical_interface_name(find[0][0] + str(i)))
             else:
-                vlans.append(napalm.base.helpers.canonical_interface_name(vls.strip()))
+                vlans.append(canonical_interface_name(vls.strip()))
         return vlans
 
     @abstractmethod
