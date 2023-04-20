@@ -19,6 +19,7 @@ from typing import Optional, Dict, Type, Any, List, Union
 from typing_extensions import Literal
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
+from netutils.interface import canonical_interface_name
 
 # local modules
 import napalm.base.exceptions
@@ -1805,8 +1806,6 @@ class NetworkDriver(object):
     def _canonical_int(self, interface: str) -> str:
         """Expose the helper function within this class."""
         if self.use_canonical_interface is True:
-            return napalm.base.helpers.canonical_interface_name(
-                interface, addl_name_map=None
-            )
+            return canonical_interface_name(interface, addl_name_map=None)
         else:
             return interface
