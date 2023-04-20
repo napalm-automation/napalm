@@ -36,15 +36,13 @@ from napalm.base.exceptions import (
     CommitConfirmException,
 )
 from napalm.base.helpers import (
-    canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
-    split_interface,
-    abbreviated_interface_name,
     generate_regex_or,
     sanitize_configs,
 )
 from netaddr.core import AddrFormatError
+from netutils.interface import abbreviated_interface_name, canonical_interface_name, split_interface
 from napalm.base.netmiko_helpers import netmiko_args
 
 # Easier to store these as constants
