@@ -20,10 +20,8 @@ from netutils.config.parser import IOSConfigParser
 
 # Do not remove the below imports, functions were moved to netutils, but to not
 # break backwards compatibility, these should remain
-from netutils.interface import (
-    abbreviated_interface_name,
-    canonical_interface_name,
-)  # noqa
+from netutils.interface import abbreviated_interface_name  # noqa
+from netutils.interface import canonical_interface_name  # noqa
 from netutils.constants import BASE_INTERFACES as base_interfaces  # noqa
 from netutils.constants import REVERSE_MAPPING as reverse_mapping  # noqa
 from netutils.interface import split_interface as _split_interface  # noqa
