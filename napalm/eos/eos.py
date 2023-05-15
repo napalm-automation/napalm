@@ -543,9 +543,10 @@ class EOSDriver(NetworkDriver):
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
-            commands = [f"configure session {self.config_session} abort"]
-            self._run_commands(commands, encoding="text")
+            config_session = self.config_session
             self.config_session = None
+            commands = [f"configure session {config_session} abort"]
+            self._run_commands(commands, encoding="text")
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
