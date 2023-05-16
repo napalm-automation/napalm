@@ -2130,7 +2130,20 @@ class EOSDriver(NetworkDriver):
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
 
-    def _show_vrf(self):
+    def _show_vrf_json(self):
+        commands = ["show vrf"]
+
+        vrfs = self._run_commands(commands)[0]["vrfs"]
+        return [
+            {
+                "name": k,
+                "interfaces": [i for i in v["interfaces"]],
+                "route_distinguisher": v["routeDistinguisher"],
+            }
+            for k, v in vrfs.items()
+        ]
+
+    def _show_vrf_text(self):
         commands = ["show vrf"]
 
         # This command has no JSON in EOS < 4.23
@@ -2164,6 +2177,12 @@ class EOSDriver(NetworkDriver):
             vrfs.append(vrf)
 
         return vrfs
+
+    def _show_vrf(self):
+        if self.cli_version == 2:
+            return self._show_vrf_json()
+        else:
+            return self._show_vrf_text()
 
     def _get_vrfs(self):
         output = self._show_vrf()
