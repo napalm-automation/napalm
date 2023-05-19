@@ -96,6 +96,8 @@ class EOSDriver(NetworkDriver):
         Optional args:
             * lock_disable (True/False): force configuration lock to be disabled (for external lock
                 management).
+            * force_cfg_session_invalid (True/False): force invalidation of the config session
+                in case of failure.
             * enable_password (True/False): Enable password for privilege elevation
             * eos_autoComplete (True/False): Allow for shortening of cli commands
             * transport (string): transport, eos_transport is a fallback for compatibility.
@@ -134,6 +136,10 @@ class EOSDriver(NetworkDriver):
         # Define locking method
         self.lock_disable = self.optional_args.pop("lock_disable", False)
 
+        self.force_cfg_session_invalid = self.optional_args.pop(
+            "force_cfg_session_invalid", False
+        )
+
         # eos_transport is there for backwards compatibility, transport is the preferred method
         transport = self.optional_args.get(
             "transport", self.optional_args.get("eos_transport", "https")
@@ -150,7 +156,6 @@ class EOSDriver(NetworkDriver):
         self.netmiko_optional_args = netmiko_args(optional_args)
 
     def _process_optional_args_eapi(self, optional_args):
-
         # Parse pyeapi transport class
         self.transport_class = self._parse_transport(self.transport)
 
@@ -543,8 +548,15 @@ class EOSDriver(NetworkDriver):
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
-            commands = [f"configure session {self.config_session} abort"]
-            self._run_commands(commands, encoding="text")
+            try:
+                commands = [f"configure session {self.config_session} abort"]
+                self._run_commands(commands, encoding="text")
+            except Exception:
+                # If discard fails, you might want to invalidate the config_session (esp. Salt)
+                # The config_session in EOS is used as the config lock.
+                if self.force_cfg_session_invalid:
+                    self.config_session = None
+                raise
             self.config_session = None
 
     def rollback(self):
