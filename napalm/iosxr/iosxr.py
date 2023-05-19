@@ -987,6 +987,13 @@ class IOSXRDriver(NetworkDriver):
         <InstanceName>default</InstanceName></Naming></Instance></BGP></Configuration></Get>"
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
+        # Check if BGP is not configured.
+        get_tag = result_tree.find("Get")
+        if get_tag is not None:
+            bgp_not_found = get_tag.attrib.get("ItemNotFound")
+            if bgp_not_found:
+                return {}
+
         bgp_asn = napalm.base.helpers.convert(
             int,
             napalm.base.helpers.find_txt(
