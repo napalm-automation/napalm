@@ -141,6 +141,7 @@ ____________________________________
 * :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new style, available beginning with EOS release 4.23.0, as per FN 0039. Beware
   that enabling this option will change the configuration you're loading through NAPALM. Default: ``False`` (won't change your configuration commands).
   .. versionadded:: 3.0.1
+* :code:`force_cfg_session_invalid` (eos) - Force the config_session to be cleared in case of issues, like `discard_config` failure. (default: ``False``)
 
 The transport argument
 ______________________
