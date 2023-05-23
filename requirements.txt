@@ -3,12 +3,12 @@ cffi>=1.11.3
 paramiko>=2.6.0
 requests>=2.7.0
 future
-textfsm
+textfsm<=1.1.2
 jinja2
 netaddr
 pyYAML
 pyeapi>=0.8.2
-netmiko>=4.1.0
+netmiko>=4.0.0
 junos-eznc>=2.6.3
 scp
 lxml>=4.3.0

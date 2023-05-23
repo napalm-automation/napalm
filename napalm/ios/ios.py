@@ -14,7 +14,6 @@
 # the License.
 import copy
 import functools
-import ipaddress
 import os
 import re
 import socket
@@ -23,6 +22,8 @@ import tempfile
 import uuid
 from collections import defaultdict
 
+from netaddr import IPNetwork
+from netaddr.core import AddrFormatError
 from netmiko import FileTransfer, InLineTransfer
 
 import napalm.base.constants as C
@@ -36,16 +37,13 @@ from napalm.base.exceptions import (
     CommitConfirmException,
 )
 from napalm.base.helpers import (
+    canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
+    split_interface,
+    abbreviated_interface_name,
     generate_regex_or,
     sanitize_configs,
-)
-from netaddr.core import AddrFormatError
-from netutils.interface import (
-    abbreviated_interface_name,
-    canonical_interface_name,
-    split_interface,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -483,10 +481,10 @@ class IOSDriver(NetworkDriver):
         # Handle special username removal pattern
         pattern2 = r".*all username.*confirm"
         patterns = rf"(?:{pattern1}|{pattern2})"
-        output = self.device.send_command(cmd, expect_string=patterns, read_timeout=90)
+        output = self.device.send_command(cmd, expect_string=patterns)
         loop_count = 50
         new_output = output
-        for _ in range(loop_count):
+        for i in range(loop_count):
             if re.search(pattern2, new_output):
                 # Send confirmation if username removal
                 new_output = self.device.send_command_timing(
@@ -987,26 +985,10 @@ class IOSDriver(NetworkDriver):
                 hostname = lldp_entry["remote_system_name"]
                 port = lldp_entry["remote_port"]
                 # Match IOS behaviour of taking remote chassis ID
-                # when lacking a system name (in show lldp neighbors)
-
-                # We can't assume remote_chassis_id or remote_port are MAC Addresses
-                # See IEEE 802.1AB-2005 and rfc2922, specifically PtopoChassisId
+                # When lacking a system name (in show lldp neighbors)
                 if not hostname:
-                    try:
-                        hostname = napalm.base.helpers.mac(
-                            lldp_entry["remote_chassis_id"]
-                        )
-                    except AddrFormatError:
-                        hostname = lldp_entry["remote_chassis_id"]
-
-                # If port is a mac-address, normalize it.
-                # The MAC helper library will normalize "15" to "00:00:00:00:00:0F"
-                if port.count(":") == 5 or port.count("-") == 5 or port.count(".") == 2:
-                    try:
-                        port = napalm.base.helpers.mac(port)
-                    except AddrFormatError:
-                        pass
-
+                    hostname = napalm.base.helpers.mac(lldp_entry["remote_chassis_id"])
+                    port = napalm.base.helpers.mac(port)
                 lldp_dict = {"port": port, "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
 
@@ -1463,11 +1445,6 @@ class IOSDriver(NetworkDriver):
         bgp_config_list = napalm.base.helpers.netutils_parse_objects(
             "router bgp", cfg["running"]
         )
-
-        # No BGP configuration
-        if not bgp_config_list:
-            return {}
-
         bgp_asn = napalm.base.helpers.regex_find_txt(
             r"router bgp (\d+)", bgp_config_list, default=0
         )
@@ -1538,9 +1515,7 @@ class IOSDriver(NetworkDriver):
                 r" update-source (\w+)", neighbor_config
             )
             local_as = napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)",
-                neighbor_config,
-                default=bgp_asn,
+                r"local-as (\d+)", neighbor_config, default=0
             )
             password = napalm.base.helpers.regex_find_txt(
                 r"password (?:[0-9] )?([^\']+\')", neighbor_config
@@ -1574,32 +1549,29 @@ class IOSDriver(NetworkDriver):
                 "route_reflector_client": route_reflector_client,
             }
 
-        # Do not include the no-group ("_") if a group argument is passed in
-        # unless group argument is "_"
-        if not group or group == "_":
-            bgp_config["_"] = {
-                "apply_groups": [],
-                "description": "",
-                "local_as": bgp_asn,
-                "type": "",
-                "import_policy": "",
-                "export_policy": "",
-                "local_address": "",
-                "multipath": False,
-                "multihop_ttl": 0,
-                "remote_as": 0,
-                "remove_private_as": False,
-                "prefix_limit": {},
-                "neighbors": bgp_group_neighbors.get("_", {}),
-            }
-
         # Get the peer-group level config for each group
         for group_name in bgp_group_neighbors.keys():
             # If a group is passed in params, only continue on that group
             if group:
                 if group_name != group:
                     continue
+            # Default no group
             if group_name == "_":
+                bgp_config["_"] = {
+                    "apply_groups": [],
+                    "description": "",
+                    "local_as": 0,
+                    "type": "",
+                    "import_policy": "",
+                    "export_policy": "",
+                    "local_address": "",
+                    "multipath": False,
+                    "multihop_ttl": 0,
+                    "remote_as": 0,
+                    "remove_private_as": False,
+                    "prefix_limit": {},
+                    "neighbors": bgp_group_neighbors.get("_", {}),
+                }
                 continue
             neighbor_config = napalm.base.helpers.netutils_parse_objects(
                 group_name, bgp_config_list
@@ -1621,7 +1593,7 @@ class IOSDriver(NetworkDriver):
                 r" description ([^\']+)\'", neighbor_config
             )
             local_as = napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, default=bgp_asn
+                r"local-as (\d+)", neighbor_config, default=0
             )
             import_policy = napalm.base.helpers.regex_find_txt(
                 r"route-map ([^\s]+) in", neighbor_config
@@ -3033,7 +3005,7 @@ class IOSDriver(NetworkDriver):
                     # next-hop is not known in this vrf, route leaked from
                     # other vrf or from vpnv4 table?
                     # get remote AS nr. from as-path if it is ebgp neighbor
-                    # locally sourced prefix is not in routing table as a bgp route (i hope...)
+                    # localy sourced prefix is not in routing table as a bgp route (i hope...)
                     if search_re_dict["bgpie"]["result"] == "external":
                         bgpras = (
                             search_re_dict["aspath"]["result"]
@@ -3102,8 +3074,8 @@ class IOSDriver(NetworkDriver):
         vrf = ""
         ip_version = None
         try:
-            ip_version = ipaddress.ip_network(destination).version
-        except ValueError:
+            ip_version = IPNetwork(destination).version
+        except AddrFormatError:
             return "Please specify a valid destination!"
         if ip_version == 4:  # process IPv4 routing table
             if vrf == "":
@@ -3111,8 +3083,8 @@ class IOSDriver(NetworkDriver):
             else:
                 vrfs = [vrf]  # VRFs where IPv4 is enabled
             vrfs.append("default")  # global VRF
-            ipnet_dest = ipaddress.ip_network(destination)
-            prefix = str(ipnet_dest.network_address)
+            ipnet_dest = IPNetwork(destination)
+            prefix = str(ipnet_dest.network)
             netmask = ""
             routes = {}
             if "/" in destination:

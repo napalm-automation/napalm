@@ -57,10 +57,7 @@ import napalm.base.constants as C
 from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.exceptions
 from napalm.base.base import NetworkDriver
-from napalm.base.utils.string_parsers import (
-    convert_uptime_string_seconds,
-    parse_fixed_width,
-)
+from napalm.base.utils.string_parsers import convert_uptime_string_seconds
 
 
 class TestBaseHelpers(unittest.TestCase):
@@ -84,7 +81,7 @@ class TestBaseHelpers(unittest.TestCase):
               custom path
             * check if can load correct template from custom path
             * check if template passed as string can be loaded
-            * check that the search path setup by MRO is correct when loading an incorrect template
+            * check that the search path setup by MRO is correct when loading an incorrecet template
         """
 
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
@@ -378,8 +375,10 @@ class TestBaseHelpers(unittest.TestCase):
             * check if IPv6 address returned as expected
         """
 
-        # test that raises ValueError when wrong format
-        self.assertRaises(ValueError, napalm.base.helpers.ip, "fake")
+        self.assertTrue(HAS_NETADDR)
+
+        # test that raises AddrFormatError when wrong format
+        self.assertRaises(AddrFormatError, napalm.base.helpers.ip, "fake")
         self.assertRaises(
             ValueError,
             napalm.base.helpers.ip,
@@ -495,6 +494,87 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(convert_uptime_string_seconds("7w6d5h4m3s"), 4770243)
         self.assertEqual(convert_uptime_string_seconds("95w2d10h58m"), 57668280)
         self.assertEqual(convert_uptime_string_seconds("1h5m"), 3900)
+
+    def test_canonical_interface_name(self):
+        """Test the canonical_interface_name helper function."""
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name("Fa0/1"), "FastEthernet0/1"
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name("FastEthernet0/1"),
+            "FastEthernet0/1",
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name("TenGig1/1/1.5"),
+            "TenGigabitEthernet1/1/1.5",
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name("Gi1/2"), "GigabitEthernet1/2"
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name("HundredGigE105/1/1"),
+            "HundredGigabitEthernet105/1/1",
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name("Lo0"), "Loopback0"
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name("lo0"), "Loopback0"
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name("no_match0/1"), "no_match0/1"
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name(
+                "lo10", addl_name_map={"lo": "something_custom"}
+            ),
+            "something_custom10",
+        )
+        self.assertEqual(
+            napalm.base.helpers.canonical_interface_name(
+                "uniq0/1/1", addl_name_map={"uniq": "something_custom"}
+            ),
+            "something_custom0/1/1",
+        )
+
+    def test_abbreviated_interface_name(self):
+        """Test the abbreviated_interface_name helper function."""
+        self.assertEqual(
+            napalm.base.helpers.abbreviated_interface_name("Fa0/1"), "Fa0/1"
+        )
+        self.assertEqual(
+            napalm.base.helpers.abbreviated_interface_name("FastEthernet0/1"), "Fa0/1"
+        )
+        self.assertEqual(
+            napalm.base.helpers.abbreviated_interface_name("TenGig1/1/1.5"), "Te1/1/1.5"
+        )
+        self.assertEqual(
+            napalm.base.helpers.abbreviated_interface_name("Gi1/2"), "Gi1/2"
+        )
+        self.assertEqual(
+            napalm.base.helpers.abbreviated_interface_name("HundredGigE105/1/1"),
+            "Hu105/1/1",
+        )
+        self.assertEqual(napalm.base.helpers.abbreviated_interface_name("Lo0"), "Lo0")
+        self.assertEqual(napalm.base.helpers.abbreviated_interface_name("lo0"), "Lo0")
+        self.assertEqual(
+            napalm.base.helpers.abbreviated_interface_name("something_custom0/1"),
+            "something_custom0/1",
+        )
+        self.assertEqual(
+            napalm.base.helpers.abbreviated_interface_name(
+                "loop10", addl_name_map={"loop": "Loopback"}
+            ),
+            "Lo10",
+        )
+        self.assertEqual(
+            napalm.base.helpers.abbreviated_interface_name(
+                "loop10",
+                addl_name_map={"loop": "Loopback"},
+                addl_reverse_map={"Loopback": "lo"},
+            ),
+            "lo10",
+        )
 
     def test_netmiko_arguments(self):
         """Test the netmiko argument processing."""
@@ -673,37 +753,6 @@ interface Gi1/2
             "ttp://platform/test_platform_show_run_pipe_sec_interface.txt",
             _TTP_TEST_STRING,
         )
-        self.assertEqual(result, _EXPECTED_RESULT)
-
-    def test_parse_fixed_width(self):
-        _TEST_STRING = """   VRF              RD              Protocols       State            Interfaces
----------------- --------------- --------------- ------------------- ---------------------------
-123456789012345671234567890123456123456789012345612345678901234567890123456789012345678901234567
-"""  # noqa: E501
-        _EXPECTED_RESULT = [
-            (
-                "   VRF           ",
-                "   RD           ",
-                "   Protocols    ",
-                "   State            ",
-                "Interfaces                 ",
-            ),
-            (
-                "---------------- ",
-                "--------------- ",
-                "--------------- ",
-                "------------------- ",
-                "---------------------------",
-            ),
-            (
-                "12345678901234567",
-                "1234567890123456",
-                "1234567890123456",
-                "12345678901234567890",
-                "123456789012345678901234567",
-            ),
-        ]
-        result = parse_fixed_width(_TEST_STRING, 17, 16, 16, 20, 27)
         self.assertEqual(result, _EXPECTED_RESULT)
 
 

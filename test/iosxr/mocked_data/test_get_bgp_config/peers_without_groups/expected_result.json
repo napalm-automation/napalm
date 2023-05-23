@@ -10,7 +10,7 @@
     "remove_private_as": false,
     "remote_as": 0,
     "multihop_ttl": 0,
-    "local_as": 65900,
+    "local_as": 0,
     "apply_groups": [],
     "neighbors": {
       "10.255.255.2": {
@@ -26,7 +26,7 @@
             }
           }
         },
-        "local_as": 65900,
+        "local_as": 0,
         "description": "",
         "local_address": "",
         "import_policy": "pass-all",
@@ -48,7 +48,7 @@
             }
           }
         },
-        "local_as": 65900,
+        "local_as": 0,
         "description": "",
         "local_address": "",
         "import_policy": "pass-all",

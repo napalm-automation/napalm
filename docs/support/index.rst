@@ -13,7 +13,7 @@ General support matrix
   =====================   ==========  =============  ====================  ==================  ============  ============  ============
   **Driver Name**         eos         junos          iosxr_netconf         iosxr               nxos          nxos_ssh      ios
   **Structured data**     Yes         Yes            Yes                   No                  Yes           No            No
-  **Minimum version**     4.15.0F     12.1           7.0                   5.1.0               6.1 [#g1]_    6.3.2         12.4(20)T
+  **Minimum version**     4.15.0F     12.1           7.0                   5.1.0               6.1 [#g1]_    12.4(20)T     6.3.2
   **Backend library**     `pyeapi`_   `junos-eznc`_  `ncclient`_           `pyIOSXR`_          `pynxos`_     `netmiko`_    `netmiko`_
   **Caveats**             :doc:`eos`                 :doc:`iosxr_netconf`                      :doc:`nxos`   :doc:`nxos`   :doc:`ios`
   =====================   ==========  =============  ====================  ==================  ============  ============  ============
@@ -141,7 +141,6 @@ ____________________________________
 * :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new style, available beginning with EOS release 4.23.0, as per FN 0039. Beware
   that enabling this option will change the configuration you're loading through NAPALM. Default: ``False`` (won't change your configuration commands).
   .. versionadded:: 3.0.1
-* :code:`force_cfg_session_invalid` (eos) - Force the config_session to be cleared in case of issues, like `discard_config` failure. (default: ``False``)
 
 The transport argument
 ______________________

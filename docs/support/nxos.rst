@@ -71,7 +71,7 @@ One caveat of using netutils diff of configurations is that the diff is performe
 
 Example assuming that the device config contains:
 
-.. code-block:: bash
+.. code-block::
 
     interface loopback0
       ip address 10.1.4.4/32
