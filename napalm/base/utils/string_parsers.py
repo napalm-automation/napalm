@@ -1,7 +1,6 @@
 """ Common methods to normalize a string """
 import re
-import struct
-from typing import Union, List, Iterable, Dict, Optional, Tuple
+from typing import Union, List, Iterable, Dict, Optional
 
 
 def convert(text: str) -> Union[str, int]:
@@ -51,7 +50,7 @@ def colon_separated_string_to_dict(
             dictionary[line_data[0].strip()] = None
         else:
             raise Exception(
-                f"Something went wrong parsing the colon separated string:\n\n{line}"
+                "Something went wrong parsing the colo separated string {}".format(line)
             )
     return dictionary
 
@@ -134,14 +133,3 @@ def convert_uptime_string_seconds(uptime: str) -> int:
         raise Exception("Unrecognized uptime string:{}".format(uptime))
 
     return uptime_seconds
-
-
-def parse_fixed_width(text: str, *fields: int) -> List[Tuple[str, ...]]:
-    len = sum(fields)
-    fmtstring = " ".join(f"{fw}s" for fw in fields)
-    unpack = struct.Struct(fmtstring).unpack_from
-
-    def parse(line: str) -> Tuple[str, ...]:
-        return tuple([str(s.decode()) for s in unpack(line.ljust(len).encode())])
-
-    return [parse(s) for s in text.splitlines()]
