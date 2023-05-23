@@ -57,7 +57,10 @@ import napalm.base.constants as C
 from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.exceptions
 from napalm.base.base import NetworkDriver
-from napalm.base.utils.string_parsers import convert_uptime_string_seconds
+from napalm.base.utils.string_parsers import (
+    convert_uptime_string_seconds,
+    parse_fixed_width,
+)
 
 
 class TestBaseHelpers(unittest.TestCase):
@@ -670,6 +673,37 @@ interface Gi1/2
             "ttp://platform/test_platform_show_run_pipe_sec_interface.txt",
             _TTP_TEST_STRING,
         )
+        self.assertEqual(result, _EXPECTED_RESULT)
+
+    def test_parse_fixed_width(self):
+        _TEST_STRING = """   VRF              RD              Protocols       State            Interfaces
+---------------- --------------- --------------- ------------------- ---------------------------
+123456789012345671234567890123456123456789012345612345678901234567890123456789012345678901234567
+"""  # noqa: E501
+        _EXPECTED_RESULT = [
+            (
+                "   VRF           ",
+                "   RD           ",
+                "   Protocols    ",
+                "   State            ",
+                "Interfaces                 ",
+            ),
+            (
+                "---------------- ",
+                "--------------- ",
+                "--------------- ",
+                "------------------- ",
+                "---------------------------",
+            ),
+            (
+                "12345678901234567",
+                "1234567890123456",
+                "1234567890123456",
+                "12345678901234567890",
+                "123456789012345678901234567",
+            ),
+        ]
+        result = parse_fixed_width(_TEST_STRING, 17, 16, 16, 20, 27)
         self.assertEqual(result, _EXPECTED_RESULT)
 
 

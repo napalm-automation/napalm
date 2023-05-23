@@ -2130,15 +2130,59 @@ class EOSDriver(NetworkDriver):
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
 
-    def _show_vrf(self):
+    def _show_vrf_json(self):
         commands = ["show vrf"]
 
-        # This command has no JSON yet
+        vrfs = self._run_commands(commands)[0]["vrfs"]
+        return [
+            {
+                "name": k,
+                "interfaces": [i for i in v["interfaces"]],
+                "route_distinguisher": v["routeDistinguisher"],
+            }
+            for k, v in vrfs.items()
+        ]
+
+    def _show_vrf_text(self):
+        commands = ["show vrf"]
+
+        # This command has no JSON in EOS < 4.23
         raw_output = self._run_commands(commands, encoding="text")[0].get("output", "")
 
-        output = napalm.base.helpers.textfsm_extractor(self, "vrf", raw_output)
+        width_line = raw_output.splitlines()[2]  # Line with dashes
+        fields = width_line.split(" ")
+        widths = [len(f) + 1 for f in fields]
+        widths[-1] -= 1
 
-        return output
+        parsed_lines = string_parsers.parse_fixed_width(raw_output, *widths)
+
+        vrfs = []
+        vrf = {}
+        current_vrf = None
+        for line in parsed_lines[3:]:
+            line = [t.strip() for t in line]
+            if line[0]:
+                if current_vrf:
+                    vrfs.append(vrf)
+                current_vrf = line[0]
+                vrf = {
+                    "name": current_vrf,
+                    "interfaces": list(),
+                }
+            if line[1]:
+                vrf["route_distinguisher"] = line[1]
+            if line[4]:
+                vrf["interfaces"].extend([t.strip() for t in line[4].split(",") if t])
+        if current_vrf:
+            vrfs.append(vrf)
+
+        return vrfs
+
+    def _show_vrf(self):
+        if self.cli_version == 2:
+            return self._show_vrf_json()
+        else:
+            return self._show_vrf_text()
 
     def _get_vrfs(self):
         output = self._show_vrf()
@@ -2171,23 +2215,26 @@ class EOSDriver(NetworkDriver):
                         interfaces[str(line.strip())] = {}
                         all_vrf_interfaces[str(line.strip())] = {}
 
-            vrfs[str(vrf["name"])] = {
-                "name": str(vrf["name"]),
-                "type": "L3VRF",
+            vrfs[vrf["name"]] = {
+                "name": vrf["name"],
+                "type": "DEFAULT_INSTANCE" if vrf["name"] == "default" else "L3VRF",
                 "state": {"route_distinguisher": vrf["route_distinguisher"]},
                 "interfaces": {"interface": interfaces},
             }
-        all_interfaces = self.get_interfaces_ip().keys()
-        vrfs["default"] = {
-            "name": "default",
-            "type": "DEFAULT_INSTANCE",
-            "state": {"route_distinguisher": ""},
-            "interfaces": {
-                "interface": {
-                    k: {} for k in all_interfaces if k not in all_vrf_interfaces.keys()
-                }
-            },
-        }
+        if "default" not in vrfs:
+            all_interfaces = self.get_interfaces_ip().keys()
+            vrfs["default"] = {
+                "name": "default",
+                "type": "DEFAULT_INSTANCE",
+                "state": {"route_distinguisher": ""},
+                "interfaces": {
+                    "interface": {
+                        k: {}
+                        for k in all_interfaces
+                        if k not in all_vrf_interfaces.keys()
+                    }
+                },
+            }
 
         if name:
             if name in vrfs:
