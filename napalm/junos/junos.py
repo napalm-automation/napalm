@@ -2128,7 +2128,6 @@ class JunOSDriver(NetworkDriver):
         vrf=C.PING_VRF,
         source_interface=C.PING_SOURCE_INTERFACE,
     ):
-
         ping_dict = {}
 
         source_str = ""
@@ -2458,7 +2457,6 @@ class JunOSDriver(NetworkDriver):
         return rv
 
     def get_network_instances(self, name=""):
-
         network_instances = {}
 
         ri_table = junos_views.junos_nw_instances_table(self.device)

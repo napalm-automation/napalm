@@ -265,7 +265,6 @@ class TestBaseHelpers(unittest.TestCase):
         # should return empty unicode
 
     def test_find_txt(self):
-
         """
         Tests helper function ```find_txt```:
 
@@ -352,7 +351,6 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertTrue(len(napalm.base.helpers.find_txt(_NOT_SPECIAL_CHILD2, ".")) > 0)
 
     def test_mac(self):
-
         """
         Tests the helper function ```mac```:
 

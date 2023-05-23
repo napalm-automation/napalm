@@ -112,7 +112,8 @@ class BaseTestGetters(object):
         """
         Test that all methods have the same signature.
 
-        The type hint annotations are ignored here because the import paths might differ."""
+        The type hint annotations are ignored here because the import paths might differ.
+        """
         errors = {}
         cls = self.driver
         # Create fictional driver instance (py3 needs bound methods)
@@ -493,7 +494,6 @@ class BaseTestGetters(object):
                 assert len(channel) == 2
                 assert isinstance(channel["index"], int)
                 for field in ["input_power", "output_power", "laser_bias_current"]:
-
                     assert len(channel["state"][field]) == 4
                     assert isinstance(channel["state"][field]["instant"], float)
                     assert isinstance(channel["state"][field]["avg"], float)
