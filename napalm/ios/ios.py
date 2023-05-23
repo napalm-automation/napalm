@@ -36,15 +36,17 @@ from napalm.base.exceptions import (
     CommitConfirmException,
 )
 from napalm.base.helpers import (
-    canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
-    split_interface,
-    abbreviated_interface_name,
     generate_regex_or,
     sanitize_configs,
 )
 from netaddr.core import AddrFormatError
+from netutils.interface import (
+    abbreviated_interface_name,
+    canonical_interface_name,
+    split_interface,
+)
 from napalm.base.netmiko_helpers import netmiko_args
 
 # Easier to store these as constants
@@ -1461,6 +1463,11 @@ class IOSDriver(NetworkDriver):
         bgp_config_list = napalm.base.helpers.netutils_parse_objects(
             "router bgp", cfg["running"]
         )
+
+        # No BGP configuration
+        if not bgp_config_list:
+            return {}
+
         bgp_asn = napalm.base.helpers.regex_find_txt(
             r"router bgp (\d+)", bgp_config_list, default=0
         )
@@ -1567,21 +1574,25 @@ class IOSDriver(NetworkDriver):
                 "route_reflector_client": route_reflector_client,
             }
 
-        bgp_config["_"] = {
-            "apply_groups": [],
-            "description": "",
-            "local_as": bgp_asn,
-            "type": "",
-            "import_policy": "",
-            "export_policy": "",
-            "local_address": "",
-            "multipath": False,
-            "multihop_ttl": 0,
-            "remote_as": 0,
-            "remove_private_as": False,
-            "prefix_limit": {},
-            "neighbors": bgp_group_neighbors.get("_", {}),
-        }
+        # Do not include the no-group ("_") if a group argument is passed in
+        # unless group argument is "_"
+        if not group or group == "_":
+            bgp_config["_"] = {
+                "apply_groups": [],
+                "description": "",
+                "local_as": bgp_asn,
+                "type": "",
+                "import_policy": "",
+                "export_policy": "",
+                "local_address": "",
+                "multipath": False,
+                "multihop_ttl": 0,
+                "remote_as": 0,
+                "remove_private_as": False,
+                "prefix_limit": {},
+                "neighbors": bgp_group_neighbors.get("_", {}),
+            }
+
         # Get the peer-group level config for each group
         for group_name in bgp_group_neighbors.keys():
             # If a group is passed in params, only continue on that group

@@ -20,6 +20,9 @@ import re
 import socket
 from collections import defaultdict
 
+# import external lib
+from netutils.interface import canonical_interface_name
+
 # import NAPALM Base
 from napalm.base import helpers
 from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
@@ -116,7 +119,7 @@ def parse_intf_section(interface):
     else:
         # More standard is up, next line admin state is lines
         match = re.search(re_intf_name_state, interface)
-        intf_name = helpers.canonical_interface_name(match.group("intf_name"))
+        intf_name = canonical_interface_name(match.group("intf_name"))
         intf_state = match.group("intf_state").strip()
         is_up = True if intf_state == "up" else False
 
@@ -516,7 +519,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         return {"is_alive": self.device.remote_conn.transport.is_active()}
 
     def _copy_run_start(self):
-
         output = self.device.save_config()
         if "complete" in output.lower():
             return True
@@ -525,7 +527,6 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
-
         commands = [
             "terminal dont-ask",
             "rollback running-config file {}".format(self.candidate_cfg),
@@ -655,7 +656,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 continue
             interface = line.split()[0]
             # Return canonical interface name
-            interface_list.append(helpers.canonical_interface_name(interface))
+            interface_list.append(canonical_interface_name(interface))
 
         return {
             "uptime": float(uptime),
@@ -1190,7 +1191,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 active = False
             return {
                 "mac": helpers.mac(mac),
-                "interface": helpers.canonical_interface_name(interface),
+                "interface": canonical_interface_name(interface),
                 "vlan": int(vlan),
                 "static": static,
                 "active": active,
@@ -1209,7 +1210,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = re.sub(r"vPC Peer-Link", "vPC-Peer-Link", output, flags=re.M)
 
         for line in output.splitlines():
-
             # Every 500 Mac's Legend is reprinted, regardless of terminal length
             if re.search(r"^Legend", line):
                 continue
@@ -1460,7 +1460,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                             # routing protocol process number, for future use
                             # nh_source_proc_nr = viastr.group('procnr)
                             if nh_int:
-                                nh_int_canon = helpers.canonical_interface_name(nh_int)
+                                nh_int_canon = canonical_interface_name(nh_int)
                             else:
                                 nh_int_canon = ""
                             route_entry = {

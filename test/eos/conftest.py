@@ -37,6 +37,19 @@ class PatchedEOSDriver(eos.EOSDriver):
 
         self.patched_attrs = ["device"]
         self.device = FakeEOSDevice()
+        self._cli_version = 1
+
+    @property
+    def cli_version(self):
+        try:
+            full_path = self.device.find_file("cli_version.txt")
+        except IOError:
+            return self._cli_version
+        return int(self.device.read_txt_file(full_path))
+
+    @cli_version.setter
+    def cli_version(self, value):
+        self._cli_version = value
 
 
 class FakeEOSDevice(BaseTestDouble):

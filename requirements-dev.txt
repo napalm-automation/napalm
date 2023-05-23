@@ -4,7 +4,7 @@ ddt==1.6.0
 flake8-import-order==0.18.2
 pytest==7.2.2
 pytest-cov==4.0.0
-pytest-json==0.4.0
+pytest-json-report==1.5.0
 pyflakes==3.0.1
 pylama==8.4.1
 mock==5.0.1
