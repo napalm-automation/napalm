@@ -1,0 +1,11 @@
+router bgp 65534
+   router-id 192.0.2.1
+   neighbor FOO-GROUP peer group
+   neighbor FOO-GROUP next-hop-self
+   neighbor FOO-GROUP description FOO
+   neighbor FOO-GROUP remote-as 65534
+   neighbor 192.0.2.2 peer group FOO-GROUP
+   no neighbor 192.0.2.2 next-hop-self
+   neighbor 192.0.2.3 peer group FOO-GROUP
+   neighbor 192.0.2.3 description SECOND-PEER
+!

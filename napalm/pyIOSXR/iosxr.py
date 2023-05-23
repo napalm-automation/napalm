@@ -690,7 +690,7 @@ class IOSXR(object):
 
     def discard_config(self):
         """
-        Clear uncommited changes in the current session.
+        Clear uncommitted changes in the current session.
 
         Clear previously loaded configuration on the device without committing it.
         """
