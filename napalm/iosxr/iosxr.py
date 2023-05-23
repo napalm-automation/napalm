@@ -16,14 +16,12 @@
 # import stdlib
 import re
 import copy
+import ipaddress
 from collections import defaultdict
 import logging
 
 # import third party lib
 from lxml import etree as ETREE
-
-from netaddr import IPAddress  # needed for traceroute, to check IP version
-from netaddr.core import AddrFormatError
 
 from napalm.pyIOSXR import IOSXR
 from napalm.pyIOSXR.exceptions import ConnectError
@@ -989,6 +987,22 @@ class IOSXRDriver(NetworkDriver):
         <InstanceName>default</InstanceName></Naming></Instance></BGP></Configuration></Get>"
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
+        # Check if BGP is not configured.
+        get_tag = result_tree.find("./Get")
+        if get_tag is not None:
+            bgp_not_found = get_tag.attrib.get("ItemNotFound")
+            if bgp_not_found:
+                return {}
+
+        bgp_asn = napalm.base.helpers.convert(
+            int,
+            napalm.base.helpers.find_txt(
+                result_tree,
+                "Get/Configuration/BGP/Instance[1]/InstanceAS/FourByteAS/Naming/AS",
+            ),
+            0,
+        )
+
         if not group:
             neighbor = ""
 
@@ -1012,7 +1026,9 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(bgp_neighbor, "RemoteAS/AS_YY"), 0
             )
             local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_neighbor, "LocalAS/AS_YY"), 0
+                int,
+                napalm.base.helpers.find_txt(bgp_neighbor, "LocalAS/AS_YY"),
+                bgp_asn,
             )
             af_table = napalm.base.helpers.find_txt(
                 bgp_neighbor, "NeighborAFTable/NeighborAF/Naming/AFName"
@@ -1104,7 +1120,7 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(bgp_group, "RemoteAS/AS_YY"), 0
             )
             local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_group, "LocalAS/AS_YY"), 0
+                int, napalm.base.helpers.find_txt(bgp_group, "LocalAS/AS_YY"), bgp_asn
             )
             multihop_ttl = napalm.base.helpers.convert(
                 int,
@@ -1166,22 +1182,22 @@ class IOSXRDriver(NetworkDriver):
             }
             if group and group == group_name:
                 break
-        if "" in bgp_group_neighbors.keys():
-            bgp_config["_"] = {
-                "apply_groups": [],
-                "description": "",
-                "local_as": 0,
-                "type": "",
-                "import_policy": "",
-                "export_policy": "",
-                "local_address": "",
-                "multipath": False,
-                "multihop_ttl": 0,
-                "remote_as": 0,
-                "remove_private_as": False,
-                "prefix_limit": {},
-                "neighbors": bgp_group_neighbors.get("", {}),
-            }
+
+        bgp_config["_"] = {
+            "apply_groups": [],
+            "description": "",
+            "local_as": bgp_asn,
+            "type": "",
+            "import_policy": "",
+            "export_policy": "",
+            "local_address": "",
+            "multipath": False,
+            "multihop_ttl": 0,
+            "remote_as": 0,
+            "remove_private_as": False,
+            "prefix_limit": {},
+            "neighbors": bgp_group_neighbors.get("", {}),
+        }
 
         return bgp_config
 
@@ -1733,8 +1749,8 @@ class IOSXRDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(network).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(network).version
+        except ValueError:
             logger.error("Wrong destination IP Address format supplied to get_route_to")
             raise TypeError("Wrong destination IP Address!")
 
@@ -2187,8 +2203,8 @@ class IOSXRDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(destination).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(destination).version
+        except ValueError:
             logger.error(
                 "Incorrect format of IP Address in traceroute \
              with value provided:%s"

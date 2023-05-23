@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<rpc-reply xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" 
+xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" 
+message-id="urn:uuid:e90c6bcc-de6b-4b51-9600-a23c75b1a078">
+ <data/>
+</rpc-reply>

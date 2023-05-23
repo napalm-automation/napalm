@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+import ipaddress
 import json
 import os
 import re
@@ -42,11 +43,10 @@ from typing_extensions import (
     DefaultDict,
 )
 
-from netaddr import IPAddress
-from netaddr.core import AddrFormatError
 from netmiko import file_transfer
 from requests.exceptions import ConnectionError
 from netutils.config.compliance import diff_network_config
+from netutils.interface import canonical_interface_name
 
 import napalm.base.constants as c
 
@@ -233,7 +233,7 @@ class NXOSDriverBase(NetworkDriver):
         interface loopback0
           ip address 10.1.4.5/32
         """
-        running_config = self.get_config(retrieve="running")["running"]
+        running_config = self.get_config(retrieve="running", full=True)["running"]
         return diff_network_config(self.merge_candidate, running_config, "cisco_nxos")
 
     def _get_diff(self) -> str:
@@ -356,8 +356,8 @@ class NXOSDriverBase(NetworkDriver):
 
         version = ""
         try:
-            version = "6" if IPAddress(destination).version == 6 else ""
-        except AddrFormatError:
+            version = "6" if ipaddress.ip_address(destination).version == 6 else ""
+        except ValueError:
             # Allow use of DNS names
             pass
 
@@ -470,8 +470,8 @@ class NXOSDriverBase(NetworkDriver):
 
         version = ""
         try:
-            version = "6" if IPAddress(destination).version == 6 else ""
-        except AddrFormatError:
+            version = "6" if ipaddress.ip_address(destination).version == 6 else ""
+        except ValueError:
             # Allow use of DNS names
             pass
 
@@ -683,7 +683,7 @@ class NXOSDriverBase(NetworkDriver):
                 lldp_entry["remote_system_enable_capab"]
             )
             # Turn the interfaces into their long version
-            local_intf = napalm.base.helpers.canonical_interface_name(local_intf)
+            local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
             lldp[local_intf].append(lldp_entry)  # type: ignore
 
@@ -739,13 +739,9 @@ class NXOSDriverBase(NetworkDriver):
             find = re.findall(find_regexp, vls.strip())
             if find:
                 for i in range(int(find[0][1]), int(find[0][2]) + 1):
-                    vlans.append(
-                        napalm.base.helpers.canonical_interface_name(
-                            find[0][0] + str(i)
-                        )
-                    )
+                    vlans.append(canonical_interface_name(find[0][0] + str(i)))
             else:
-                vlans.append(napalm.base.helpers.canonical_interface_name(vls.strip()))
+                vlans.append(canonical_interface_name(vls.strip()))
         return vlans
 
     @abstractmethod

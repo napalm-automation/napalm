@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import re
 import copy
 import difflib
+import ipaddress
 import logging
 
 # import third party lib
@@ -31,8 +32,6 @@ from ncclient.operations.rpc import RPCError
 from ncclient.operations.errors import TimeoutExpiredError
 from lxml import etree as ETREE
 from lxml.etree import XMLSyntaxError
-from netaddr import IPAddress  # needed for traceroute, to check IP version
-from netaddr.core import AddrFormatError
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
@@ -1367,8 +1366,24 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
 
+        data_ele = result_tree.find("./{*}data")
+        # If there are no children in "<data>", then there is no BGP configured
+        bgp_configured = bool(len(data_ele.getchildren()))
+        if not bgp_configured:
+            return {}
+
         if not group:
             neighbor = ""
+
+        bgp_asn = napalm.base.helpers.convert(
+            int,
+            self._find_txt(
+                result_tree,
+                ".//bgpc:bgp/bgpc:instance/bgpc:instance-as/bgpc:four-byte-as/bgpc:as",
+                default=0,
+                namespaces=C.NS,
+            ),
+        )
 
         bgp_group_neighbors = {}
         bgp_neighbor_xpath = ".//bgpc:bgp/bgpc:instance/bgpc:instance-as/\
@@ -1431,7 +1446,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = local_as_x * 65536 + local_as_y
+            local_as = (local_as_x * 65536 + local_as_y) or bgp_asn
             af_table = self._find_txt(
                 bgp_neighbor,
                 "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:af-name",
@@ -1598,7 +1613,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = local_as_x * 65536 + local_as_y
+            local_as = (local_as_x * 65536 + local_as_y) or bgp_asn
             multihop_ttl = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
@@ -1680,22 +1695,22 @@ class IOSXRNETCONFDriver(NetworkDriver):
             }
             if group and group == group_name:
                 break
-        if "" in bgp_group_neighbors.keys():
-            bgp_config["_"] = {
-                "apply_groups": [],
-                "description": "",
-                "local_as": 0,
-                "type": "",
-                "import_policy": "",
-                "export_policy": "",
-                "local_address": "",
-                "multipath": False,
-                "multihop_ttl": 0,
-                "remote_as": 0,
-                "remove_private_as": False,
-                "prefix_limit": {},
-                "neighbors": bgp_group_neighbors.get("", {}),
-            }
+
+        bgp_config["_"] = {
+            "apply_groups": [],
+            "description": "",
+            "local_as": bgp_asn,
+            "type": "",
+            "import_policy": "",
+            "export_policy": "",
+            "local_address": "",
+            "multipath": False,
+            "multihop_ttl": 0,
+            "remote_as": 0,
+            "remove_private_as": False,
+            "prefix_limit": {},
+            "neighbors": bgp_group_neighbors.get("", {}),
+        }
 
         return bgp_config
 
@@ -2481,8 +2496,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(network).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(network).version
+        except ValueError:
             logger.error("Wrong destination IP Address format supplied to get_route_to")
             raise TypeError("Wrong destination IP Address!")
 
@@ -2952,8 +2967,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(destination).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(destination).version
+        except ValueError:
             logger.error(
                 "Incorrect format of IP Address in traceroute \
              with value provided:%s"
@@ -3139,7 +3154,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             if config[datastore] != "":
                 if encoding == "cli":
                     cli_tree = ETREE.XML(config[datastore], parser=parser)[0]
-                    if cli_tree:
+                    if len(cli_tree):
                         config[datastore] = cli_tree[0].text.strip()
                     else:
                         config[datastore] = ""
