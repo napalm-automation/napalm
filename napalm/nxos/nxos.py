@@ -133,7 +133,6 @@ class NXOSDriverBase(NetworkDriver):
     def load_replace_candidate(
         self, filename: Optional[str] = None, config: Optional[str] = None
     ) -> None:
-
         if not filename and not config:
             raise ReplaceConfigException(
                 "filename or config parameter must be provided."
@@ -444,7 +443,6 @@ class NXOSDriverBase(NetworkDriver):
         timeout: int = c.TRACEROUTE_TIMEOUT,
         vrf: str = c.TRACEROUTE_VRF,
     ) -> models.TracerouteResultDict:
-
         _HOP_ENTRY_PROBE = [
             r"\s+",
             r"(",  # beginning of host_name (ip_address) RTT group
@@ -587,7 +585,6 @@ class NXOSDriverBase(NetworkDriver):
     def get_config(
         self, retrieve: str = "all", full: bool = False, sanitized: bool = False
     ) -> models.ConfigDict:
-
         # NX-OS adds some extra, unneeded lines that should be filtered.
         filter_strings = [
             r"!Command: show .*$",

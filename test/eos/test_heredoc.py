@@ -6,7 +6,6 @@ from textwrap import dedent
 @pytest.mark.usefixtures("set_device_parameters")
 class TestConfigMangling(object):
     def test_heredoc(self):
-
         raw_config = dedent(
             """\
         hostname vEOS
@@ -117,7 +116,6 @@ class TestConfigMangling(object):
         )
 
     def test_heredoc_with_bangs(self):
-
         raw_config = dedent(
             """\
         hostname vEOS

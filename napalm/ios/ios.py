@@ -783,7 +783,6 @@ class IOSDriver(NetworkDriver):
             use_scp = False
 
         with TransferClass(**kwargs) as transfer:
-
             # Check if file already exists and has correct MD5
             if transfer.check_file_exists() and transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
@@ -1220,7 +1219,6 @@ class IOSDriver(NetworkDriver):
 
         interface_dict = {}
         for line in output.splitlines():
-
             interface_regex_1 = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
             interface_regex_2 = r"^(\S+)\s+is\s+(up|down)"
             interface_regex_3 = (
@@ -3135,7 +3133,7 @@ class IOSDriver(NetworkDriver):
             for cmditem in commands:
                 outvrf = self._send_command(cmditem)
                 output.append(outvrf)
-            for (outitem, _vrf) in zip(output, vrfs):  # for all VRFs
+            for outitem, _vrf in zip(output, vrfs):  # for all VRFs
                 route_proto_regex = RE_RP_FROM.search(outitem)
                 if route_proto_regex:
                     route_match = destination
@@ -3550,7 +3548,6 @@ class IOSDriver(NetworkDriver):
         return traceroute_dict
 
     def get_network_instances(self, name=""):
-
         instances = {}
         sh_vrf_detail = self._send_command("show vrf detail")
         show_ip_int_br = self._send_command("show ip interface brief")
@@ -3583,7 +3580,6 @@ class IOSDriver(NetworkDriver):
             return instances
 
         for vrf in sh_vrf_detail.split("\n\n"):
-
             first_part = vrf.split("Address family")[0]
 
             # retrieve the name of the VRF and the Route Distinguisher

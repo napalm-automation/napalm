@@ -152,7 +152,6 @@ class IOSXRDriver(NetworkDriver):
         self.device.rollback()
 
     def get_facts(self):
-
         facts = {
             "vendor": "Cisco",
             "os_version": "",
@@ -256,7 +255,6 @@ class IOSXRDriver(NetworkDriver):
         return facts
 
     def get_interfaces(self):
-
         interfaces = {}
 
         INTERFACE_DEFAULTS = {
@@ -844,7 +842,6 @@ class IOSXRDriver(NetworkDriver):
         return environment_status
 
     def get_lldp_neighbors(self):
-
         # init result dict
         lldp = {}
         sh_lldp = self.device.show_lldp_neighbors().splitlines()[5:-3]
@@ -864,7 +861,6 @@ class IOSXRDriver(NetworkDriver):
         return lldp
 
     def get_lldp_neighbors_detail(self, interface=""):
-
         lldp_neighbors = {}
 
         rpc_command = (
@@ -953,7 +949,6 @@ class IOSXRDriver(NetworkDriver):
         return cli_output
 
     def get_bgp_config(self, group="", neighbor=""):
-
         bgp_config = {}
 
         # a helper
@@ -1202,7 +1197,6 @@ class IOSXRDriver(NetworkDriver):
         return bgp_config
 
     def get_bgp_neighbors_detail(self, neighbor_address=""):
-
         bgp_neighbors_detail = {}
 
         active_vrfs = ["default"]
@@ -1504,7 +1498,6 @@ class IOSXRDriver(NetworkDriver):
         return arp_table
 
     def get_ntp_peers(self):
-
         ntp_peers = {}
 
         rpc_command = "<Get><Configuration><NTP></NTP></Configuration></Get>"
@@ -1529,7 +1522,6 @@ class IOSXRDriver(NetworkDriver):
         return ntp_peers
 
     def get_ntp_servers(self):
-
         ntp_servers = {}
 
         rpc_command = "<Get><Configuration><NTP></NTP></Configuration></Get>"
@@ -1554,7 +1546,6 @@ class IOSXRDriver(NetworkDriver):
         return ntp_servers
 
     def get_ntp_stats(self):
-
         ntp_stats = []
 
         rpc_command = (
@@ -1607,7 +1598,6 @@ class IOSXRDriver(NetworkDriver):
         return ntp_stats
 
     def get_interfaces_ip(self):
-
         interfaces_ip = {}
 
         rpc_command_ipv4_ipv6 = "<Get><Operational><IPV4Network></IPV4Network>\
@@ -1688,7 +1678,6 @@ class IOSXRDriver(NetworkDriver):
         return interfaces_ip
 
     def get_mac_address_table(self):
-
         mac_table = []
 
         rpc_command = (
@@ -1725,7 +1714,6 @@ class IOSXRDriver(NetworkDriver):
         return mac_table
 
     def get_route_to(self, destination="", protocol="", longer=False):
-
         routes = {}
         global IP_RIBRoute
 
@@ -1936,7 +1924,6 @@ class IOSXRDriver(NetworkDriver):
         return routes
 
     def get_snmp_information(self):
-
         snmp_information = {}
 
         snmp_rpc_command = "<Get><Configuration><SNMP></SNMP></Configuration></Get>"
@@ -1966,7 +1953,6 @@ class IOSXRDriver(NetworkDriver):
         return snmp_information
 
     def get_probes_config(self):
-
         sla_config = {}
 
         _PROBE_TYPE_XML_TAG_MAP_ = {
@@ -2014,7 +2000,6 @@ class IOSXRDriver(NetworkDriver):
         return sla_config
 
     def get_probes_results(self):
-
         sla_results = {}
 
         _PROBE_TYPE_XML_TAG_MAP_ = {
@@ -2198,7 +2183,6 @@ class IOSXRDriver(NetworkDriver):
         timeout=C.TRACEROUTE_TIMEOUT,
         vrf=C.TRACEROUTE_VRF,
     ):
-
         traceroute_result = {}
 
         ipv = 4
@@ -2305,7 +2289,6 @@ class IOSXRDriver(NetworkDriver):
         return traceroute_result
 
     def get_users(self):
-
         users = {}
 
         _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP = {
@@ -2336,7 +2319,6 @@ class IOSXRDriver(NetworkDriver):
         return users
 
     def get_config(self, retrieve="all", full=False, sanitized=False):
-
         config = {"startup": "", "running": "", "candidate": ""}  # default values
 
         # IOS-XR only supports "all" on "show run"

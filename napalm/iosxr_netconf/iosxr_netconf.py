@@ -451,7 +451,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         interfaces_rpc_reply_etree = ETREE.fromstring(interfaces_rpc_reply)
 
         # Retrieves interfaces details
-        for (interface_tree, description_tree) in zip(
+        for interface_tree, description_tree in zip(
             interfaces_rpc_reply_etree.xpath(
                 ".//int:interfaces/int:interface-xr/int:interface", namespaces=C.NS
             ),
@@ -459,7 +459,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ".//int:interfaces/int:interfaces/int:interface", namespaces=C.NS
             ),
         ):
-
             interface_name = self._find_txt(
                 interface_tree, "./int:interface-name", default="", namespaces=C.NS
             )
@@ -680,7 +679,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
             neighbors = {}
 
             for neighbor in rpc_reply_etree.xpath(xpath, namespaces=C.NS):
-
                 this_neighbor = {}
                 this_neighbor["local_as"] = napalm.base.helpers.convert(
                     int,
