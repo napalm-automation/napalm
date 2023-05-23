@@ -1366,6 +1366,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
 
+        data_ele = result_tree.find("./{*}data")
+        # If there are no children in "<data>", then there is no BGP configured
+        bgp_configured = bool(len(data_ele.getchildren()))
+        if not bgp_configured:
+            return {}
+
         if not group:
             neighbor = ""
 
@@ -3148,7 +3154,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             if config[datastore] != "":
                 if encoding == "cli":
                     cli_tree = ETREE.XML(config[datastore], parser=parser)[0]
-                    if cli_tree:
+                    if len(cli_tree):
                         config[datastore] = cli_tree[0].text.strip()
                     else:
                         config[datastore] = ""
