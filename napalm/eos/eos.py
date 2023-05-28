@@ -508,7 +508,7 @@ class EOSDriver(NetworkDriver):
                 raise CommitError("Pending commit confirm already in process!")
 
             commands = [
-                "copy startup-config flash:rollback-0",
+                "copy running-config flash:rollback-0",
                 "configure session {} commit timer {}".format(
                     self.config_session,
                     time.strftime("%H:%M:%S", time.gmtime(revert_in)),
@@ -517,7 +517,7 @@ class EOSDriver(NetworkDriver):
             self._run_commands(commands, encoding="text")
         else:
             commands = [
-                "copy startup-config flash:rollback-0",
+                "copy running-config flash:rollback-0",
                 "configure session {} commit".format(self.config_session),
                 "write memory",
             ]
