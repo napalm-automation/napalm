@@ -1,6 +1,6 @@
 urllib3==1.26.15 # https://github.com/readthedocs/readthedocs.org/issues/10290
 sphinx==1.8.6
-sphinx-rtd-theme==1.2.0
+sphinx-rtd-theme==1.2.2
 sphinxcontrib-napoleon==0.7
 invoke==2.0.0
 jinja2==2.11.3
