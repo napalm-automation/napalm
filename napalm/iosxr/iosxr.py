@@ -302,7 +302,7 @@ class IOSXRDriver(NetworkDriver):
 
             mtu = int(napalm.base.helpers.find_txt(interface_tree, "MTU"))
             description = napalm.base.helpers.find_txt(interface_tree, "Description")
-            last_flapped = napalm.base.helpers.find_txt(interface_tree, "LastStateTransitionTime")
+            last_flapped = napalm.base.helpers.find_txt(interface_tree, "LastStateTransitionTime", -1)
             interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)
             interfaces[interface_name].update(
                 {
