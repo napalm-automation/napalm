@@ -583,7 +583,7 @@ class NXOSDriverBase(NetworkDriver):
         self._send_command_list(["terminal dont-ask"])
 
     def get_config(
-        self, retrieve: str = "all", full: bool = False, sanitized: bool = False
+        self, retrieve: str = "all", full: bool = False, sanitized: bool = False, format: str = "text"
     ) -> models.ConfigDict:
         # NX-OS adds some extra, unneeded lines that should be filtered.
         filter_strings = [
