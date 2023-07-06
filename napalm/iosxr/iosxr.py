@@ -2318,7 +2318,7 @@ class IOSXRDriver(NetworkDriver):
 
         return users
 
-    def get_config(self, retrieve="all", full=False, sanitized=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False, format="text"):
         config = {"startup": "", "running": "", "candidate": ""}  # default values
 
         # IOS-XR only supports "all" on "show run"

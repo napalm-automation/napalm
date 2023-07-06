@@ -3613,7 +3613,7 @@ class IOSDriver(NetworkDriver):
         except AttributeError:
             raise ValueError("The vrf %s does not exist" % name)
 
-    def get_config(self, retrieve="all", full=False, sanitized=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False, format="text"):
         """Implementation of get_config for IOS.
 
         Returns the startup or/and running configuration as dictionary.

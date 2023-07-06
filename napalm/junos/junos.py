@@ -2435,10 +2435,11 @@ class JunOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all", full=False, sanitized=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False, format="text"):
         rv = {"startup": "", "running": "", "candidate": ""}
 
-        options = {"format": "text", "database": "candidate"}
+        self.format = format
+        options = {"format": self.format, "database": "candidate"}
         sanitize_strings = {
             r"^(\s+community\s+)\w+(;.*|\s+{.*)$": r"\1<removed>\2",
             r'^(.*)"\$\d\$\S+"(;.*)$': r"\1<removed>\2",
