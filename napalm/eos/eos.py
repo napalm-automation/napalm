@@ -47,11 +47,10 @@ from napalm.base.exceptions import (
     ReplaceConfigException,
     SessionLockedException,
     CommandErrorException,
+    UnsupportedVersion,
 )
 from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
-from napalm.eos.pyeapi_syntax_wrapper import Node
 from napalm.eos.utils.versions import EOSVersion
-from napalm.eos.utils.cli_syntax import cli_convert
 import napalm.base.constants as c
 
 # local modules
@@ -123,7 +122,6 @@ class EOSDriver(NetworkDriver):
         self.timeout = timeout
         self.config_session = None
         self.locked = False
-        self.cli_version = 1
 
         self.platform = "eos"
         self.profile = [self.platform]
@@ -131,7 +129,6 @@ class EOSDriver(NetworkDriver):
 
         self.enablepwd = self.optional_args.pop("enable_password", "")
         self.eos_autoComplete = self.optional_args.pop("eos_autoComplete", None)
-        self.fn0039_config = self.optional_args.pop("eos_fn0039_config", False)
 
         # Define locking method
         self.lock_disable = self.optional_args.pop("lock_disable", False)
@@ -201,10 +198,6 @@ class EOSDriver(NetworkDriver):
                 device_type="arista_eos",
                 netmiko_optional_args=self.netmiko_optional_args,
             )
-            # let's try to determine if we need to use new EOS cli syntax
-            sh_ver = self._run_commands(["show version"])
-            if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0"):
-                self.cli_version = 2
         else:
             try:
                 connection = self.transport_class(
@@ -216,21 +209,23 @@ class EOSDriver(NetworkDriver):
                 )
 
                 if self.device is None:
-                    self.device = Node(connection, enablepwd=self.enablepwd)
+                    self.device = pyeapi.client.Node(
+                        connection, enablepwd=self.enablepwd
+                    )
                 # does not raise an Exception if unusable
 
-                # let's try to determine if we need to use new EOS cli syntax
-                sh_ver = self.device.run_commands(["show version"])
-                self.cli_version = (
-                    2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
-                )
-
-                self.device.update_cli_version(self.cli_version)
             except ConnectionError as ce:
                 # and this is raised either if device not avaiable
                 # either if HTTP(S) agent is not enabled
                 # show management api http-commands
                 raise ConnectionException(str(ce))
+
+        # endif self.transport
+
+        sh_ver = self._run_commands(["show version"])
+        self._eos_version = EOSVersion(sh_ver[0]["version"])
+        if self._eos_version < EOSVersion("4.23.0"):
+            raise UnsupportedVersion(self._eos_version)
 
     def close(self):
         """Implementation of NAPALM method close."""
@@ -263,11 +258,6 @@ class EOSDriver(NetworkDriver):
 
     def _run_commands(self, commands, **kwargs):
         if self.transport == "ssh":
-            if self.fn0039_config:
-                if isinstance(commands, str):
-                    commands = [cli_convert(commands, self.cli_version)]
-                else:
-                    commands = [cli_convert(cmd, self.cli_version) for cmd in commands]
             ret = []
             for command in commands:
                 if kwargs.get("encoding") == "text":
@@ -463,10 +453,9 @@ class EOSDriver(NetworkDriver):
                 self._run_commands(
                     commands,
                     autoComplete=self.eos_autoComplete,
-                    fn0039_transform=self.fn0039_config,
                 )
             else:
-                self._run_commands(commands, fn0039_transform=self.fn0039_config)
+                self._run_commands(commands)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             msg = str(e)
@@ -1527,23 +1516,14 @@ class EOSDriver(NetworkDriver):
                         nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
                     metric = route_details.get("metric")
                     if _vrf not in vrf_cache.keys():
-                        if self.cli_version == 1:
-                            command = "show ip{ipv} bgp {dest} {longer} detail vrf {_vrf}".format(
+                        command = (
+                            "show ip{ipv} bgp {dest} {longer} detail vrf {_vrf}".format(
                                 ipv=ipv,
                                 dest=destination,
                                 longer="longer-prefixes" if longer else "",
                                 _vrf=_vrf,
                             )
-                        else:
-                            # Newer EOS can't mix longer-prefix and detail
-                            command = (
-                                "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
-                                    ipv=ipv,
-                                    dest=destination,
-                                    longer="longer-prefixes" if longer else "",
-                                    _vrf=_vrf,
-                                )
-                            )
+                        )
                         vrf_cache.update(
                             {
                                 _vrf: self._run_commands([command])[0]
@@ -2169,17 +2149,12 @@ class EOSDriver(NetworkDriver):
         return vrfs
 
     def _show_vrf(self):
-        if self.cli_version == 2:
-            return self._show_vrf_json()
-        else:
-            return self._show_vrf_text()
+        return self._show_vrf_json()
 
     def _get_vrfs(self):
         output = self._show_vrf()
 
         vrfs = [str(vrf["name"]) for vrf in output]
-
-        vrfs.append("default")
 
         return vrfs
 
