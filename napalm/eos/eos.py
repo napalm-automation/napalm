@@ -1640,7 +1640,11 @@ class EOSDriver(NetworkDriver):
         # Default values
         snmp_dict = {"chassis_id": "", "location": "", "contact": "", "community": {}}
 
-        commands = ["show snmp chassis", "show snmp location", "show snmp contact"]
+        commands = [
+            "show snmp v2-mib chassis",
+            "show snmp v2-mib location",
+            "show snmp v2-mib contact",
+        ]
         snmp_config = self._run_commands(commands, encoding="json")
         for line in snmp_config:
             for k, v in line.items():
