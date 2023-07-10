@@ -680,13 +680,16 @@ class EOSDriver(NetworkDriver):
             except KeyError:
                 return default
 
-        NEIGHBOR_FILTER = "bgp neighbors vrf all | include IPv[46] (Unicast|6PE):.*[0-9]+ | grep -v ' IPv[46] Unicast:/.' | remote AS |^Local AS|Desc|BGP state |remote router ID"  # noqa
+        NEIGHBOR_FILTER = "vrf all | include IPv[46] (Unicast|6PE):.*[0-9]+ | grep -v ' IPv[46] Unicast:/.' | remote AS |^Local AS|Desc|BGP state |remote router ID"  # noqa
         output_summary_cmds = self._run_commands(
             ["show ipv6 bgp summary vrf all", "show ip bgp summary vrf all"],
             encoding="json",
         )
         output_neighbor_cmds = self._run_commands(
-            ["show ip " + NEIGHBOR_FILTER, "show ipv6 " + NEIGHBOR_FILTER],
+            [
+                "show ip bgp neighbors " + NEIGHBOR_FILTER,
+                "show ipv6 bgp peers " + NEIGHBOR_FILTER,
+            ],
             encoding="text",
         )
 
@@ -1519,13 +1522,11 @@ class EOSDriver(NetworkDriver):
                         nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
                     metric = route_details.get("metric")
                     if _vrf not in vrf_cache.keys():
-                        command = (
-                            "show ip{ipv} bgp {dest} {longer} detail vrf {_vrf}".format(
-                                ipv=ipv,
-                                dest=destination,
-                                longer="longer-prefixes" if longer else "",
-                                _vrf=_vrf,
-                            )
+                        command = "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
+                            ipv=ipv,
+                            dest=destination,
+                            longer="longer-prefixes" if longer else "",
+                            _vrf=_vrf,
                         )
                         vrf_cache.update(
                             {
@@ -1933,7 +1934,7 @@ class EOSDriver(NetworkDriver):
         summary_commands = []
         if not neighbor_address:
             commands.append("show ip bgp neighbors vrf all")
-            commands.append("show ipv6 bgp neighbors vrf all")
+            commands.append("show ipv6 bgp peers vrf all")
             summary_commands.append("show ip bgp summary vrf all")
             summary_commands.append("show ipv6 bgp summary vrf all")
         else:
@@ -1946,7 +1947,7 @@ class EOSDriver(NetworkDriver):
                 commands.append("show ip bgp neighbors %s vrf all" % neighbor_address)
                 summary_commands.append("show ip bgp summary vrf all")
             elif peer_ver == 6:
-                commands.append("show ipv6 bgp neighbors %s vrf all" % neighbor_address)
+                commands.append("show ipv6 bgp peers %s vrf all" % neighbor_address)
                 summary_commands.append("show ipv6 bgp summary vrf all")
 
         raw_output = self._run_commands(commands, encoding="text")
