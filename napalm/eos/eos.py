@@ -820,10 +820,13 @@ class EOSDriver(NetworkDriver):
                 yield name, values
 
         sh_version_out = self._run_commands(["show version"])
-        is_veos = sh_version_out[0]["modelName"].lower() == "veos"
-        commands = ["show environment cooling", "show environment temperature"]
+        is_veos = sh_version_out[0]["modelName"].lower() in ["veos", "ceoslab"]
+        commands = [
+            "show system environment cooling",
+            "show system environment temperature",
+        ]
         if not is_veos:
-            commands.append("show environment power")
+            commands.append("show system environment power")
             fans_output, temp_output, power_output = self._run_commands(commands)
         else:
             fans_output, temp_output = self._run_commands(commands)
