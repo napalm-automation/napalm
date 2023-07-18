@@ -157,11 +157,11 @@ class NXOSDriverBase(NetworkDriver):
             )
             if not transfer_result["file_exists"]:
                 raise ValueError()
-        except Exception:
+        except Exception as e:
             msg = (
                 "Could not transfer file. There was an error "
                 "during transfer. Please make sure remote "
-                "permissions are set."
+                f"permissions are set. Caught Error:\n{repr(str(e))}"
             )
             raise ReplaceConfigException(msg)
 
