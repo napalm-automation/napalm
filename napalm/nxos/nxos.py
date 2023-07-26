@@ -1046,6 +1046,7 @@ class NXOSDriver(NXOSDriverBase):
             "Established": {"is_up": True, "is_enabled": True},
             "Closing": {"is_up": True, "is_enabled": True},
             "Shutdown": {"is_up": False, "is_enabled": False},
+            "Admin (Shut)": {"is_up": False, "is_enabled": False},
         }
         """
         af_name_dict = {
