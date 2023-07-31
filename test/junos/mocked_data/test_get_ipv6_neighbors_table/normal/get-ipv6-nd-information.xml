@@ -26,5 +26,14 @@
         <ipv6-nd-issecure>no</ipv6-nd-issecure>
         <ipv6-nd-interface-name>em0.0</ipv6-nd-interface-name>
     </ipv6-nd-entry>
-    <ipv6-nd-total>3</ipv6-nd-total>
+    <ipv6-nd-entry>
+        <ipv6-nd-neighbor-address>2001:0DB8::3</ipv6-nd-neighbor-address>
+        <ipv6-nd-neighbor-l2-address>none</ipv6-nd-neighbor-l2-address>
+        <ipv6-nd-state>unreachable</ipv6-nd-state>
+        <ipv6-nd-expire>3</ipv6-nd-expire>
+        <ipv6-nd-isrouter>no</ipv6-nd-isrouter>
+        <ipv6-nd-issecure>no</ipv6-nd-issecure>
+        <ipv6-nd-interface-name>ae0.3</ipv6-nd-interface-name>
+    </ipv6-nd-entry>
+    <ipv6-nd-total>4</ipv6-nd-total>
 </ipv6-nd-information>
