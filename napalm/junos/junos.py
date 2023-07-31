@@ -444,7 +444,9 @@ class JunOSDriver(NetworkDriver):
                     ),
                     "description": (iface_data["description"] or ""),
                     "last_flapped": float((iface_data["last_flapped"] or -1)),
-                    "mac_address": "" if iface_data["mac_address"] is "none" else napalm.base.helpers.convert(
+                    "mac_address": ""
+                    if iface_data["mac_address"] is "none"
+                    else napalm.base.helpers.convert(
                         napalm.base.helpers.mac,
                         iface_data["mac_address"],
                         str(iface_data["mac_address"]),
