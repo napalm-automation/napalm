@@ -1638,7 +1638,11 @@ class JunOSDriver(NetworkDriver):
 
         for ipv6_table_entry in ipv6_neighbors_table_items:
             ipv6_entry = {elem[0]: elem[1] for elem in ipv6_table_entry[1]}
-            ipv6_entry["mac"] = napalm.base.helpers.mac(ipv6_entry.get("mac"))
+            ipv6_entry["mac"] = (
+                ""
+                if ipv6_entry.get("mac") == "none"
+                else napalm.base.helpers.mac(ipv6_entry.get("mac"))
+            )
             ipv6_entry["ip"] = napalm.base.helpers.ip(ipv6_entry.get("ip"))
             ipv6_neighbors_table.append(ipv6_entry)
 
