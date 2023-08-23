@@ -18,6 +18,10 @@ from builtins import super
 import ipaddress
 import re
 import socket
+from collections import defaultdict
+
+# import external lib
+from netutils.interface import canonical_interface_name
 
 # import NAPALM Base
 from napalm.base import helpers
@@ -115,7 +119,7 @@ def parse_intf_section(interface):
     else:
         # More standard is up, next line admin state is lines
         match = re.search(re_intf_name_state, interface)
-        intf_name = helpers.canonical_interface_name(match.group("intf_name"))
+        intf_name = canonical_interface_name(match.group("intf_name"))
         intf_state = match.group("intf_state").strip()
         is_up = True if intf_state == "up" else False
 
@@ -515,7 +519,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         return {"is_alive": self.device.remote_conn.transport.is_active()}
 
     def _copy_run_start(self):
-
         output = self.device.save_config()
         if "complete" in output.lower():
             return True
@@ -524,7 +527,6 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
-
         commands = [
             "terminal dont-ask",
             "rollback running-config file {}".format(self.candidate_cfg),
@@ -654,7 +656,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 continue
             interface = line.split()[0]
             # Return canonical interface name
-            interface_list.append(helpers.canonical_interface_name(interface))
+            interface_list.append(canonical_interface_name(interface))
 
         return {
             "uptime": float(uptime),
@@ -793,6 +795,61 @@ class NXOSSSHDriver(NXOSDriverBase):
             output = self._send_command(command)
             cli_output[str(command)] = output
         return cli_output
+
+    def get_network_instances(self, name=""):
+        """
+        get_network_instances implementation for NX-OS
+        """
+
+        # command 'show vrf detail | json' returns all VRFs with detailed information in JSON format
+        # format: list of dictionaries with keys such as 'vrf_name' and 'rd'
+        vrf_table_raw = self._get_command_table(
+            "show vrf detail | json", "TABLE_vrf", "ROW_vrf"
+        )
+
+        # command 'show vrf interface' returns all interfaces including their assigned VRF
+        # format: list of dictionaries with keys 'if_name', 'vrf_name', 'vrf_id' and 'soo'
+        intf_table_raw = self._get_command_table(
+            "show vrf interface | json", "TABLE_if", "ROW_if"
+        )
+
+        # create a dictionary with key = 'vrf_name' and value = list of interfaces
+        vrf_intfs = defaultdict(list)
+        for intf in intf_table_raw:
+            vrf_intfs[intf["vrf_name"]].append(str(intf["if_name"]))
+
+        vrfs = {}
+        for vrf in vrf_table_raw:
+            vrf_name = str(vrf.get("vrf_name"))
+            vrfs[vrf_name] = {}
+            vrfs[vrf_name]["name"] = vrf_name
+
+            # differentiate between VRF type 'DEFAULT_INSTANCE' and 'L3VRF'
+            if vrf_name == "default":
+                vrfs[vrf_name]["type"] = "DEFAULT_INSTANCE"
+            else:
+                vrfs[vrf_name]["type"] = "L3VRF"
+
+            vrfs[vrf_name]["state"] = {"route_distinguisher": str(vrf.get("rd"))}
+
+            # convert list of interfaces (vrf_intfs[vrf_name]) to expected format
+            # format = dict with key = interface name and empty values
+            vrfs[vrf_name]["interfaces"] = {}
+            vrfs[vrf_name]["interfaces"]["interface"] = dict.fromkeys(
+                vrf_intfs[vrf_name], {}
+            )
+
+        # if name of a specific VRF was passed as an argument
+        # only return results for this particular VRF
+
+        if name:
+            if name in vrfs.keys():
+                return {str(name): vrfs[name]}
+            else:
+                return {}
+        # else return results for all VRFs
+        else:
+            return vrfs
 
     def get_environment(self):
         """
@@ -1134,7 +1191,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 active = False
             return {
                 "mac": helpers.mac(mac),
-                "interface": helpers.canonical_interface_name(interface),
+                "interface": canonical_interface_name(interface),
                 "vlan": int(vlan),
                 "static": static,
                 "active": active,
@@ -1153,7 +1210,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = re.sub(r"vPC Peer-Link", "vPC-Peer-Link", output, flags=re.M)
 
         for line in output.splitlines():
-
             # Every 500 Mac's Legend is reprinted, regardless of terminal length
             if re.search(r"^Legend", line):
                 continue
@@ -1404,7 +1460,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                             # routing protocol process number, for future use
                             # nh_source_proc_nr = viastr.group('procnr)
                             if nh_int:
-                                nh_int_canon = helpers.canonical_interface_name(nh_int)
+                                nh_int_canon = canonical_interface_name(nh_int)
                             else:
                                 nh_int_canon = ""
                             route_entry = {

@@ -1,0 +1,68 @@
+------------------------------------------------
+Local Intf: Gi9/48
+Chassis id: 4a07.d0f3.fbb6
+Port id: Gi0
+Port Description: GigabitEthernet0
+System Name: COMPUTER.company.example.com
+
+System Description: 
+Cisco IOS Software, C3600 Software (AP3G2-K9W8-M), Version 15.3(3)JC15, RELEASE SOFTWARE (fc1)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2018 by Cisco Systems, Inc.
+Compiled Thu 07-Jun-18 16:43 by prod_rel_team
+
+Time remaining: 95 seconds
+System Capabilities: B
+Enabled Capabilities: B
+Management Addresses:
+    IP: 10.31.18.65
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    1000baseT(FD)
+    1000baseT(HD)
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+Media Attachment Unit type: 30
+Vlan ID: - not advertised
+PoE+ Power-via-MDI TLV:
+ Power Pair: Signal
+ Power Class: Class 4
+ Power Device Type: Type 1 PD
+ Power Source: PSE
+ Power Priority: high
+ Power Requested: 13000 mW
+ Power Allocated: 13000 mW
+
+------------------------------------------------
+Local Intf: Gi9/8
+Chassis id: NICEHOSTNAME
+Port id: a18b.95b5.e46f
+Port Description - not advertised
+System Name - not advertised
+System Description - not advertised
+
+Time remaining: 2690 seconds
+System Capabilities - not advertised
+Enabled Capabilities - not advertised
+Management Addresses - not advertised
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    1000baseT(FD)
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+MED Information:
+
+    MED Codes:
+          (NP) Network Policy, (LI) Location Identification
+          (PS) Power Source Entity, (PD) Power Device
+          (IN) Inventory
+
+    Inventory information - not advertised
+    Capabilities: 
+    Device type: Endpoint Class I
+    Network Policies - not advertised
+    Power requirements - not advertised
+    Location - not advertised

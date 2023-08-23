@@ -33,10 +33,11 @@ from collections import defaultdict
 # third party libs
 import pyeapi
 from pyeapi.eapilib import ConnectionError, EapiConnection
-from netmiko import BaseConnection, ConfigInvalidException
+from netmiko import ConfigInvalidException
 
 # NAPALM base
 import napalm.base.helpers
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import string_parsers
 from napalm.base.exceptions import (
@@ -95,9 +96,12 @@ class EOSDriver(NetworkDriver):
         Optional args:
             * lock_disable (True/False): force configuration lock to be disabled (for external lock
                 management).
+            * force_cfg_session_invalid (True/False): force invalidation of the config session
+                in case of failure.
             * enable_password (True/False): Enable password for privilege elevation
             * eos_autoComplete (True/False): Allow for shortening of cli commands
-            * transport (string): pyeapi transport, defaults to eos_transport if set
+            * transport (string): transport, eos_transport is a fallback for compatibility.
+                - ssh (uses Netmiko)
                 - socket
                 - http_local
                 - http
@@ -123,45 +127,47 @@ class EOSDriver(NetworkDriver):
 
         self.platform = "eos"
         self.profile = [self.platform]
+        self.optional_args = optional_args or {}
 
-        self._process_optional_args(optional_args or {})
+        self.enablepwd = self.optional_args.pop("enable_password", "")
+        self.eos_autoComplete = self.optional_args.pop("eos_autoComplete", None)
+        self.fn0039_config = self.optional_args.pop("eos_fn0039_config", False)
 
-    def _process_optional_args(self, optional_args):
         # Define locking method
-        self.lock_disable = optional_args.get("lock_disable", False)
+        self.lock_disable = self.optional_args.pop("lock_disable", False)
 
-        self.enablepwd = optional_args.pop("enable_password", "")
-        self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
-        # eos_transport is there for backwards compatibility, transport is the preferred method
-        transport = optional_args.get(
-            "transport", optional_args.get("eos_transport", "https")
+        self.force_cfg_session_invalid = self.optional_args.pop(
+            "force_cfg_session_invalid", False
         )
-        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
+
+        # eos_transport is there for backwards compatibility, transport is the preferred method
+        transport = self.optional_args.get(
+            "transport", self.optional_args.get("eos_transport", "https")
+        )
         self.transport = transport
-        if transport == "ssh":
-            self.transport_class = "ssh"
-            init_args = ["port"]
-        else:
-            # Parse pyeapi transport class
-            self.transport_class = self._parse_transport(transport)
-            # ([1:]) to omit self
-            init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
-
-        filter_args = ["host", "username", "password", "timeout", "lock_disable"]
 
         if transport == "ssh":
-            self.netmiko_optional_args = {
-                k: v
-                for k, v in optional_args.items()
-                if k in init_args and k not in filter_args
-            }
+            self._process_optional_args_ssh(self.optional_args)
         else:
-            init_args.append("enforce_verification")  # Not an arg for unknown reason
-            self.eapi_kwargs = {
-                k: v
-                for k, v in optional_args.items()
-                if k in init_args and k not in filter_args
-            }
+            self._process_optional_args_eapi(self.optional_args)
+
+    def _process_optional_args_ssh(self, optional_args):
+        self.transport_class = None
+        self.netmiko_optional_args = netmiko_args(optional_args)
+
+    def _process_optional_args_eapi(self, optional_args):
+        # Parse pyeapi transport class
+        self.transport_class = self._parse_transport(self.transport)
+
+        # ([1:]) to omit self
+        init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
+        filter_args = ["host", "username", "password", "timeout"]
+        init_args.append("enforce_verification")  # Not an arg for unknown reason
+        self.eapi_kwargs = {
+            k: v
+            for k, v in optional_args.items()
+            if k in init_args and k not in filter_args
+        }
 
     def _parse_transport(self, transport):
         if inspect.isclass(transport) and issubclass(transport, EapiConnection):
@@ -192,7 +198,8 @@ class EOSDriver(NetworkDriver):
         """Implementation of NAPALM method open."""
         if self.transport == "ssh":
             self.device = self._netmiko_open(
-                "arista_eos", netmiko_optional_args=self.netmiko_optional_args
+                device_type="arista_eos",
+                netmiko_optional_args=self.netmiko_optional_args,
             )
             # let's try to determine if we need to use new EOS cli syntax
             sh_ver = self._run_commands(["show version"])
@@ -205,7 +212,7 @@ class EOSDriver(NetworkDriver):
                     username=self.username,
                     password=self.password,
                     timeout=self.timeout,
-                    **self.eapi_kwargs
+                    **self.eapi_kwargs,
                 )
 
                 if self.device is None:
@@ -228,7 +235,7 @@ class EOSDriver(NetworkDriver):
     def close(self):
         """Implementation of NAPALM method close."""
         self.discard_config()
-        if isinstance(self.device, BaseConnection):
+        if self.transport == "ssh":
             self._netmiko_close()
         elif hasattr(self.device.connection, "close") and callable(
             self.device.connection.close
@@ -280,6 +287,27 @@ class EOSDriver(NetworkDriver):
             return ret
         else:
             return self.device.run_commands(commands, **kwargs)
+
+    def _obtain_lock(self, wait_time=None):
+        """
+        EOS internally creates config sessions when using commit-confirm.
+
+        This can cause issues obtaining the configuration lock:
+
+        cfg-2034--574620864-0 completed
+        cfg-2034--574620864-1 pending
+        """
+        if wait_time:
+            start_time = time.time()
+            while time.time() - start_time < wait_time:
+                try:
+                    self._lock()
+                    return
+                except SessionLockedException:
+                    time.sleep(1)
+
+        # One last try
+        return self._lock()
 
     def _lock(self):
         sess = self._run_commands(["show configuration sessions"])[0]["sessions"]
@@ -384,7 +412,7 @@ class EOSDriver(NetworkDriver):
             self.config_session = "napalm_{}".format(datetime.now().microsecond)
 
         if not self.lock_disable:
-            self._lock()
+            self._obtain_lock(wait_time=10)
 
         commands = []
         commands.append("configure session {}".format(self.config_session))
@@ -429,7 +457,7 @@ class EOSDriver(NetworkDriver):
             return None
 
         try:
-            if not any(l == "end" for l in commands):
+            if not any(cmd == "end" for cmd in commands):
                 commands.append("end")  # exit config mode
             if self.eos_autoComplete is not None:
                 self._run_commands(
@@ -520,13 +548,15 @@ class EOSDriver(NetworkDriver):
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
-            commands = ["configure session {}".format(self.config_session), "abort"]
-            if self.transport == "ssh":
-                # For some reason when testing with vEOS 4.26.1F this
-                # doesn't work with the normal wrapper.
-                self._run_commands(["", commands[0]])
-            else:
-                self.device.run_commands(commands)
+            try:
+                commands = [f"configure session {self.config_session} abort"]
+                self._run_commands(commands, encoding="text")
+            except Exception:
+                # If discard fails, you might want to invalidate the config_session (esp. Salt)
+                # The config_session in EOS is used as the config lock.
+                if self.force_cfg_session_invalid:
+                    self.config_session = None
+                raise
             self.config_session = None
 
     def rollback(self):
@@ -877,7 +907,6 @@ class EOSDriver(NetworkDriver):
         return sorted([LLDP_CAPAB_TRANFORM_TABLE[c.lower()] for c in capabilities])
 
     def get_lldp_neighbors_detail(self, interface=""):
-
         lldp_neighbors_out = {}
 
         filters = []
@@ -976,6 +1005,7 @@ class EOSDriver(NetworkDriver):
             "local-v4-addr": "local_address",
             "local-v6-addr": "local_address",
             "local-as": "local_as",
+            "next-hop-self": "nhs",
             "description": "description",
             "import-policy": "import_policy",
             "export-policy": "export_policy",
@@ -1033,7 +1063,7 @@ class EOSDriver(NetworkDriver):
             )  # few more default values
             return group_dict
 
-        def default_neighbor_dict(local_as):
+        def default_neighbor_dict(local_as, group_dict):
             neighbor_dict = {}
             neighbor_dict.update(
                 {
@@ -1044,10 +1074,16 @@ class EOSDriver(NetworkDriver):
             neighbor_dict.update(
                 {"prefix_limit": {}, "local_as": local_as, "authentication_key": ""}
             )  # few more default values
+            neighbor_dict.update(
+                {
+                    key: group_dict.get(key)
+                    for key in _GROUP_FIELD_MAP_.values()
+                    if key in group_dict and key in _PEER_FIELD_MAP_.values()
+                }
+            )  # copy in values from group dict if present
             return neighbor_dict
 
         def parse_options(options, default_value=False):
-
             if not options:
                 return {}
 
@@ -1134,14 +1170,20 @@ class EOSDriver(NetworkDriver):
                 ipaddress.ip_address(group_or_neighbor)
                 # if passes the test => it is an IP Address, thus a Neighbor!
                 peer_address = group_or_neighbor
-                if peer_address not in bgp_neighbors:
-                    bgp_neighbors[peer_address] = default_neighbor_dict(local_as)
+                group_name = None
                 if options[0] == "peer-group":
-                    bgp_neighbors[peer_address]["__group"] = options[1]
+                    group_name = options[1]
                 # EOS > 4.23.0 only supports the new syntax
                 # https://www.arista.com/en/support/advisories-notices/fieldnotices/7097-field-notice-39
                 elif options[0] == "peer" and options[1] == "group":
-                    bgp_neighbors[peer_address]["__group"] = options[2]
+                    group_name = options[2]
+                if peer_address not in bgp_neighbors:
+                    bgp_neighbors[peer_address] = default_neighbor_dict(
+                        local_as, bgp_config.get(group_name, {})
+                    )
+
+                if group_name:
+                    bgp_neighbors[peer_address]["__group"] = group_name
 
                 # in the config, neighbor details are lister after
                 # the group is specified for the neighbor:
@@ -1169,6 +1211,8 @@ class EOSDriver(NetworkDriver):
                     bgp_config[group_name] = default_group_dict(local_as)
                 bgp_config[group_name].update(parse_options(options, default_value))
 
+        bgp_config["_"] = default_group_dict(local_as)
+
         for peer, peer_details in bgp_neighbors.items():
             peer_group = peer_details.pop("__group", None)
             if not peer_group:
@@ -1176,6 +1220,14 @@ class EOSDriver(NetworkDriver):
             if peer_group not in bgp_config:
                 bgp_config[peer_group] = default_group_dict(local_as)
             bgp_config[peer_group]["neighbors"][peer] = peer_details
+
+        [
+            v.pop("nhs", None) for v in bgp_config.values()
+        ]  # remove NHS from group-level dictionary
+
+        if local_as == 0:
+            # BGP not running
+            return {}
 
         return bgp_config
 
@@ -1276,7 +1328,6 @@ class EOSDriver(NetworkDriver):
         return ntp_stats
 
     def get_interfaces_ip(self):
-
         interfaces_ip = {}
 
         interfaces_ipv4_out = self._run_commands(["show ip interface"])[0]["interfaces"]
@@ -1373,7 +1424,6 @@ class EOSDriver(NetworkDriver):
         return interfaces_ip
 
     def get_mac_address_table(self):
-
         mac_table = []
 
         commands = ["show mac address-table"]
@@ -1671,7 +1721,6 @@ class EOSDriver(NetworkDriver):
         timeout=c.TRACEROUTE_TIMEOUT,
         vrf=c.TRACEROUTE_VRF,
     ):
-
         _HOP_ENTRY_PROBE = [
             r"\s+",
             r"(",  # beginning of host_name (ip_address) RTT group
@@ -1828,7 +1877,6 @@ class EOSDriver(NetworkDriver):
             )
 
             for item in peer_info:
-
                 # Determining a few other fields in the final peer_info
                 item["up"] = True if item["up"] == "up" else False
                 item["local_address_configured"] = (
@@ -1888,7 +1936,6 @@ class EOSDriver(NetworkDriver):
             return peer_details
 
         def _append(bgp_dict, peer_info):
-
             remote_as = peer_info["remote_as"]
             vrf_name = peer_info["routing_table"]
 
@@ -1941,7 +1988,6 @@ class EOSDriver(NetworkDriver):
             v6_peer_info = _parse_per_peer_bgp_detail(raw_output[1]["output"])
 
         for peer_info in v4_peer_info:
-
             vrf_name = peer_info["routing_table"]
             peer_remote_addr = peer_info["remote_address"]
             peer_info["accepted_prefix_count"] = (
@@ -1955,7 +2001,6 @@ class EOSDriver(NetworkDriver):
             _append(bgp_detail_info, peer_info)
 
         for peer_info in v6_peer_info:
-
             vrf_name = peer_info["routing_table"]
             peer_remote_addr = peer_info["remote_address"]
             peer_info["accepted_prefix_count"] = (
@@ -1971,7 +2016,6 @@ class EOSDriver(NetworkDriver):
         return bgp_detail_info
 
     def get_optics(self):
-
         command = ["show interfaces transceiver"]
 
         output = self._run_commands(command, encoding="json")[0]["interfaces"]
@@ -2076,15 +2120,59 @@ class EOSDriver(NetworkDriver):
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
 
-    def _show_vrf(self):
+    def _show_vrf_json(self):
         commands = ["show vrf"]
 
-        # This command has no JSON yet
+        vrfs = self._run_commands(commands)[0]["vrfs"]
+        return [
+            {
+                "name": k,
+                "interfaces": [i for i in v["interfaces"]],
+                "route_distinguisher": v["routeDistinguisher"],
+            }
+            for k, v in vrfs.items()
+        ]
+
+    def _show_vrf_text(self):
+        commands = ["show vrf"]
+
+        # This command has no JSON in EOS < 4.23
         raw_output = self._run_commands(commands, encoding="text")[0].get("output", "")
 
-        output = napalm.base.helpers.textfsm_extractor(self, "vrf", raw_output)
+        width_line = raw_output.splitlines()[2]  # Line with dashes
+        fields = width_line.split(" ")
+        widths = [len(f) + 1 for f in fields]
+        widths[-1] -= 1
 
-        return output
+        parsed_lines = string_parsers.parse_fixed_width(raw_output, *widths)
+
+        vrfs = []
+        vrf = {}
+        current_vrf = None
+        for line in parsed_lines[3:]:
+            line = [t.strip() for t in line]
+            if line[0]:
+                if current_vrf:
+                    vrfs.append(vrf)
+                current_vrf = line[0]
+                vrf = {
+                    "name": current_vrf,
+                    "interfaces": list(),
+                }
+            if line[1]:
+                vrf["route_distinguisher"] = line[1]
+            if line[4]:
+                vrf["interfaces"].extend([t.strip() for t in line[4].split(",") if t])
+        if current_vrf:
+            vrfs.append(vrf)
+
+        return vrfs
+
+    def _show_vrf(self):
+        if self.cli_version == 2:
+            return self._show_vrf_json()
+        else:
+            return self._show_vrf_text()
 
     def _get_vrfs(self):
         output = self._show_vrf()
@@ -2117,23 +2205,26 @@ class EOSDriver(NetworkDriver):
                         interfaces[str(line.strip())] = {}
                         all_vrf_interfaces[str(line.strip())] = {}
 
-            vrfs[str(vrf["name"])] = {
-                "name": str(vrf["name"]),
-                "type": "L3VRF",
+            vrfs[vrf["name"]] = {
+                "name": vrf["name"],
+                "type": "DEFAULT_INSTANCE" if vrf["name"] == "default" else "L3VRF",
                 "state": {"route_distinguisher": vrf["route_distinguisher"]},
                 "interfaces": {"interface": interfaces},
             }
-        all_interfaces = self.get_interfaces_ip().keys()
-        vrfs["default"] = {
-            "name": "default",
-            "type": "DEFAULT_INSTANCE",
-            "state": {"route_distinguisher": ""},
-            "interfaces": {
-                "interface": {
-                    k: {} for k in all_interfaces if k not in all_vrf_interfaces.keys()
-                }
-            },
-        }
+        if "default" not in vrfs:
+            all_interfaces = self.get_interfaces_ip().keys()
+            vrfs["default"] = {
+                "name": "default",
+                "type": "DEFAULT_INSTANCE",
+                "state": {"route_distinguisher": ""},
+                "interfaces": {
+                    "interface": {
+                        k: {}
+                        for k in all_interfaces
+                        if k not in all_vrf_interfaces.keys()
+                    }
+                },
+            }
 
         if name:
             if name in vrfs:

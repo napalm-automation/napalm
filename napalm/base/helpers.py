@@ -18,6 +18,14 @@ from netaddr import EUI
 from netaddr import mac_unix
 from netutils.config.parser import IOSConfigParser
 
+# Do not remove the below imports, functions were moved to netutils, but to not
+# break backwards compatibility, these should remain
+from netutils.interface import abbreviated_interface_name  # noqa
+from netutils.interface import canonical_interface_name  # noqa
+from netutils.constants import BASE_INTERFACES as base_interfaces  # noqa
+from netutils.constants import REVERSE_MAPPING as reverse_mapping  # noqa
+from netutils.interface import split_interface as _split_interface
+
 try:
     from ttp import quick_parse as ttp_quick_parse
 
@@ -30,7 +38,6 @@ import napalm.base.exceptions
 from napalm.base import constants
 from napalm.base.models import ConfigDict
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
-from napalm.base.canonical_map import base_interfaces, reverse_mapping
 
 T = TypeVar("T")
 R = TypeVar("R")
@@ -564,92 +571,7 @@ def as_number(as_number_val: str) -> int:
 
 def split_interface(intf_name: str) -> Tuple[str, str]:
     """Split an interface name based on first digit, slash, or space match."""
-    head = intf_name.rstrip(r"/\0123456789. ")
-    tail = intf_name[len(head) :].lstrip()
-    return (head, tail)
-
-
-def canonical_interface_name(
-    interface: str, addl_name_map: Optional[Dict[str, str]] = None
-) -> str:
-    """Function to return an interface's canonical name (fully expanded name).
-
-    Use of explicit matches used to indicate a clear understanding on any potential
-    match. Regex and other looser matching methods were not implmented to avoid false
-    positive matches. As an example, it would make sense to do "[P|p][O|o]" which would
-    incorrectly match PO = POS and Po = Port-channel, leading to a false positive, not
-    easily troubleshot, found, or known.
-
-    :param interface: The interface you are attempting to expand.
-    :param addl_name_map: A dict containing key/value pairs that updates
-    the base mapping. Used if an OS has specific differences. e.g. {"Po": "PortChannel"} vs
-    {"Po": "Port-Channel"}
-    :type addl_name_map: optional
-    """
-
-    name_map = {}
-    name_map.update(base_interfaces)
-    interface_type, interface_number = split_interface(interface)
-
-    if isinstance(addl_name_map, dict):
-        name_map.update(addl_name_map)
-    # check in dict for mapping
-    if name_map.get(interface_type):
-        long_int = name_map.get(interface_type)
-        assert isinstance(long_int, str)
-        return long_int + str(interface_number)
-    # if nothing matched, return the original name
-    else:
-        return interface
-
-
-def abbreviated_interface_name(
-    interface: str,
-    addl_name_map: Optional[Dict[str, str]] = None,
-    addl_reverse_map: Optional[Dict[str, str]] = None,
-) -> str:
-    """Function to return an abbreviated representation of the interface name.
-
-    :param interface: The interface you are attempting to abbreviate.
-    :param addl_name_map: A dict containing key/value pairs that updates
-    the base mapping. Used if an OS has specific differences. e.g. {"Po": "PortChannel"} vs
-    {"Po": "Port-Channel"}
-    :type addl_name_map: optional
-    :param addl_reverse_map: A dict containing key/value pairs that updates
-    the reverse mapping. Used if an OS has specific differences. e.g. {"PortChannel": "Po"} vs
-    {"PortChannel": "po"}
-    :type addl_reverse_map: optional
-    """
-
-    name_map = {}
-    name_map.update(base_interfaces)
-    interface_type, interface_number = split_interface(interface)
-
-    if isinstance(addl_name_map, dict):
-        name_map.update(addl_name_map)
-
-    rev_name_map = {}
-    rev_name_map.update(reverse_mapping)
-
-    if isinstance(addl_reverse_map, dict):
-        rev_name_map.update(addl_reverse_map)
-
-    # Try to ensure canonical type.
-    if name_map.get(interface_type):
-        canonical_type = name_map.get(interface_type)
-    else:
-        canonical_type = interface_type
-
-    assert isinstance(canonical_type, str)
-
-    try:
-        abbreviated_name = rev_name_map[canonical_type] + str(interface_number)
-        return abbreviated_name
-    except KeyError:
-        pass
-
-    # If abbreviated name lookup fails, return original name
-    return interface
+    return _split_interface(interface=intf_name)
 
 
 def transform_lldp_capab(capabilities: Union[str, Any]) -> List[str]:

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0"><Get ItemNotFound="true"><Configuration><BGP MajorVersion="40" MinorVersion="9"><Instance NotFound="true"><Naming><InstanceName>default</InstanceName></Naming></Instance></BGP></Configuration></Get><ResultSummary ErrorCount="0" ItemNotFound="true"/></Response>

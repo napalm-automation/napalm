@@ -185,7 +185,6 @@ class RPCClient(RPCBase):
 
         new_response = []
         for response in response_list:
-
             # Detect errors
             self._error_check(response)
 
