@@ -217,5 +217,25 @@
   "1005": {
     "name": "Vlan1005",
     "interfaces": []
-  }
+  },
+  "2400": {
+    "name": "Vlan2400",
+    "interfaces": [
+      "Port-channel1"
+    ]
+  },
+  "2432": {
+    "name": "Vlan2432",
+    "interfaces": [
+      "GigabitEthernet0/1",
+      "GigabitEthernet0/2"
+    ]
+  },
+  "2433": {
+    "name": "Vlan2433",
+    "interfaces": [
+      "GigabitEthernet0/3",
+      "GigabitEthernet0/4"
+    ]
+  },
 }
