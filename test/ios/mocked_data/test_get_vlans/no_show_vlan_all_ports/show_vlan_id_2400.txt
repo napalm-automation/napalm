@@ -12,5 +12,5 @@ Disabled
 
 Primary Secondary Type              Ports
 ------- --------- ----------------- ------------------------------------------
-2400    2432      community         Gi1/1, Gi1/2
-2400    2433      community         Gi1/3, Gi1/4
+2400    2432      community         Gi0/1, Gi0/2
+2400    2433      community         Gi0/3, Gi0/4
