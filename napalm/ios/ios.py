@@ -3738,7 +3738,7 @@ class IOSDriver(NetworkDriver):
                 vlan_id = vlan_m.group(1)
                 vlan_name = vlan_m.group(2)
                 interfaces = vlan_m.group(3) or ""
-                if vlan.get(vlan_name):
+                if vlans.get(vlan_name):
                     vlan_id = vlan_name
                     vlans[vlan_name] = {
                         "name": vlans["vlan_name"]["name"],
