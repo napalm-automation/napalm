@@ -3719,7 +3719,7 @@ class IOSDriver(NetworkDriver):
         if output.find("Invalid input detected") >= 0:
             return self._get_vlan_from_id()
         else:
-            return self._get_vlan_all_ports(output)
+            return self._get_vlan_all_ports(output, vlan_id=None)
 
     def _get_vlan_all_ports(self, output, _vlan_id):
         find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")

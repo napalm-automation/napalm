@@ -225,14 +225,14 @@
     ]
   },
   "2432": {
-    "name": "Vlan2432",
+    "name": "2432",
     "interfaces": [
       "GigabitEthernet0/1",
       "GigabitEthernet0/2"
     ]
   },
   "2433": {
-    "name": "Vlan2433",
+    "name": "2433",
     "interfaces": [
       "GigabitEthernet0/3",
       "GigabitEthernet0/4"
