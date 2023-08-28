@@ -3785,7 +3785,7 @@ class IOSDriver(NetworkDriver):
         find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
         vlans = {}
         for vlan_id, vlan_name in find_vlan:
-            output = self._send_command("show vlan id {}".format(vlan_id, vlan_name))
+            output = self._send_command("show vlan id {}".format(vlan_id))
             _vlans = self._get_vlan_all_ports(output, vlan_id, vlan_name)
             if len(_vlans) == 0:
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
