@@ -3719,9 +3719,9 @@ class IOSDriver(NetworkDriver):
         if output.find("Invalid input detected") >= 0:
             return self._get_vlan_from_id()
         else:
-            return self._get_vlan_all_ports(output, _vlan_id=None)
+            return self._get_vlan_all_ports(output, _vlan_id=None, vlan_name=None)
 
-    def _get_vlan_all_ports(self, output, _vlan_id):
+    def _get_vlan_all_ports(self, output, _vlan_id, _vlan_name):
         find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")
         continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
         match_pvlan_regexp = re.compile(
@@ -3754,6 +3754,7 @@ class IOSDriver(NetworkDriver):
                         continue
                     else:
                         vlan_id = vlan_m.group(1)
+                        vlan_name = _vlan_name if _vlan_name else vlan_name
                     interfaces = vlan_m.group(3) or ""
                     vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
 
@@ -3784,8 +3785,8 @@ class IOSDriver(NetworkDriver):
         find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
         vlans = {}
         for vlan_id, vlan_name in find_vlan:
-            output = self._send_command("show vlan id {}".format(vlan_id))
-            _vlans = self._get_vlan_all_ports(output, vlan_id)
+            output = self._send_command("show vlan id {}".format(vlan_id, vlan_name))
+            _vlans = self._get_vlan_all_ports(output, vlan_id, vlan_name)
             if len(_vlans) == 0:
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
             elif len(_vlans) == 1:
