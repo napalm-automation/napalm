@@ -546,7 +546,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def rollback(self):
         if not self._check_file_exists(self.rollback_cfg):
             msg = f"Rollback file '{self.rollback_cfg}' does not exist on device."
-            raise ReplaceConfigException(msg=msg)
+            raise ReplaceConfigException(msg)
 
         commands = [
             "terminal dont-ask",

@@ -944,7 +944,7 @@ class NXOSDriver(NXOSDriverBase):
         assert isinstance(self.device, NXOSDevice)
         if not self._check_file_exists(cfg_file=self.rollback_cfg):
             msg = f"Rollback file '{self.rollback_cfg}' does not exist on device."
-            raise ReplaceConfigException(msg=msg)
+            raise ReplaceConfigException(msg)
         self.device.rollback(self.rollback_cfg)
         self._copy_run_start()
         self.changed = False
