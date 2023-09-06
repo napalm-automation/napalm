@@ -191,6 +191,30 @@ class NXOSDriverBase(NetworkDriver):
     ) -> Dict[str, Union[str, Dict[str, Any]]]:
         raise NotImplementedError
 
+    def _check_file_exists(self, cfg_file: str) -> bool:
+        """
+        Check that the file exists on remote device using full path.
+
+        cfg_file can be a full path, e.g.: bootflash:rollback_config.txt
+        or just a filename, e.g.: rollback_config.txt
+
+        For example
+        # dir rollback_config.txt
+            71803    Sep 06 14:13:33 2023  rollback_config.txt
+
+        Usage for bootflash://sup-local
+        6211682304 bytes used
+        110314684416 bytes free
+        116526366720 bytes total
+        """
+        cmd = f"dir {cfg_file}"
+        output = self._send_command(command=cmd, raw_text=True)
+        if "No such file or directory" in output:
+            return False
+        elif cfg_file in output:
+            return True
+        return False
+
     def _commit_merge(self) -> None:
         try:
             output = self._send_config(self.merge_candidate)
@@ -918,10 +942,12 @@ class NXOSDriver(NXOSDriverBase):
 
     def rollback(self) -> None:
         assert isinstance(self.device, NXOSDevice)
-        if self.changed:
-            self.device.rollback(self.rollback_cfg)
-            self._copy_run_start()
-            self.changed = False
+        if not self._check_file_exists(cfg_file=self.rollback_cfg):
+            msg = f"Rollback file '{self.rollback_cfg}' does not exist on device."
+            raise ReplaceConfigException(msg=msg)
+        self.device.rollback(self.rollback_cfg)
+        self._copy_run_start()
+        self.changed = False
 
     def get_facts(self) -> models.FactsDict:
         facts: models.FactsDict = {}  # type: ignore
