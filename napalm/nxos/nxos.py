@@ -369,14 +369,14 @@ class NXOSDriverBase(NetworkDriver):
         if source != "":
             command += " source {}".format(source)
         elif source_interface != "":
-            command += " source {}".format(source_interface)
+            command += " source-interface {}".format(source_interface)
 
         if vrf != "":
             command += " vrf {}".format(vrf)
         output = self._send_command(command, raw_text=True)
         assert isinstance(output, str)
 
-        if "connect:" in output:
+        if "connect:" in output.lower() or 'invalid' in output.lower():
             ping_dict["error"] = output
         elif "PING" in output:
             ping_dict["success"] = {
