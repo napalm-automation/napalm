@@ -371,8 +371,12 @@ class NXOSDriverBase(NetworkDriver):
         elif source_interface != "":
             command += " source-interface {}".format(source_interface)
 
-        if vrf != "":
-            command += " vrf {}".format(vrf)
+        # source_interface and vrf are mutually exclusive, but since they
+        # provide the same behavior, no need to raise an exception--just
+        # prefer source_interface.
+        if not source_interface:
+            if vrf != "":
+                command += " vrf {}".format(vrf)
         output = self._send_command(command, raw_text=True)
         assert isinstance(output, str)
 
