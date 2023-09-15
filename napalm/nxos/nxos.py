@@ -211,9 +211,8 @@ class NXOSDriverBase(NetworkDriver):
         output = self._send_command(command=cmd, raw_text=True)
         if "No such file or directory" in output:
             return False
-        elif cfg_file in output:
+        else:
             return True
-        return False
 
     def _commit_merge(self) -> None:
         try:
