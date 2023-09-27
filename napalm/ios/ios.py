@@ -3723,7 +3723,9 @@ class IOSDriver(NetworkDriver):
 
     def _get_vlan_all_ports(self, output):
         find_regexp = re.compile(
-            r"^(\d+)\s+(.*?(?=active|act\/[isl]{1}shut|act\/unsup))\w+(?:\/\w+)?\S+(\s+[A-Z][a-z].*)?$"
+            r"^(\d+)\s+"  # vlan id
+            "(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"  # vlan name
+            "\w+(?:\/\w+)?\S+(\s+[A-Z][a-z].*)?$"  # ports
         )
         continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
         output = output.splitlines()
