@@ -3722,7 +3722,7 @@ class IOSDriver(NetworkDriver):
             return self._get_vlan_all_ports(output)
 
     def _get_vlan_all_ports(self, output):
-        find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")
+        find_regexp = re.compile(r"^(\d+)\s+(.*?(?=active|act\/[isl]{1}shut|act\/unsup))\w+(?:\/\w+)?\S+(\s+[A-Z][a-z].*)?$")
         continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
         output = output.splitlines()
         vlans = {}
@@ -3736,7 +3736,7 @@ class IOSDriver(NetworkDriver):
             if vlan_m:
                 was_vlan_or_cont = True
                 vlan_id = vlan_m.group(1)
-                vlan_name = vlan_m.group(2)
+                vlan_name = vlan_m.group(2).strip()
                 interfaces = vlan_m.group(3) or ""
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
 
@@ -3763,7 +3763,7 @@ class IOSDriver(NetworkDriver):
     def _get_vlan_from_id(self):
         command = "show vlan brief"
         output = self._send_command(command)
-        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        vlan_regexp = r"^(\d+)\W+(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"
         find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
         vlans = {}
         for vlan_id, vlan_name in find_vlan:
