@@ -90,6 +90,7 @@ class JunOSDriver(NetworkDriver):
         self.ssh_config_file = optional_args.get("ssh_config_file", None)
         self.ignore_warning = optional_args.get("ignore_warning", False)
         self.auto_probe = optional_args.get("auto_probe", 0)
+        self.huge_tree = optional_args.get("huge_tree", False)
 
         # Define locking method
         self.lock_disable = optional_args.get("lock_disable", False)
@@ -121,6 +122,7 @@ class JunOSDriver(NetworkDriver):
                 ssh_private_key_file=self.key_file,
                 ssh_config=self.ssh_config_file,
                 port=self.port,
+                huge_tree=self.huge_tree,
             )
         else:
             self.device = Device(
@@ -129,6 +131,7 @@ class JunOSDriver(NetworkDriver):
                 password=password,
                 port=self.port,
                 ssh_config=self.ssh_config_file,
+                huge_tree=self.huge_tree,
             )
 
         self.platform = "junos"
