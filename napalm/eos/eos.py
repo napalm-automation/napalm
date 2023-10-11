@@ -1679,7 +1679,7 @@ class EOSDriver(NetworkDriver):
 
         users = {}
 
-        commands = ["show user-account"]
+        commands = ["show users accounts"]
         user_items = self._run_commands(commands)[0].get("users", {})
 
         for user, user_details in user_items.items():
