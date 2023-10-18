@@ -38,7 +38,7 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 IPV4_ADDR_REGEX = IP_ADDR_REGEX
 IPV6_ADDR_REGEX_1 = r"::"
-IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{0,39}::[0-9a-fA-F:]{0,39}"
 IPV6_ADDR_REGEX_3 = (
     r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:"
     r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
@@ -268,7 +268,7 @@ def bgp_normalize_table_data(bgp_table):
     Normalize this so the line wrap doesn't exit.
     """
     bgp_table = bgp_table.strip()
-    bgp_multiline_pattern = r"({})\s*\n".format(IPV4_OR_IPV6_REGEX)
+    bgp_multiline_pattern = r"({})(\s*\d*){0,3}\s*\n".format(IPV4_OR_IPV6_REGEX)
     # Strip out the newline
     return re.sub(bgp_multiline_pattern, r"\1", bgp_table)
 
