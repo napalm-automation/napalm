@@ -264,13 +264,18 @@ def bgp_normalize_table_data(bgp_table):
                 4 65535  163664  163693      145    0    0     3w2d 3
     2001:db8:e0:dd::1
                 4    10  327491  327278      145    0    0     3w1d 4
+    2001:db8:e0:df::
+                4    12345678
+                         327465  327268      145    0    0     3w1d 4
 
     Normalize this so the line wrap doesn't exit.
     """
     bgp_table = bgp_table.strip()
-    bgp_multiline_pattern = r"({})(\s*\d*){{0,3}}\s*\n".format(IPV4_OR_IPV6_REGEX)
+    bgp_multiline_pattern = r"({})\s*\n(((\s*\d*){{1,4}})\s*\n)?".format(
+        IPV4_OR_IPV6_REGEX
+    )
     # Strip out the newline
-    return re.sub(bgp_multiline_pattern, r"\1", bgp_table)
+    return re.sub(bgp_multiline_pattern, r"\1\3", bgp_table)
 
 
 def bgp_table_parser(bgp_table):
