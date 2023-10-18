@@ -268,7 +268,7 @@ def bgp_normalize_table_data(bgp_table):
     Normalize this so the line wrap doesn't exit.
     """
     bgp_table = bgp_table.strip()
-    bgp_multiline_pattern = r"({})(\s*\d*){0,3}\s*\n".format(IPV4_OR_IPV6_REGEX)
+    bgp_multiline_pattern = r"({})(\s*\d*){{0,3}}\s*\n".format(IPV4_OR_IPV6_REGEX)
     # Strip out the newline
     return re.sub(bgp_multiline_pattern, r"\1", bgp_table)
 
