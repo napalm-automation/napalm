@@ -271,11 +271,15 @@ def bgp_normalize_table_data(bgp_table):
     Normalize this so the line wrap doesn't exit.
     """
     bgp_table = bgp_table.strip()
-    bgp_multiline_pattern = r"({})\s*\n(((\s*\d*){{1,4}})\s*\n)?".format(
+    # Remove newline after ipv6 address
+    bgp_ipv6_multiline_pattern = r"({})\s*\n".format(IPV4_OR_IPV6_REGEX)
+    bgp_table = re.sub(bgp_ipv6_multiline_pattern, r"\1", bgp_table)
+    # Remove newline after a long AS number
+    bgp_long_as_multiline_pattern = r"((?:{})\s*\d*\s*\d*)\s*\n".format(
         IPV4_OR_IPV6_REGEX
     )
-    # Strip out the newline
-    return re.sub(bgp_multiline_pattern, r"\1\3", bgp_table)
+    bgp_table = re.sub(bgp_long_as_multiline_pattern, r"\1", bgp_table)
+    return bgp_table
 
 
 def bgp_table_parser(bgp_table):
