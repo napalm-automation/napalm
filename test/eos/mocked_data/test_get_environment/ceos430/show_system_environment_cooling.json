@@ -1,0 +1,14 @@
+{
+    "systemStatus": "unknownCoolingAlarmLevel",
+    "airflowDirection": "unknownAirflowDirection",
+    "currentZones": 1,
+    "configuredZones": 0,
+    "defaultZones": false,
+    "numCoolingZones": [],
+    "shutdownOnInsufficientFans": true,
+    "overrideFanSpeed": 0,
+    "minFanSpeed": 0,
+    "coolingMode": "automatic",
+    "fanTraySlots": [],
+    "powerSupplySlots": []
+}

@@ -1,0 +1,37 @@
+{
+  "vrfs": {
+    "default": {
+      "routeDistinguisher": "",
+      "protocols": {
+        "ipv4": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "up"
+        },
+        "ipv6": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "down"
+        }
+      },
+      "vrfState": "up",
+      "interfacesV4": [
+        "Ethernet1",
+        "Ethernet2",
+        "Loopback1",
+        "Management1",
+        "Vlan123"
+      ],
+      "interfacesV6": [
+        "Management1"
+      ],
+      "interfaces": [
+        "Ethernet1",
+        "Ethernet2",
+        "Loopback1",
+        "Management1",
+        "Vlan123"
+      ]
+    }
+  }
+}

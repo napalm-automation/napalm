@@ -1,0 +1,44 @@
+{
+  "vrfs": {
+    "default": {
+      "routeDistinguisher": "",
+      "protocols": {
+        "ipv4": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "up"
+        },
+        "ipv6": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "down"
+        }
+      },
+      "vrfState": "up",
+      "interfaces": [
+        "Ethernet1",
+        "Port-Channel1"
+      ]
+    },
+    "TEST": {
+      "routeDistinguisher": "0:1",
+      "protocols": {
+        "ipv4": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "up"
+        },
+        "ipv6": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "down"
+        }
+      },
+      "vrfState": "up",
+      "interfaces": [
+        "Ethernet2",
+        "Port-Channel2"
+      ]
+    }
+  }
+}
