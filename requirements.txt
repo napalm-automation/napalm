@@ -11,7 +11,7 @@ netmiko>=4.1.0
 junos-eznc>=2.6.3
 scp
 lxml>=4.3.0
-ncclient>=0.6.15
+ncclient
 ttp
 ttp_templates
 netutils>=1.0.0
