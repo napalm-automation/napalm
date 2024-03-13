@@ -529,7 +529,6 @@ class TestGettersNetworkDriver(object):
         self.assertTrue(result)
 
     def test_traceroute(self):
-
         destination = "8.8.8.8"
         try:
             get_traceroute = self.device.traceroute(destination)
@@ -547,7 +546,6 @@ class TestGettersNetworkDriver(object):
         self.assertTrue(result)
 
     def test_get_users(self):
-
         try:
             get_users = self.device.get_users()
         except NotImplementedError:
@@ -561,7 +559,6 @@ class TestGettersNetworkDriver(object):
         self.assertTrue(result)
 
     def test_get_optics(self):
-
         try:
             get_optics = self.device.get_optics()
         except NotImplementedError:
@@ -575,7 +572,6 @@ class TestGettersNetworkDriver(object):
                 assert len(channel) == 2
                 assert isinstance(channel["index"], int)
                 for field in ["input_power", "output_power", "laser_bias_current"]:
-
                     assert len(channel["state"][field]) == 4
                     assert isinstance(channel["state"][field]["instant"], float)
                     assert isinstance(channel["state"][field]["avg"], float)

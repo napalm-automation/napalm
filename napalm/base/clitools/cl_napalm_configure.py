@@ -22,7 +22,6 @@ logger = logging.getLogger("cl-napalm-config.py")
 def run(
     vendor, hostname, user, password, strategy, optional_args, config_file, dry_run
 ):
-
     logger.debug('Getting driver for OS "{driver}"'.format(driver=vendor))
     driver = get_network_driver(vendor)
 

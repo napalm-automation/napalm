@@ -402,6 +402,15 @@ junos_bgp_config_peers_view:
     inet6_flow_teardown_timeout_prefix_limit: {family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout: int}
     inet6_flow_novalidate_prefix_limit: {family/inet6/flow/prefix-limit/no-validate: unicode}
 
+junos_routing_config_table:
+  get: "routing-options/autonomous-system"
+  view: junos_routing_config_view
+
+junos_routing_config_view:
+  fields:
+    local_system_as: autonomous-system
+
+
 ####
 #### BGP Neighbors and Routing Tables Stats
 ####

@@ -1,0 +1,15 @@
+{
+  "GigabitEthernet9/48": [
+      {
+        "port": "Gi0",
+        "hostname": "COMPUTER.company.example.com"
+      }
+    ]
+  ,
+  "GigabitEthernet9/8": [
+      {
+        "port": "A1:8B:95:B5:E4:6F",
+        "hostname": "NICEHOSTNAME"
+      }
+    ]
+}

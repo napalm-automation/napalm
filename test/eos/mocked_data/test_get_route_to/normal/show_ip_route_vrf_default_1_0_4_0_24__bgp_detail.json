@@ -9,7 +9,7 @@
                     "routeAction": "forward",
                     "vias": [
                         {
-                            "interface": "Port-Channel2",
+                            "interface": "Port-Channel1",
                             "nexthopAddr": "192.168.0.1"
                         }
                     ],
