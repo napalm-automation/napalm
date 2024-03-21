@@ -6,9 +6,9 @@ textfsm
 jinja2
 netaddr
 pyYAML
-pyeapi>=0.8.2
+pyeapi>=1.0.2
 netmiko>=4.1.0
-junos-eznc>=2.6.3
+junos-eznc>=2.7.0
 scp
 lxml>=4.3.0
 ncclient
