@@ -1,0 +1,22 @@
+{
+    "mfgName": "Arista",
+    "modelName": "cEOSLab",
+    "hardwareRevision": "",
+    "serialNumber": "DE5B7D98C24A207BE70876CC0AD5546F",
+    "systemMacAddress": "00:1c:73:78:8e:81",
+    "hwMacAddress": "00:00:00:00:00:00",
+    "configMacAddress": "00:00:00:00:00:00",
+    "version": "4.30.0F-31408673.4300F (engineering build)",
+    "architecture": "x86_64",
+    "internalVersion": "4.30.0F-31408673.4300F",
+    "internalBuildId": "a35f0dc7-2d65-4f2a-a010-279cf445fd8c",
+    "imageFormatVersion": "1.0",
+    "imageOptimization": "None",
+    "cEosToolsVersion": "(unknown)",
+    "kernelVersion": "5.15.0-56-generic",
+    "bootupTimestamp": 1688840924.7556078,
+    "uptime": 6527.436209201813,
+    "memTotal": 231066228,
+    "memFree": 221986768,
+    "isIntlVersion": false
+}

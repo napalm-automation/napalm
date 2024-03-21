@@ -65,6 +65,7 @@ env
 
 test/unit/test_devices.py
 
+.report.json
 report.json
 tags
 .pytest_cache/

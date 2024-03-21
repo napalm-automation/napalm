@@ -1,11 +1,26 @@
 {
+  "_": {
+    "apply_groups": [],
+    "description": "",
+    "local_as": 65001,
+    "type": "",
+    "import_policy": "",
+    "export_policy": "",
+    "local_address": "",
+    "multipath": false,
+    "multihop_ttl": 0,
+    "remote_as": 0,
+    "remove_private_as": false,
+    "prefix_limit": {},
+    "neighbors": {}
+  },
   "RR-CLIENTS": {
     "apply_groups": [],
     "description": "[ibgp - rr clients]",
     "export_policy": "PASS-OUT",
     "import_policy": "PASS-IN",
     "local_address": "GigabitEthernet1",
-    "local_as": 0,
+    "local_as": 65001,
     "multihop_ttl": 0,
     "multipath": false,
     "neighbors": {
@@ -15,7 +30,7 @@
         "export_policy": "",
         "import_policy": "",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65001,
         "nhs": false,
         "prefix_limit": {
           "inet": {
@@ -37,7 +52,7 @@
         "export_policy": "",
         "import_policy": "",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65001,
         "nhs": false,
         "prefix_limit": {
           "inet": {
