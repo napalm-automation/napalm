@@ -42,6 +42,10 @@ class PatchedEOSDriver(eos.EOSDriver):
 class FakeEOSDevice(BaseTestDouble):
     """EOS device test double."""
 
+    def __init__(self):
+        super(FakeEOSDevice, self).__init__()
+        self.connection = object()
+
     def run_commands(self, command_list, encoding="json"):
         """Fake run_commands."""
         result = list()
@@ -56,11 +60,3 @@ class FakeEOSDevice(BaseTestDouble):
                 result.append({"output": self.read_txt_file(full_path)})
 
         return result
-
-    def update_cli_version(self, version):
-        """
-        Update CLI version number for this device
-        :param version: int: version number
-        :return: None
-        """
-        self.cli_version = version

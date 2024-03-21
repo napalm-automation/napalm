@@ -1,0 +1,10 @@
+[
+    {
+        "interface": "ae0.3",
+        "ip": "2001:db8::3",
+        "mac": "",
+        "age": 3.0,
+        "state": "unreachable"
+    }
+]
+

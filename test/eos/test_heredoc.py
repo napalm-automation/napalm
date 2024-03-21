@@ -6,7 +6,6 @@ from textwrap import dedent
 @pytest.mark.usefixtures("set_device_parameters")
 class TestConfigMangling(object):
     def test_heredoc(self):
-
         raw_config = dedent(
             """\
         hostname vEOS
@@ -55,11 +54,10 @@ class TestConfigMangling(object):
             },
             "management ssh",
             "idle-timeout 15",
+            "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(
-            expected_result, fn0039_transform=False
-        )
+        self.device.device.run_commands.assert_called_with(expected_result)
 
     def test_mode_comment(self):
         raw_config = dedent(
@@ -108,14 +106,12 @@ class TestConfigMangling(object):
                 "input": "This is a multi-line HEREDOC\ncomment for standard ACL test3",
             },
             "permit host 192.0.2.3",
+            "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(
-            expected_result, fn0039_transform=False
-        )
+        self.device.device.run_commands.assert_called_with(expected_result)
 
     def test_heredoc_with_bangs(self):
-
         raw_config = dedent(
             """\
         hostname vEOS
@@ -147,8 +143,7 @@ class TestConfigMangling(object):
             },
             "management ssh",
             "idle-timeout 15",
+            "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(
-            expected_result, fn0039_transform=False
-        )
+        self.device.device.run_commands.assert_called_with(expected_result)

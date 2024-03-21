@@ -19,6 +19,7 @@ from typing import Optional, Dict, Type, Any, List, Union
 from typing_extensions import Literal
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
+from netutils.interface import canonical_interface_name
 
 # local modules
 import napalm.base.exceptions
@@ -343,7 +344,7 @@ class NetworkDriver(object):
          * is_enabled (True/False)
          * description (string)
          * last_flapped (float in seconds)
-         * speed (int in Mbit)
+         * speed (float in Mbit)
          * MTU (in Bytes)
          * mac_address (string)
 
@@ -356,7 +357,7 @@ class NetworkDriver(object):
                 'is_enabled': False,
                 'description': '',
                 'last_flapped': -1.0,
-                'speed': 1000,
+                'speed': 1000.0,
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:61',
                 },
@@ -366,7 +367,7 @@ class NetworkDriver(object):
                 'is_enabled': True,
                 'description': 'foo',
                 'last_flapped': 1429978575.1554043,
-                'speed': 1000,
+                'speed': 1000.0,
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:62',
                 },
@@ -376,7 +377,7 @@ class NetworkDriver(object):
                 'is_enabled': True,
                 'description': 'bla',
                 'last_flapped': 1429978575.1555667,
-                'speed': 1000,
+                'speed': 1000.0,
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:63',
                 },
@@ -386,7 +387,7 @@ class NetworkDriver(object):
                 'is_enabled': True,
                 'description': 'bar',
                 'last_flapped': -1.0,
-                'speed': 1000,
+                'speed': 1000.0,
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:64',
                 }
@@ -647,7 +648,8 @@ class NetworkDriver(object):
         :param neighbor: Returns the configuration of a specific BGP neighbor.
 
         Main dictionary keys represent the group name and the values represent a dictionary having
-        the keys below. Neighbors which aren't members of a group will be stored in a key named "_":
+        the keys below.  A default group named "_" will contain information regarding global
+        settings and any neighbors that are not members of a group.
 
             * type (string)
             * description (string)
@@ -737,8 +739,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def cli(self, commands: List[str]) -> Dict[str, Union[str, Dict[str, Any]]]:
-
+    def cli(
+        self, commands: List[str], encoding: str = "text"
+    ) -> Dict[str, Union[str, Dict[str, Any]]]:
         """
         Will execute a list of commands and return the output in a dictionary format.
 
@@ -768,7 +771,6 @@ class NetworkDriver(object):
     def get_bgp_neighbors_detail(
         self, neighbor_address: str = ""
     ) -> Dict[str, models.PeerDetailsDict]:
-
         """
         Returns a detailed view of the BGP neighbors as a dictionary of lists.
 
@@ -863,7 +865,6 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def get_arp_table(self, vrf: str = "") -> List[models.ARPTableDict]:
-
         """
         Returns a list of dictionaries having the following set of keys:
             * interface (string)
@@ -898,7 +899,6 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def get_ntp_peers(self) -> Dict[str, models.NTPPeerDict]:
-
         """
         Returns the NTP peers configuration as dictionary.
         The keys of the dictionary represent the IP Addresses of the peers.
@@ -918,7 +918,6 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def get_ntp_servers(self) -> Dict[str, models.NTPServerDict]:
-
         """
         Returns the NTP servers configuration as dictionary.
         The keys of the dictionary represent the IP Addresses of the servers.
@@ -938,7 +937,6 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def get_ntp_stats(self) -> List[models.NTPStats]:
-
         """
         Returns a list of NTP synchronization statistics.
 
@@ -975,7 +973,6 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def get_interfaces_ip(self) -> Dict[str, models.InterfacesIPDict]:
-
         """
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
         Keys of the main dictionary represent the name of the interface.
@@ -1029,7 +1026,6 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def get_mac_address_table(self) -> List[models.MACAdressTable]:
-
         """
         Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address
         Table, having the following keys:
@@ -1082,7 +1078,6 @@ class NetworkDriver(object):
     def get_route_to(
         self, destination: str = "", protocol: str = "", longer: bool = False
     ) -> Dict[str, models.RouteDict]:
-
         """
         Returns a dictionary of dictionaries containing details of all available routes to a
         destination.
@@ -1157,7 +1152,6 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def get_snmp_information(self) -> models.SNMPDict:
-
         """
         Returns a dict of dicts containing SNMP configuration.
         Each inner dictionary contains these fields
@@ -1383,7 +1377,7 @@ class NetworkDriver(object):
             OR
 
             {
-                'error': 'unknown host 8.8.8.8.8'
+                'error': 'unknown host 8.8.8.8'
             }
 
         """
@@ -1503,7 +1497,7 @@ class NetworkDriver(object):
             OR
 
             {
-                'error': 'unknown host 8.8.8.8.8'
+                'error': 'unknown host 8.8.8.8'
             }
         """
         raise NotImplementedError
@@ -1802,8 +1796,6 @@ class NetworkDriver(object):
     def _canonical_int(self, interface: str) -> str:
         """Expose the helper function within this class."""
         if self.use_canonical_interface is True:
-            return napalm.base.helpers.canonical_interface_name(
-                interface, addl_name_map=None
-            )
+            return canonical_interface_name(interface, addl_name_map=None)
         else:
             return interface

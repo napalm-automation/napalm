@@ -119,7 +119,7 @@ class FakeJunOSDevice(BaseTestDouble):
     def bind(*args, **kvargs):
         pass
 
-    def cli(self, command=""):
+    def cli(self, command="", encoding="text"):
         filename = "{safe_command}.txt".format(safe_command=self.sanitize_text(command))
         fielpath = self.find_file(filename)
         return self.read_txt_file(fielpath)
@@ -147,7 +147,6 @@ class FakeRPCObject:
         return lxml.etree.fromstring(xml_string)
 
     def get_config(self, get_cmd=None, filter_xml=None, options={}):
-
         # get_cmd is an XML tree that requests a specific part of the config
         # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
 

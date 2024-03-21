@@ -151,7 +151,9 @@ class MockDriver(NetworkDriver):
     def is_alive(self) -> models.AliveDict:
         return {"is_alive": self.opened}
 
-    def cli(self, commands: List[str]) -> Dict[str, Union[str, Dict[str, Any]]]:
+    def cli(
+        self, commands: List[str], encoding: str = "text"
+    ) -> Dict[str, Union[str, Dict[str, Any]]]:
         count = self._count_calls("cli")
         result = {}
         regexp = re.compile("[^a-zA-Z0-9]+")

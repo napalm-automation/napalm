@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import re
 import copy
 import difflib
+import ipaddress
 import logging
 
 # import third party lib
@@ -31,8 +32,6 @@ from ncclient.operations.rpc import RPCError
 from ncclient.operations.errors import TimeoutExpiredError
 from lxml import etree as ETREE
 from lxml.etree import XMLSyntaxError
-from netaddr import IPAddress  # needed for traceroute, to check IP version
-from netaddr.core import AddrFormatError
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
@@ -66,14 +65,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.pending_changes = False
         self.replace = False
         self.locked = False
-        if optional_args is None:
-            optional_args = {}
-
-        self.netmiko_optional_args = optional_args
-        self.port = optional_args.get("port", 830)
-        self.lock_on_connect = optional_args.get("config_lock", False)
-        self.key_file = optional_args.get("key_file", None)
-        self.config_encoding = optional_args.get("config_encoding", "cli")
+        self.optional_args = optional_args if optional_args else {}
+        self.port = self.optional_args.pop("port", 830)
+        self.lock_on_connect = self.optional_args.pop("config_lock", False)
+        self.key_file = self.optional_args.pop("key_file", None)
+        self.config_encoding = self.optional_args.pop("config_encoding", "cli")
         if self.config_encoding not in C.CONFIG_ENCODINGS:
             raise ValueError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
@@ -92,7 +88,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 key_filename=self.key_file,
                 timeout=self.timeout,
                 device_params={"name": "iosxr"},
-                **self.netmiko_optional_args,
+                **self.optional_args,
             )
             if self.lock_on_connect:
                 self._lock()
@@ -338,7 +334,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "vendor": "Cisco",
             "os_version": "",
             "hostname": "",
-            "uptime": -1,
+            "uptime": -1.0,
             "serial_number": "",
             "fqdn": "",
             "model": "",
@@ -365,7 +361,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         # Retrieves uptime
         uptime = napalm.base.helpers.convert(
-            int,
+            float,
             self._find_txt(
                 facts_rpc_reply_etree,
                 ".//suo:system-time/\
@@ -373,7 +369,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 default="",
                 namespaces=C.NS,
             ),
-            -1,
+            -1.0,
         )
 
         # Retrieves interfaces name
@@ -455,7 +451,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         interfaces_rpc_reply_etree = ETREE.fromstring(interfaces_rpc_reply)
 
         # Retrieves interfaces details
-        for (interface_tree, description_tree) in zip(
+        for interface_tree, description_tree in zip(
             interfaces_rpc_reply_etree.xpath(
                 ".//int:interfaces/int:interface-xr/int:interface", namespaces=C.NS
             ),
@@ -463,7 +459,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ".//int:interfaces/int:interfaces/int:interface", namespaces=C.NS
             ),
         ):
-
             interface_name = self._find_txt(
                 interface_tree, "./int:interface-name", default="", namespaces=C.NS
             )
@@ -684,7 +679,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
             neighbors = {}
 
             for neighbor in rpc_reply_etree.xpath(xpath, namespaces=C.NS):
-
                 this_neighbor = {}
                 this_neighbor["local_as"] = napalm.base.helpers.convert(
                     int,
@@ -1329,7 +1323,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return lldp_neighbors_detail
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         """Execute raw CLI commands and returns their output."""
         return NotImplementedError
 
@@ -1370,8 +1364,24 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
 
+        data_ele = result_tree.find("./{*}data")
+        # If there are no children in "<data>", then there is no BGP configured
+        bgp_configured = bool(len(data_ele.getchildren()))
+        if not bgp_configured:
+            return {}
+
         if not group:
             neighbor = ""
+
+        bgp_asn = napalm.base.helpers.convert(
+            int,
+            self._find_txt(
+                result_tree,
+                ".//bgpc:bgp/bgpc:instance/bgpc:instance-as/bgpc:four-byte-as/bgpc:as",
+                default=0,
+                namespaces=C.NS,
+            ),
+        )
 
         bgp_group_neighbors = {}
         bgp_neighbor_xpath = ".//bgpc:bgp/bgpc:instance/bgpc:instance-as/\
@@ -1434,7 +1444,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = local_as_x * 65536 + local_as_y
+            local_as = (local_as_x * 65536 + local_as_y) or bgp_asn
             af_table = self._find_txt(
                 bgp_neighbor,
                 "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:af-name",
@@ -1601,7 +1611,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = local_as_x * 65536 + local_as_y
+            local_as = (local_as_x * 65536 + local_as_y) or bgp_asn
             multihop_ttl = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
@@ -1683,22 +1693,22 @@ class IOSXRNETCONFDriver(NetworkDriver):
             }
             if group and group == group_name:
                 break
-        if "" in bgp_group_neighbors.keys():
-            bgp_config["_"] = {
-                "apply_groups": [],
-                "description": "",
-                "local_as": 0,
-                "type": "",
-                "import_policy": "",
-                "export_policy": "",
-                "local_address": "",
-                "multipath": False,
-                "multihop_ttl": 0,
-                "remote_as": 0,
-                "remove_private_as": False,
-                "prefix_limit": {},
-                "neighbors": bgp_group_neighbors.get("", {}),
-            }
+
+        bgp_config["_"] = {
+            "apply_groups": [],
+            "description": "",
+            "local_as": bgp_asn,
+            "type": "",
+            "import_policy": "",
+            "export_policy": "",
+            "local_address": "",
+            "multipath": False,
+            "multihop_ttl": 0,
+            "remote_as": 0,
+            "remove_private_as": False,
+            "prefix_limit": {},
+            "neighbors": bgp_group_neighbors.get("", {}),
+        }
 
         return bgp_config
 
@@ -2484,8 +2494,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(network).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(network).version
+        except ValueError:
             logger.error("Wrong destination IP Address format supplied to get_route_to")
             raise TypeError("Wrong destination IP Address!")
 
@@ -2955,8 +2965,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(destination).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(destination).version
+        except ValueError:
             logger.error(
                 "Incorrect format of IP Address in traceroute \
              with value provided:%s"
@@ -3142,7 +3152,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             if config[datastore] != "":
                 if encoding == "cli":
                     cli_tree = ETREE.XML(config[datastore], parser=parser)[0]
-                    if cli_tree:
+                    if len(cli_tree):
                         config[datastore] = cli_tree[0].text.strip()
                     else:
                         config[datastore] = ""
