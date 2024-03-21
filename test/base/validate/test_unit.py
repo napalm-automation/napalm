@@ -1,4 +1,5 @@
 """Tests for the validate methods."""
+
 import pytest
 import copy
 

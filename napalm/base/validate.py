@@ -3,6 +3,7 @@ Validation methods for the NAPALM base.
 
 See: https://napalm.readthedocs.io/en/latest/validate.html
 """
+
 import yaml
 import copy
 import re

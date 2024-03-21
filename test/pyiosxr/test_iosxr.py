@@ -24,7 +24,6 @@ from napalm.pyIOSXR.exceptions import InvalidXMLResponse
 
 
 class _MockedNetMikoDevice(object):
-
     """
     Defines the minimum attributes necessary to mock a SSH connection using netmiko.
     """
@@ -97,7 +96,6 @@ class _MockedNetMikoDevice(object):
 
 
 class _MockedIOSXRDevice(IOSXR):
-
     """
     Overrides only the very basic methods from the main device driver, that cannot be mocked.
     """
@@ -112,7 +110,6 @@ class _MockedIOSXRDevice(IOSXR):
 
 
 class TestIOSXRDevice(unittest.TestCase):
-
     """
     Tests IOS-XR basic functions.
     """

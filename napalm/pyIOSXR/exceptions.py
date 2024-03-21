@@ -43,7 +43,6 @@ class ConnectError(IOSXRException):
 
 
 class CommitError(IOSXRException):
-
     """Raised when unable to commit. Mostly due to ERROR 0x41866c00"""
 
     pass
