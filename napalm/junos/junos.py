@@ -1136,7 +1136,7 @@ class JunOSDriver(NetworkDriver):
             )
             raw_txt = self.device.cli(safe_command, warning=False, format=encoding)
             if isinstance(raw_txt, etree._Element):
-                raw_txt = etree.tostring(raw_txt.get_parent()).decode()
+                raw_txt = etree.tostring(raw_txt.getparent()).decode()
                 cli_output[str(command)] = raw_txt
             else:
                 cli_output[str(command)] = str(_process_pipe(command, raw_txt))
@@ -1638,7 +1638,11 @@ class JunOSDriver(NetworkDriver):
 
         for ipv6_table_entry in ipv6_neighbors_table_items:
             ipv6_entry = {elem[0]: elem[1] for elem in ipv6_table_entry[1]}
-            ipv6_entry["mac"] = napalm.base.helpers.mac(ipv6_entry.get("mac"))
+            ipv6_entry["mac"] = (
+                ""
+                if ipv6_entry.get("mac") == "none"
+                else napalm.base.helpers.mac(ipv6_entry.get("mac"))
+            )
             ipv6_entry["ip"] = napalm.base.helpers.ip(ipv6_entry.get("ip"))
             ipv6_neighbors_table.append(ipv6_entry)
 
