@@ -1,4 +1,5 @@
 """NAPALM Cisco IOS Handler."""
+
 # Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -14,6 +15,7 @@
 # the License.
 import copy
 import functools
+import ipaddress
 import os
 import re
 import socket
@@ -22,8 +24,6 @@ import tempfile
 import uuid
 from collections import defaultdict
 
-from netaddr import IPNetwork
-from netaddr.core import AddrFormatError
 from netmiko import FileTransfer, InLineTransfer
 
 import napalm.base.constants as C
@@ -34,15 +34,19 @@ from napalm.base.exceptions import (
     MergeConfigException,
     ConnectionClosedException,
     CommandErrorException,
+    CommitConfirmException,
 )
 from napalm.base.helpers import (
-    canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
-    split_interface,
-    abbreviated_interface_name,
     generate_regex_or,
     sanitize_configs,
+)
+from netaddr.core import AddrFormatError
+from netutils.interface import (
+    abbreviated_interface_name,
+    canonical_interface_name,
+    split_interface,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -56,7 +60,7 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 IPV4_ADDR_REGEX = IP_ADDR_REGEX
 IPV6_ADDR_REGEX_1 = r"::"
-IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{0,39}::[0-9a-fA-F:]{0,39}"
 IPV6_ADDR_REGEX_3 = (
     r"[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:"
     "[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"
@@ -480,10 +484,10 @@ class IOSDriver(NetworkDriver):
         # Handle special username removal pattern
         pattern2 = r".*all username.*confirm"
         patterns = rf"(?:{pattern1}|{pattern2})"
-        output = self.device.send_command(cmd, expect_string=patterns)
+        output = self.device.send_command(cmd, expect_string=patterns, read_timeout=90)
         loop_count = 50
         new_output = output
-        for i in range(loop_count):
+        for _ in range(loop_count):
             if re.search(pattern2, new_output):
                 # Send confirmation if username removal
                 new_output = self.device.send_command_timing(
@@ -502,13 +506,36 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         """
-        if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
+        CISCO_TIMER_MIN = 1
+        CISCO_TIMER_MAX = 120
+        ARCHIVE_DISABLED_MESSAGE = (
+            "For Cisco devices, revert_in requires 'archive' feature to be enabled."
+        )
+        revert_in_min = None
+
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
+            )
+
+        if revert_in is not None:
+            if not self._check_archive_feature():
+                raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
+            elif not CISCO_TIMER_MIN * 60 <= revert_in <= CISCO_TIMER_MAX * 60:
+                msg = (
+                    "For Cisco IOS devices revert_in is rounded down to the nearest minute,"
+                    "pass revert_in as a multiple of 60 between {} and {}".format(
+                        CISCO_TIMER_MIN * 60, CISCO_TIMER_MAX * 60
+                    )
+                )
+                raise CommitConfirmException(msg)
+            else:
+                revert_in_min = int(revert_in / 60)
+
+        if self.has_pending_commit():
+            raise CommandErrorException(
+                "Configuration session already in progress, cannot "
+                "perform configuration actions"
             )
 
         # Always generate a rollback config on commit
@@ -520,8 +547,16 @@ class IOSDriver(NetworkDriver):
             cfg_file = self._gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
-            if self.auto_rollback_on_error:
+            if revert_in_min and self.auto_rollback_on_error:
+                cmd = "configure replace {} force revert trigger error timer {}".format(
+                    cfg_file, revert_in_min
+                )
+            elif self.auto_rollback_on_error:
                 cmd = "configure replace {} force revert trigger error".format(cfg_file)
+            elif revert_in_min:
+                cmd = "configure replace {} force revert timer {}".format(
+                    cfg_file, revert_in_min
+                )
             else:
                 cmd = "configure replace {} force".format(cfg_file)
             output = self._commit_handler(cmd)
@@ -534,14 +569,29 @@ class IOSDriver(NetworkDriver):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
             elif "%Please turn config archive on" in output:
-                msg = "napalm-ios replace() requires Cisco 'archive' feature to be enabled."
-                raise ReplaceConfigException(msg)
+                if revert_in_min:
+                    raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
+                else:
+                    msg = "napalm-ios replace() requires Cisco 'archive' feature to be enabled"
+                    raise ReplaceConfigException(msg)
         else:
             # Merge operation
             filename = self.merge_cfg
             cfg_file = self._gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise MergeConfigException("Merge source config file does not exist")
+            if revert_in_min is not None:
+                # Enter config mode with a revert timer and exit config mode
+                try:
+                    self.device.config_mode(
+                        config_command="configure terminal revert timer {}".format(
+                            revert_in_min
+                        )
+                    )
+                    self.device.exit_config_mode()
+                except ValueError:
+                    raise MergeConfigException(ARCHIVE_DISABLED_MESSAGE)
+
             cmd = "copy {} running-config".format(cfg_file)
             output = self._commit_handler(cmd)
             if "Invalid input detected" in output:
@@ -553,8 +603,61 @@ class IOSDriver(NetworkDriver):
         # After a commit - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
 
-        # Save config to startup (both replace and merge)
-        output += self.device.save_config()
+        if revert_in_min is None:
+            # Save config to startup (both replace and merge)
+            output += self.device.save_config()
+
+    def _check_archive_feature(self):
+        cmd = "show archive"
+        output = self.device.send_command(cmd)
+        if "Archive feature not enabled" in output:
+            return False
+        return True
+
+    def has_pending_commit(self):
+        pending_commits = self._get_pending_commits()
+        return bool(pending_commits)
+
+    def _get_pending_commits(self):
+        if self._check_archive_feature():
+            cmd = "show archive config rollback timer"
+            output = self.device.send_command(cmd)
+        else:
+            return {}
+        if "No Rollback Confirmed Change pending" in output:
+            return {}
+        match_strings = r"|".join(
+            [
+                r"Time configured.*?: (?P<configured>.*)",
+                r"Timer type: (?P<type>.*)",
+                r"Timer value: (?P<timer>.*)",
+                r"User: (?P<user>.*)",
+            ]
+        )
+        keys = ["configured", "type", "timer", "user"]
+        matches = re.finditer(match_strings, output)
+        pending_commits = {}
+        for match in matches:
+            for key in keys:
+                if match.groupdict().get(key):
+                    pending_commits.update({key: match.groupdict().get(key)})
+
+        return pending_commits
+
+    def confirm_commit(self):
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
+        if self.has_pending_commit():
+            pending = self._get_pending_commits()
+            if pending.get("user") == self.username:
+                self.device.send_command("configure confirm")
+                self.device.save_config()
+            else:
+                raise CommitConfirmException(
+                    "Configuration session active but not owned by"
+                    " {} cannot confirm commit".format(self.username)
+                )
+        else:
+            raise CommitConfirmException("No pending configuration")
 
     def discard_config(self):
         """Discard loaded candidate configurations."""
@@ -572,18 +675,29 @@ class IOSDriver(NetworkDriver):
 
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
-        filename = self.rollback_cfg
-        cfg_file = self._gen_full_path(filename)
-        if not self._check_file_exists(cfg_file):
-            raise ReplaceConfigException("Rollback config file does not exist")
-        cmd = "configure replace {} force".format(cfg_file)
-        self._commit_handler(cmd)
+        if self.has_pending_commit():
+            if self._get_pending_commits().get("user") == self.username:
+                cmd = "configure revert now"
+                self._commit_handler(cmd)
+                self.device.save_config()
+            else:
+                raise CommitConfirmException(
+                    "Configuration session active but not owned by {} "
+                    "cannot rollback".format(self.username)
+                )
+        else:
+            filename = self.rollback_cfg
+            cfg_file = self._gen_full_path(filename)
+            if not self._check_file_exists(cfg_file):
+                raise ReplaceConfigException("Rollback config file does not exist")
+            cmd = "configure replace {} force".format(cfg_file)
+            self._commit_handler(cmd)
 
-        # After a rollback - we no longer know whether this is configured or not.
-        self.prompt_quiet_configured = None
+            # After a rollback - we no longer know whether this is configured or not.
+            self.prompt_quiet_configured = None
 
-        # Save config to startup
-        self.device.save_config()
+            # Save config to startup
+            self.device.save_config()
 
     def _inline_tcl_xfer(
         self, source_file=None, source_config=None, dest_file=None, file_system=None
@@ -670,7 +784,6 @@ class IOSDriver(NetworkDriver):
             use_scp = False
 
         with TransferClass(**kwargs) as transfer:
-
             # Check if file already exists and has correct MD5
             if transfer.check_file_exists() and transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
@@ -874,10 +987,26 @@ class IOSDriver(NetworkDriver):
                 hostname = lldp_entry["remote_system_name"]
                 port = lldp_entry["remote_port"]
                 # Match IOS behaviour of taking remote chassis ID
-                # When lacking a system name (in show lldp neighbors)
+                # when lacking a system name (in show lldp neighbors)
+
+                # We can't assume remote_chassis_id or remote_port are MAC Addresses
+                # See IEEE 802.1AB-2005 and rfc2922, specifically PtopoChassisId
                 if not hostname:
-                    hostname = napalm.base.helpers.mac(lldp_entry["remote_chassis_id"])
-                    port = napalm.base.helpers.mac(port)
+                    try:
+                        hostname = napalm.base.helpers.mac(
+                            lldp_entry["remote_chassis_id"]
+                        )
+                    except AddrFormatError:
+                        hostname = lldp_entry["remote_chassis_id"]
+
+                # If port is a mac-address, normalize it.
+                # The MAC helper library will normalize "15" to "00:00:00:00:00:0F"
+                if port.count(":") == 5 or port.count("-") == 5 or port.count(".") == 2:
+                    try:
+                        port = napalm.base.helpers.mac(port)
+                    except AddrFormatError:
+                        pass
+
                 lldp_dict = {"port": port, "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
 
@@ -1091,7 +1220,6 @@ class IOSDriver(NetworkDriver):
 
         interface_dict = {}
         for line in output.splitlines():
-
             interface_regex_1 = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
             interface_regex_2 = r"^(\S+)\s+is\s+(up|down)"
             interface_regex_3 = (
@@ -1334,6 +1462,11 @@ class IOSDriver(NetworkDriver):
         bgp_config_list = napalm.base.helpers.netutils_parse_objects(
             "router bgp", cfg["running"]
         )
+
+        # No BGP configuration
+        if not bgp_config_list:
+            return {}
+
         bgp_asn = napalm.base.helpers.regex_find_txt(
             r"router bgp (\d+)", bgp_config_list, default=0
         )
@@ -1404,7 +1537,9 @@ class IOSDriver(NetworkDriver):
                 r" update-source (\w+)", neighbor_config
             )
             local_as = napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, default=0
+                r"local-as (\d+)",
+                neighbor_config,
+                default=bgp_asn,
             )
             password = napalm.base.helpers.regex_find_txt(
                 r"password (?:[0-9] )?([^\']+\')", neighbor_config
@@ -1438,29 +1573,32 @@ class IOSDriver(NetworkDriver):
                 "route_reflector_client": route_reflector_client,
             }
 
+        # Do not include the no-group ("_") if a group argument is passed in
+        # unless group argument is "_"
+        if not group or group == "_":
+            bgp_config["_"] = {
+                "apply_groups": [],
+                "description": "",
+                "local_as": bgp_asn,
+                "type": "",
+                "import_policy": "",
+                "export_policy": "",
+                "local_address": "",
+                "multipath": False,
+                "multihop_ttl": 0,
+                "remote_as": 0,
+                "remove_private_as": False,
+                "prefix_limit": {},
+                "neighbors": bgp_group_neighbors.get("_", {}),
+            }
+
         # Get the peer-group level config for each group
         for group_name in bgp_group_neighbors.keys():
             # If a group is passed in params, only continue on that group
             if group:
                 if group_name != group:
                     continue
-            # Default no group
             if group_name == "_":
-                bgp_config["_"] = {
-                    "apply_groups": [],
-                    "description": "",
-                    "local_as": 0,
-                    "type": "",
-                    "import_policy": "",
-                    "export_policy": "",
-                    "local_address": "",
-                    "multipath": False,
-                    "multihop_ttl": 0,
-                    "remote_as": 0,
-                    "remove_private_as": False,
-                    "prefix_limit": {},
-                    "neighbors": bgp_group_neighbors.get("_", {}),
-                }
                 continue
             neighbor_config = napalm.base.helpers.netutils_parse_objects(
                 group_name, bgp_config_list
@@ -1482,7 +1620,7 @@ class IOSDriver(NetworkDriver):
                 r" description ([^\']+)\'", neighbor_config
             )
             local_as = napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, default=0
+                r"local-as (\d+)", neighbor_config, default=bgp_asn
             )
             import_policy = napalm.base.helpers.regex_find_txt(
                 r"route-map ([^\s]+) in", neighbor_config
@@ -1820,12 +1958,17 @@ class IOSDriver(NetworkDriver):
             # get neighbor_entry out of neighbor data
             neighbor_entry = None
             for neighbor in neighbor_data:
-                if (
-                    neighbor["afi"].lower() == afi
-                    and napalm.base.helpers.ip(neighbor["remote_addr"]) == remote_addr
-                ):
-                    neighbor_entry = neighbor
-                    break
+                current_neighbor = napalm.base.helpers.ip(neighbor["remote_addr"])
+                if neighbor["afi"].lower() == afi and current_neighbor == remote_addr:
+                    # Neighbor IPs in VRFs can overlap, so make sure
+                    # we haven't covered this VRF + IP already
+                    vrf = neighbor["vrf"] or "global"
+                    if (
+                        vrf == "global"
+                        or current_neighbor not in bgp_neighbor_data[vrf]["peers"]
+                    ):
+                        neighbor_entry = neighbor
+                        break
             # check for proper session data for the afi
             if neighbor_entry is None:
                 continue
@@ -1958,46 +2101,54 @@ class IOSDriver(NetworkDriver):
                 "up": neigh["up"] != "never",
                 "local_as": napalm.base.helpers.as_number(neigh["local_as"]),
                 "remote_as": napalm.base.helpers.as_number(neigh["remote_as"]),
-                "router_id": napalm.base.helpers.ip(bgp_neigh["router_id"])
-                if bgp_neigh["router_id"]
-                else "",
-                "local_address": napalm.base.helpers.ip(bgp_neigh["local_address"])
-                if bgp_neigh["local_address"]
-                else "",
+                "router_id": (
+                    napalm.base.helpers.ip(bgp_neigh["router_id"])
+                    if bgp_neigh["router_id"]
+                    else ""
+                ),
+                "local_address": (
+                    napalm.base.helpers.ip(bgp_neigh["local_address"])
+                    if bgp_neigh["local_address"]
+                    else ""
+                ),
                 "local_address_configured": False,
-                "local_port": napalm.base.helpers.as_number(bgp_neigh["local_port"])
-                if bgp_neigh["local_port"]
-                else 0,
+                "local_port": (
+                    napalm.base.helpers.as_number(bgp_neigh["local_port"])
+                    if bgp_neigh["local_port"]
+                    else 0
+                ),
                 "routing_table": bgp_neigh["vrf"] if bgp_neigh["vrf"] else "global",
                 "remote_address": napalm.base.helpers.ip(bgp_neigh["neighbor"]),
-                "remote_port": napalm.base.helpers.as_number(bgp_neigh["remote_port"])
-                if bgp_neigh["remote_port"]
-                else 0,
+                "remote_port": (
+                    napalm.base.helpers.as_number(bgp_neigh["remote_port"])
+                    if bgp_neigh["remote_port"]
+                    else 0
+                ),
                 "multihop": False,
                 "multipath": False,
                 "remove_private_as": False,
                 "import_policy": "",
                 "export_policy": "",
-                "input_messages": napalm.base.helpers.as_number(
-                    bgp_neigh["msg_total_in"]
-                )
-                if bgp_neigh["msg_total_in"]
-                else 0,
-                "output_messages": napalm.base.helpers.as_number(
-                    bgp_neigh["msg_total_out"]
-                )
-                if bgp_neigh["msg_total_out"]
-                else 0,
-                "input_updates": napalm.base.helpers.as_number(
-                    bgp_neigh["msg_update_in"]
-                )
-                if bgp_neigh["msg_update_in"]
-                else 0,
-                "output_updates": napalm.base.helpers.as_number(
-                    bgp_neigh["msg_update_out"]
-                )
-                if bgp_neigh["msg_update_out"]
-                else 0,
+                "input_messages": (
+                    napalm.base.helpers.as_number(bgp_neigh["msg_total_in"])
+                    if bgp_neigh["msg_total_in"]
+                    else 0
+                ),
+                "output_messages": (
+                    napalm.base.helpers.as_number(bgp_neigh["msg_total_out"])
+                    if bgp_neigh["msg_total_out"]
+                    else 0
+                ),
+                "input_updates": (
+                    napalm.base.helpers.as_number(bgp_neigh["msg_update_in"])
+                    if bgp_neigh["msg_update_in"]
+                    else 0
+                ),
+                "output_updates": (
+                    napalm.base.helpers.as_number(bgp_neigh["msg_update_out"])
+                    if bgp_neigh["msg_update_out"]
+                    else 0
+                ),
                 "messages_queued_out": napalm.base.helpers.as_number(neigh["out_q"]),
                 "connection_state": bgp_neigh["bgp_state"],
                 "previous_connection_state": "",
@@ -2008,13 +2159,17 @@ class IOSDriver(NetworkDriver):
                     else False
                 ),
                 "local_as_prepend": False,
-                "holdtime": napalm.base.helpers.as_number(bgp_neigh["holdtime"])
-                if bgp_neigh["holdtime"]
-                else 0,
+                "holdtime": (
+                    napalm.base.helpers.as_number(bgp_neigh["holdtime"])
+                    if bgp_neigh["holdtime"]
+                    else 0
+                ),
                 "configured_holdtime": 0,
-                "keepalive": napalm.base.helpers.as_number(bgp_neigh["keepalive"])
-                if bgp_neigh["keepalive"]
-                else 0,
+                "keepalive": (
+                    napalm.base.helpers.as_number(bgp_neigh["keepalive"])
+                    if bgp_neigh["keepalive"]
+                    else 0
+                ),
                 "configured_keepalive": 0,
                 "active_prefix_count": 0,
                 "received_prefix_count": 0,
@@ -2894,7 +3049,7 @@ class IOSDriver(NetworkDriver):
                     # next-hop is not known in this vrf, route leaked from
                     # other vrf or from vpnv4 table?
                     # get remote AS nr. from as-path if it is ebgp neighbor
-                    # localy sourced prefix is not in routing table as a bgp route (i hope...)
+                    # locally sourced prefix is not in routing table as a bgp route (i hope...)
                     if search_re_dict["bgpie"]["result"] == "external":
                         bgpras = (
                             search_re_dict["aspath"]["result"]
@@ -2963,8 +3118,8 @@ class IOSDriver(NetworkDriver):
         vrf = ""
         ip_version = None
         try:
-            ip_version = IPNetwork(destination).version
-        except AddrFormatError:
+            ip_version = ipaddress.ip_network(destination).version
+        except ValueError:
             return "Please specify a valid destination!"
         if ip_version == 4:  # process IPv4 routing table
             if vrf == "":
@@ -2972,8 +3127,8 @@ class IOSDriver(NetworkDriver):
             else:
                 vrfs = [vrf]  # VRFs where IPv4 is enabled
             vrfs.append("default")  # global VRF
-            ipnet_dest = IPNetwork(destination)
-            prefix = str(ipnet_dest.network)
+            ipnet_dest = ipaddress.ip_network(destination)
+            prefix = str(ipnet_dest.network_address)
             netmask = ""
             routes = {}
             if "/" in destination:
@@ -2996,7 +3151,7 @@ class IOSDriver(NetworkDriver):
             for cmditem in commands:
                 outvrf = self._send_command(cmditem)
                 output.append(outvrf)
-            for (outitem, _vrf) in zip(output, vrfs):  # for all VRFs
+            for outitem, _vrf in zip(output, vrfs):  # for all VRFs
                 route_proto_regex = RE_RP_FROM.search(outitem)
                 if route_proto_regex:
                     route_match = destination
@@ -3067,10 +3222,10 @@ class IOSDriver(NetworkDriver):
                             # was not specified
                             if protocol == "" or protocol == route_entry["protocol"]:
                                 if route_proto == "bgp":
-                                    route_entry[
-                                        "protocol_attributes"
-                                    ] = self._get_bgp_route_attr(
-                                        destination, _vrf, nh, ip_version
+                                    route_entry["protocol_attributes"] = (
+                                        self._get_bgp_route_attr(
+                                            destination, _vrf, nh, ip_version
+                                        )
                                     )
                                 nh_line_found = (
                                     False  # for next RT entry processing ...
@@ -3163,12 +3318,16 @@ class IOSDriver(NetworkDriver):
             output = self._send_command(command)
         for match in re.finditer(username_regex, output, re.M):
             users[match.groupdict()["username"]] = {
-                "level": int(match.groupdict()["priv_level"])
-                if match.groupdict()["priv_level"]
-                else 1,
-                "password": match.groupdict()["pwd_hash"]
-                if match.groupdict()["pwd_hash"]
-                else "",
+                "level": (
+                    int(match.groupdict()["priv_level"])
+                    if match.groupdict()["priv_level"]
+                    else 1
+                ),
+                "password": (
+                    match.groupdict()["pwd_hash"]
+                    if match.groupdict()["pwd_hash"]
+                    else ""
+                ),
                 "sshkeys": [],
             }
         for match in re.finditer(pub_keychain_regex, output, re.M):
@@ -3411,7 +3570,6 @@ class IOSDriver(NetworkDriver):
         return traceroute_dict
 
     def get_network_instances(self, name=""):
-
         instances = {}
         sh_vrf_detail = self._send_command("show vrf detail")
         show_ip_int_br = self._send_command("show ip interface brief")
@@ -3444,7 +3602,6 @@ class IOSDriver(NetworkDriver):
             return instances
 
         for vrf in sh_vrf_detail.split("\n\n"):
-
             first_part = vrf.split("Address family")[0]
 
             # retrieve the name of the VRF and the Route Distinguisher
@@ -3587,7 +3744,11 @@ class IOSDriver(NetworkDriver):
             return self._get_vlan_all_ports(output)
 
     def _get_vlan_all_ports(self, output):
-        find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")
+        find_regexp = re.compile(
+            r"^(\d+)\s+"  # vlan id
+            r"(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"  # vlan name
+            r"\w+(?:\/\w+)?\S+(\s+[A-Z][a-z].*)?$"  # ports
+        )
         continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
         output = output.splitlines()
         vlans = {}
@@ -3601,7 +3762,7 @@ class IOSDriver(NetworkDriver):
             if vlan_m:
                 was_vlan_or_cont = True
                 vlan_id = vlan_m.group(1)
-                vlan_name = vlan_m.group(2)
+                vlan_name = vlan_m.group(2).strip()
                 interfaces = vlan_m.group(3) or ""
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
 
@@ -3628,7 +3789,7 @@ class IOSDriver(NetworkDriver):
     def _get_vlan_from_id(self):
         command = "show vlan brief"
         output = self._send_command(command)
-        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        vlan_regexp = r"^(\d+)\W+(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"
         find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
         vlans = {}
         for vlan_id, vlan_name in find_vlan:

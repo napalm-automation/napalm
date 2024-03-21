@@ -1,4 +1,5 @@
 """Test fixtures."""
+
 import copy
 
 import lxml
@@ -126,7 +127,6 @@ class FakeJunOSDevice(BaseTestDouble):
 
 
 class FakeRPCObject:
-
     """
     Fake RPC caller.
     """
@@ -147,7 +147,6 @@ class FakeRPCObject:
         return lxml.etree.fromstring(xml_string)
 
     def get_config(self, get_cmd=None, filter_xml=None, options={}):
-
         # get_cmd is an XML tree that requests a specific part of the config
         # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
 
@@ -171,7 +170,6 @@ class FakeRPCObject:
 
 
 class FakeConnectionRPCObject:
-
     """
     Will make fake RPC requests that usually are directly made via netconf.
     """

@@ -1,4 +1,5 @@
 """Test fixtures."""
+
 import pytest
 from lxml import etree
 from napalm.base.test import conftest as parent_conftest
@@ -32,7 +33,6 @@ class PatchedIOSXRNETCONFDriver(iosxr_netconf.IOSXRNETCONFDriver):
     """Patched IOSXR NETCONF Driver."""
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-
         super().__init__(hostname, username, password, timeout, optional_args)
 
         self.patched_attrs = ["device"]

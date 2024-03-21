@@ -24,7 +24,6 @@ Contributors fooelisa, mirceaulinic, et all
 
 class IOSXRException(Exception):
     def __init__(self, msg=None, dev=None):
-
         super(IOSXRException, self).__init__(msg)
         if dev:
             self._xr = dev
@@ -44,7 +43,6 @@ class ConnectError(IOSXRException):
 
 
 class CommitError(IOSXRException):
-
     """Raised when unable to commit. Mostly due to ERROR 0x41866c00"""
 
     pass

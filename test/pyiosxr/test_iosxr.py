@@ -24,7 +24,6 @@ from napalm.pyIOSXR.exceptions import InvalidXMLResponse
 
 
 class _MockedNetMikoDevice(object):
-
     """
     Defines the minimum attributes necessary to mock a SSH connection using netmiko.
     """
@@ -97,7 +96,6 @@ class _MockedNetMikoDevice(object):
 
 
 class _MockedIOSXRDevice(IOSXR):
-
     """
     Overrides only the very basic methods from the main device driver, that cannot be mocked.
     """
@@ -112,7 +110,6 @@ class _MockedIOSXRDevice(IOSXR):
 
 
 class TestIOSXRDevice(unittest.TestCase):
-
     """
     Tests IOS-XR basic functions.
     """
@@ -142,7 +139,6 @@ class TestIOSXRDevice(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-
         """
         Opens the connection with the IOS-XR device.
         """
@@ -165,7 +161,6 @@ class TestIOSXRDevice(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-
         """
         Closes the connection with the device.
         """
@@ -173,7 +168,6 @@ class TestIOSXRDevice(unittest.TestCase):
         cls.device.close()
 
     def test_mock_lock_connection_open(self):
-
         if self.MOCK:
             self.device.lock_on_connect = True
             # because there's one single mock file
@@ -184,7 +178,6 @@ class TestIOSXRDevice(unittest.TestCase):
             # enough to see that will try to lock during connect
 
     def test_mock_close(self):
-
         """Testing if unlocking when connection is closed"""
 
         if self.MOCK:
@@ -193,7 +186,6 @@ class TestIOSXRDevice(unittest.TestCase):
             self.assertFalse(self.device.locked, msg="Cannot unlock the DB.")
 
     def test_execute_rpc_method(self):
-
         """Testing private method _execute_rpc"""
 
         self.assertIsInstance(
@@ -205,7 +197,6 @@ class TestIOSXRDevice(unittest.TestCase):
         )
 
     def test__getttr__show_(self):
-
         """Testing special attribute __getattr___ against valid show command"""
 
         self.assertIsInstance(
@@ -215,13 +206,11 @@ class TestIOSXRDevice(unittest.TestCase):
         )
 
     def test__getttr__show_args(self):
-
         """Testing special attribute __getattr___ against valid show command with arguments"""
 
         self.assertIsInstance(self.device.show_ntp("ass"), str)
 
     def test_acquire_xml_agent(self):
-
         """Testing if able to acquire the XML agent."""
 
         self.device._lock_xml_agent(time.time())
@@ -250,14 +239,12 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertTrue(self.device._in_cli_mode())
 
     def test__getattr_show_config(self):
-
         """Testing special attribute __getattr___ against valid show config command"""
 
         self.assertIsInstance(self.device.show_run_ntp(config=True), str)
 
     def test__getattr__no_show(self):
-
-        """Test special attribute __getattr__ agains a no-show command"""
+        """Test special attribute __getattr__ against a no-show command"""
 
         raised = False
 
@@ -269,7 +256,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertTrue(raised)
 
     def test_make_rpc_call_returns_XML(self):
-
         """Test if public method make_rpc_call returns str"""
 
         self.assertIsInstance(
@@ -298,7 +284,6 @@ class TestIOSXRDevice(unittest.TestCase):
         )  # Exception raised => xml agent released
 
     def test_try_to_read_till_timeout(self):
-
         """Testing if will try to read from the device till time out"""
 
         if self.MOCK:
@@ -309,7 +294,6 @@ class TestIOSXRDevice(unittest.TestCase):
             )
 
     def test_multiple_read_attempts_till_timeout(self):
-
         """Testing if will try to read non-empty replies from the device till time out"""
 
         if self.MOCK:
@@ -320,7 +304,6 @@ class TestIOSXRDevice(unittest.TestCase):
             )
 
     def test_iterator_id_raises_IteratorIDError(self):
-
         """Testing if reply containing the IteratorID attribute raises IteratorIDError"""
 
         self.device.load_candidate_config(config="xml agent tty iteration on size 1")
@@ -340,7 +323,6 @@ class TestIOSXRDevice(unittest.TestCase):
         # going to prev state
 
     def test_channel_acquired_enter_xml_mode(self):
-
         """Test if not raises ConnectError when the channel is busy with other requests"""
 
         self.device._lock_xml_agent()
@@ -348,7 +330,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertIsNone(self.device._enter_xml_mode())
 
     def test_truncated_response_raises_InvalidXMLResponse(self):
-
         """Testing if truncated XML reply raises InvalidXMLResponse"""
 
         if self.MOCK:
@@ -361,7 +342,6 @@ class TestIOSXRDevice(unittest.TestCase):
             )
 
     def test_iosxr_bug_0x44318c06(self):
-
         """Tests if IOS-XR bug returns error 0x44318c06 and raise XMLCLIError"""
 
         if self.MOCK:
@@ -374,7 +354,6 @@ class TestIOSXRDevice(unittest.TestCase):
             )
 
     def test_empty_reply_raises_TimeoutError(self):
-
         """Testing if empty reply raises TimeoutError"""
 
         if self.MOCK:
@@ -383,7 +362,6 @@ class TestIOSXRDevice(unittest.TestCase):
             self.assertRaises(TimeoutError, self.device._execute_rpc, "<Empty/>")
 
     def test_multiple_requests_raise_0xa3679e00(self):
-
         """Testing if simultaneuous requests trigger XMLCLIError"""
 
         if self.MOCK:
@@ -397,25 +375,21 @@ class TestIOSXRDevice(unittest.TestCase):
             pass
 
     def test_execute_show(self):
-
         """Testing private method _execute_show"""
 
         self.assertIsInstance(self.device._execute_show("show ntp ass"), str)
 
     def test_execute_invalid_show_raises_InvalidInputError(self):
-
         """Testing if invalid show command raises InvalidInputError"""
 
         self.assertRaises(InvalidInputError, self.device._execute_show, "sh fake")
 
     def test_execute_config_show(self):
-
         """Testing private method _execute_config_show"""
 
         self.assertIsInstance(self.device._execute_config_show("show run ntp"), str)
 
     def test_execute_invalid_config_show_raises_InvalidInputError(self):
-
         """Testing if invalid config show command raises InvalidInputError"""
 
         self.assertRaises(
@@ -423,7 +397,6 @@ class TestIOSXRDevice(unittest.TestCase):
         )
 
     def test_lock_raises_LockError(self):
-
         """Tests if DB already locked raises LockError"""
 
         if self.MOCK:
@@ -455,7 +428,6 @@ class TestIOSXRDevice(unittest.TestCase):
             same_device.close()
 
     def test_unlock(self):
-
         """Testing unlock feature"""
 
         if self.MOCK:
@@ -475,7 +447,6 @@ class TestIOSXRDevice(unittest.TestCase):
                 self.assertFalse(self.device.locked)
 
     def _load_dummy_config(self):
-
         """Helper that loads some dummy data before committing."""
 
         config = """
@@ -485,7 +456,6 @@ class TestIOSXRDevice(unittest.TestCase):
         return self.device.load_candidate_config(config=config)
 
     def test_load_invalid_config_raises_InvalidInputError(self):
-
         """Testing if loading config with mistakes raises InvalidInputError"""
 
         self.assertRaises(
@@ -496,7 +466,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.device.discard_config()
 
     def test_load_candidate_config_file(self):
-
         """Testing loading candidate config from file"""
 
         self.assertIsNone(
@@ -508,7 +477,6 @@ class TestIOSXRDevice(unittest.TestCase):
         )
 
     def test_load_invalid_candidate_config_file_raises_InvalidInputError(self):
-
         """Testing if loading invalid config from a file raises InvalidInputError"""
 
         self.assertRaises(
@@ -520,7 +488,6 @@ class TestIOSXRDevice(unittest.TestCase):
         )
 
     def test_load_config(self):
-
         """Testing if able to load candidate config, then check commit diff and discard changes"""
 
         self._load_dummy_config()
@@ -563,7 +530,6 @@ class TestIOSXRDevice(unittest.TestCase):
             )
 
     def test_commit_config(self):
-
         """Testing commit config"""
 
         self._load_dummy_config()
@@ -573,7 +539,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.device.rollback()
 
     def test_commit_config_message(self):
-
         """Testing commit config with comment message"""
 
         self._load_dummy_config()
@@ -583,7 +548,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.device.rollback()
 
     def test_commit_config_label(self):
-
         """Testing commit config with label"""
 
         self._load_dummy_config()
@@ -593,7 +557,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.device.rollback()
 
     def test_commit_config_confirmed(self):
-
         """Testing commit confirmed"""
 
         self._load_dummy_config()
@@ -603,19 +566,16 @@ class TestIOSXRDevice(unittest.TestCase):
         self.device.rollback()
 
     def test_commit_config_confirmed_raise_InvalidInputError(self):
-
         """Testing if incorrect value for confirm time raises InvalidInputError"""
 
         self.assertRaises(InvalidInputError, self.device.commit_config, confirmed=1)
 
     def test_commit_empty_buffer_raises(self):
-
         """Testing if trying to commit empty changes raises CommitError"""
 
         self.assertRaises(CommitError, self.device.commit_config, comment="empty")
 
     def test_commit_after_other_session_commit(self):
-
         """Testing if trying to commit after another process commited does not raise CommitError"""
 
         if self.MOCK:
@@ -658,7 +618,6 @@ class TestIOSXRDevice(unittest.TestCase):
             self.device.open()
 
     def _prefetch_running_config_and_append(self):
-
         """Helper method to be used in the config-replace tests below"""
 
         running_config = "".join(self.device.show_run().splitlines(1)[3:])
@@ -666,7 +625,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.device.load_candidate_config(config="ntp server 8.8.8.8")
 
     def test_compare_replace_config(self):
-
         """Testing compare replace config"""
 
         self._prefetch_running_config_and_append()
@@ -674,7 +632,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertIsInstance(self.device.compare_replace_config(), str)
 
     def test_commit_replace_config(self):
-
         """Testing commit replace config"""
 
         self._prefetch_running_config_and_append()
@@ -682,7 +639,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertIsNone(self.device.commit_replace_config())
 
     def test_commit_replace_config_message(self):
-
         """Testing commit replace config with comment message"""
 
         self._prefetch_running_config_and_append()
@@ -690,7 +646,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertIsNone(self.device.commit_replace_config(comment="good"))
 
     def test_commit_replace_config_label(self):
-
         """Testing commit replace config with label"""
 
         self._prefetch_running_config_and_append()
@@ -698,7 +653,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertIsNone(self.device.commit_replace_config(label="test"))
 
     def test_commit_replace_config_confirmed(self):
-
         """Testing commit replace confirmed"""
 
         self._prefetch_running_config_and_append()
@@ -706,7 +660,6 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertIsNone(self.device.commit_replace_config(confirmed=60))
 
     def test_commit_replace_config_confirmed_raise_InvalidInputError(self):
-
         """Testing if incorrect value for confirmed replace commit time raises InvalidInputError"""
 
         self.assertRaises(

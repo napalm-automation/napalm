@@ -1,4 +1,5 @@
 """conf.py."""
+
 # -*- coding: utf-8 -*-
 #
 # napalm documentation build configuration file, created by
@@ -371,13 +372,13 @@ def build_getters_support_matrix(app):
         if not (m.startswith("_") or m in EXCLUDE_METHODS)
     }
 
-    regex_name = re.compile(r"(?P<driver>\w+)\/.*::test_(?P<getter>\w+)")
+    regex_name = re.compile(r"test.*/(?P<driver>\w+)\/.*::test_(?P<getter>\w+)")
 
     filename = "./support/tests/report.json"
     with open(filename, "r") as f:
         data = json.loads(f.read())
-        for test in data["report"]["tests"]:
-            match = regex_name.search(test["name"])
+        for test in data["tests"]:
+            match = regex_name.search(test["nodeid"])
             if match:
                 driver = match.group("driver")
                 drivers.add(driver)

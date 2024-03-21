@@ -1,4 +1,5 @@
 """Test fixtures."""
+
 from builtins import super
 
 import pytest
@@ -60,11 +61,3 @@ class FakeEOSDevice(BaseTestDouble):
                 result.append({"output": self.read_txt_file(full_path)})
 
         return result
-
-    def update_cli_version(self, version):
-        """
-        Update CLI version number for this device
-        :param version: int: version number
-        :return: None
-        """
-        self.cli_version = version
