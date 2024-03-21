@@ -46,6 +46,7 @@ from typing_extensions import (
 from netmiko import file_transfer
 from requests.exceptions import ConnectionError
 from netutils.config.compliance import diff_network_config
+from netutils.interface import canonical_interface_name
 
 import napalm.base.constants as c
 
@@ -132,7 +133,6 @@ class NXOSDriverBase(NetworkDriver):
     def load_replace_candidate(
         self, filename: Optional[str] = None, config: Optional[str] = None
     ) -> None:
-
         if not filename and not config:
             raise ReplaceConfigException(
                 "filename or config parameter must be provided."
@@ -157,11 +157,11 @@ class NXOSDriverBase(NetworkDriver):
             )
             if not transfer_result["file_exists"]:
                 raise ValueError()
-        except Exception:
+        except Exception as e:
             msg = (
                 "Could not transfer file. There was an error "
                 "during transfer. Please make sure remote "
-                "permissions are set."
+                f"permissions are set. Caught Error:\n{repr(str(e))}"
             )
             raise ReplaceConfigException(msg)
 
@@ -443,7 +443,6 @@ class NXOSDriverBase(NetworkDriver):
         timeout: int = c.TRACEROUTE_TIMEOUT,
         vrf: str = c.TRACEROUTE_VRF,
     ) -> models.TracerouteResultDict:
-
         _HOP_ENTRY_PROBE = [
             r"\s+",
             r"(",  # beginning of host_name (ip_address) RTT group
@@ -586,7 +585,6 @@ class NXOSDriverBase(NetworkDriver):
     def get_config(
         self, retrieve: str = "all", full: bool = False, sanitized: bool = False
     ) -> models.ConfigDict:
-
         # NX-OS adds some extra, unneeded lines that should be filtered.
         filter_strings = [
             r"!Command: show .*$",
@@ -682,7 +680,7 @@ class NXOSDriverBase(NetworkDriver):
                 lldp_entry["remote_system_enable_capab"]
             )
             # Turn the interfaces into their long version
-            local_intf = napalm.base.helpers.canonical_interface_name(local_intf)
+            local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
             lldp[local_intf].append(lldp_entry)  # type: ignore
 
@@ -738,13 +736,9 @@ class NXOSDriverBase(NetworkDriver):
             find = re.findall(find_regexp, vls.strip())
             if find:
                 for i in range(int(find[0][1]), int(find[0][2]) + 1):
-                    vlans.append(
-                        napalm.base.helpers.canonical_interface_name(
-                            find[0][0] + str(i)
-                        )
-                    )
+                    vlans.append(canonical_interface_name(find[0][0] + str(i)))
             else:
-                vlans.append(napalm.base.helpers.canonical_interface_name(vls.strip()))
+                vlans.append(canonical_interface_name(vls.strip()))
         return vlans
 
     @abstractmethod
@@ -1052,6 +1046,7 @@ class NXOSDriver(NXOSDriverBase):
             "Established": {"is_up": True, "is_enabled": True},
             "Closing": {"is_up": True, "is_enabled": True},
             "Shutdown": {"is_up": False, "is_enabled": False},
+            "Admin (Shut)": {"is_up": False, "is_enabled": False},
         }
         """
         af_name_dict = {

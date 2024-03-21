@@ -6,7 +6,6 @@ from textwrap import dedent
 @pytest.mark.usefixtures("set_device_parameters")
 class TestConfigMangling(object):
     def test_heredoc(self):
-
         raw_config = dedent(
             """\
         hostname vEOS
@@ -58,9 +57,7 @@ class TestConfigMangling(object):
             "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(
-            expected_result, fn0039_transform=False
-        )
+        self.device.device.run_commands.assert_called_with(expected_result)
 
     def test_mode_comment(self):
         raw_config = dedent(
@@ -112,12 +109,9 @@ class TestConfigMangling(object):
             "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(
-            expected_result, fn0039_transform=False
-        )
+        self.device.device.run_commands.assert_called_with(expected_result)
 
     def test_heredoc_with_bangs(self):
-
         raw_config = dedent(
             """\
         hostname vEOS
@@ -152,6 +146,4 @@ class TestConfigMangling(object):
             "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(
-            expected_result, fn0039_transform=False
-        )
+        self.device.device.run_commands.assert_called_with(expected_result)

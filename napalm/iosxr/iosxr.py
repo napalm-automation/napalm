@@ -152,7 +152,6 @@ class IOSXRDriver(NetworkDriver):
         self.device.rollback()
 
     def get_facts(self):
-
         facts = {
             "vendor": "Cisco",
             "os_version": "",
@@ -256,7 +255,6 @@ class IOSXRDriver(NetworkDriver):
         return facts
 
     def get_interfaces(self):
-
         interfaces = {}
 
         INTERFACE_DEFAULTS = {
@@ -844,7 +842,6 @@ class IOSXRDriver(NetworkDriver):
         return environment_status
 
     def get_lldp_neighbors(self):
-
         # init result dict
         lldp = {}
         sh_lldp = self.device.show_lldp_neighbors().splitlines()[5:-3]
@@ -864,7 +861,6 @@ class IOSXRDriver(NetworkDriver):
         return lldp
 
     def get_lldp_neighbors_detail(self, interface=""):
-
         lldp_neighbors = {}
 
         rpc_command = (
@@ -953,7 +949,6 @@ class IOSXRDriver(NetworkDriver):
         return cli_output
 
     def get_bgp_config(self, group="", neighbor=""):
-
         bgp_config = {}
 
         # a helper
@@ -987,6 +982,22 @@ class IOSXRDriver(NetworkDriver):
         <InstanceName>default</InstanceName></Naming></Instance></BGP></Configuration></Get>"
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
+        # Check if BGP is not configured.
+        get_tag = result_tree.find("./Get")
+        if get_tag is not None:
+            bgp_not_found = get_tag.attrib.get("ItemNotFound")
+            if bgp_not_found:
+                return {}
+
+        bgp_asn = napalm.base.helpers.convert(
+            int,
+            napalm.base.helpers.find_txt(
+                result_tree,
+                "Get/Configuration/BGP/Instance[1]/InstanceAS/FourByteAS/Naming/AS",
+            ),
+            0,
+        )
+
         if not group:
             neighbor = ""
 
@@ -1010,7 +1021,9 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(bgp_neighbor, "RemoteAS/AS_YY"), 0
             )
             local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_neighbor, "LocalAS/AS_YY"), 0
+                int,
+                napalm.base.helpers.find_txt(bgp_neighbor, "LocalAS/AS_YY"),
+                bgp_asn,
             )
             af_table = napalm.base.helpers.find_txt(
                 bgp_neighbor, "NeighborAFTable/NeighborAF/Naming/AFName"
@@ -1102,7 +1115,7 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(bgp_group, "RemoteAS/AS_YY"), 0
             )
             local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_group, "LocalAS/AS_YY"), 0
+                int, napalm.base.helpers.find_txt(bgp_group, "LocalAS/AS_YY"), bgp_asn
             )
             multihop_ttl = napalm.base.helpers.convert(
                 int,
@@ -1164,27 +1177,26 @@ class IOSXRDriver(NetworkDriver):
             }
             if group and group == group_name:
                 break
-        if "" in bgp_group_neighbors.keys():
-            bgp_config["_"] = {
-                "apply_groups": [],
-                "description": "",
-                "local_as": 0,
-                "type": "",
-                "import_policy": "",
-                "export_policy": "",
-                "local_address": "",
-                "multipath": False,
-                "multihop_ttl": 0,
-                "remote_as": 0,
-                "remove_private_as": False,
-                "prefix_limit": {},
-                "neighbors": bgp_group_neighbors.get("", {}),
-            }
+
+        bgp_config["_"] = {
+            "apply_groups": [],
+            "description": "",
+            "local_as": bgp_asn,
+            "type": "",
+            "import_policy": "",
+            "export_policy": "",
+            "local_address": "",
+            "multipath": False,
+            "multihop_ttl": 0,
+            "remote_as": 0,
+            "remove_private_as": False,
+            "prefix_limit": {},
+            "neighbors": bgp_group_neighbors.get("", {}),
+        }
 
         return bgp_config
 
     def get_bgp_neighbors_detail(self, neighbor_address=""):
-
         bgp_neighbors_detail = {}
 
         active_vrfs = ["default"]
@@ -1486,7 +1498,6 @@ class IOSXRDriver(NetworkDriver):
         return arp_table
 
     def get_ntp_peers(self):
-
         ntp_peers = {}
 
         rpc_command = "<Get><Configuration><NTP></NTP></Configuration></Get>"
@@ -1511,7 +1522,6 @@ class IOSXRDriver(NetworkDriver):
         return ntp_peers
 
     def get_ntp_servers(self):
-
         ntp_servers = {}
 
         rpc_command = "<Get><Configuration><NTP></NTP></Configuration></Get>"
@@ -1536,7 +1546,6 @@ class IOSXRDriver(NetworkDriver):
         return ntp_servers
 
     def get_ntp_stats(self):
-
         ntp_stats = []
 
         rpc_command = (
@@ -1589,7 +1598,6 @@ class IOSXRDriver(NetworkDriver):
         return ntp_stats
 
     def get_interfaces_ip(self):
-
         interfaces_ip = {}
 
         rpc_command_ipv4_ipv6 = "<Get><Operational><IPV4Network></IPV4Network>\
@@ -1670,7 +1678,6 @@ class IOSXRDriver(NetworkDriver):
         return interfaces_ip
 
     def get_mac_address_table(self):
-
         mac_table = []
 
         rpc_command = (
@@ -1707,7 +1714,6 @@ class IOSXRDriver(NetworkDriver):
         return mac_table
 
     def get_route_to(self, destination="", protocol="", longer=False):
-
         routes = {}
         global IP_RIBRoute
 
@@ -1918,7 +1924,6 @@ class IOSXRDriver(NetworkDriver):
         return routes
 
     def get_snmp_information(self):
-
         snmp_information = {}
 
         snmp_rpc_command = "<Get><Configuration><SNMP></SNMP></Configuration></Get>"
@@ -1948,7 +1953,6 @@ class IOSXRDriver(NetworkDriver):
         return snmp_information
 
     def get_probes_config(self):
-
         sla_config = {}
 
         _PROBE_TYPE_XML_TAG_MAP_ = {
@@ -1996,7 +2000,6 @@ class IOSXRDriver(NetworkDriver):
         return sla_config
 
     def get_probes_results(self):
-
         sla_results = {}
 
         _PROBE_TYPE_XML_TAG_MAP_ = {
@@ -2180,7 +2183,6 @@ class IOSXRDriver(NetworkDriver):
         timeout=C.TRACEROUTE_TIMEOUT,
         vrf=C.TRACEROUTE_VRF,
     ):
-
         traceroute_result = {}
 
         ipv = 4
@@ -2287,7 +2289,6 @@ class IOSXRDriver(NetworkDriver):
         return traceroute_result
 
     def get_users(self):
-
         users = {}
 
         _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP = {
@@ -2318,7 +2319,6 @@ class IOSXRDriver(NetworkDriver):
         return users
 
     def get_config(self, retrieve="all", full=False, sanitized=False):
-
         config = {"startup": "", "running": "", "candidate": ""}  # default values
 
         # IOS-XR only supports "all" on "show run"

@@ -1,11 +1,26 @@
 {
+    "_": {
+        "apply_groups": [],
+        "description": "",
+        "export_policy": "",
+        "import_policy": "",
+        "local_address": "",
+        "local_as": 65172,
+        "multihop_ttl": 0,
+        "multipath": false,
+        "neighbors": {},
+        "prefix_limit": {},
+        "remote_as": 0,
+        "remove_private_as": false,
+        "type": ""
+    },
     "EBGP": {
         "apply_groups": [],
         "description": "",
         "export_policy": "EBGP-OUT-POLICY",
         "import_policy": "EBGP-IN-POLICY",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65172,
         "multihop_ttl": 0,
         "multipath": false,
         "neighbors": {
@@ -15,7 +30,7 @@
                 "export_policy": "",
                 "import_policy": "",
                 "local_address": "",
-                "local_as": 0,
+                "local_as": 65172,
                 "nhs": false,
                 "prefix_limit": {
                     "inet": {
@@ -37,7 +52,7 @@
                 "export_policy": "",
                 "import_policy": "",
                 "local_address": "",
-                "local_as": 0,
+                "local_as": 65172,
                 "nhs": false,
                 "prefix_limit": {
                     "inet": {
@@ -65,7 +80,7 @@
         "export_policy": "EBGP-VRF-OUT-POLICY",
         "import_policy": "EBGP-VRF-IN-POLICY",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65172,
         "multihop_ttl": 0,
         "multipath": false,
         "neighbors": {},
@@ -80,7 +95,7 @@
         "export_policy": "IBGPv6-OUT-POLICY",
         "import_policy": "IBGPv6-IN-POLICY",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65172,
         "multihop_ttl": 0,
         "multipath": false,
         "neighbors": {
@@ -90,7 +105,7 @@
                 "export_policy": "",
                 "import_policy": "",
                 "local_address": "",
-                "local_as": 0,
+                "local_as": 65172,
                 "nhs": false,
                 "prefix_limit": {
                     "inet6": {
@@ -112,7 +127,7 @@
                 "export_policy": "",
                 "import_policy": "",
                 "local_address": "",
-                "local_as": 0,
+                "local_as": 65172,
                 "nhs": false,
                 "prefix_limit": {
                     "inet6": {
@@ -140,7 +155,7 @@
         "export_policy": "EBGPv6-VRF-OUT-POLICY",
         "import_policy": "EBGPv6-VRF-IN-POLICY",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65172,
         "multihop_ttl": 0,
         "multipath": false,
         "neighbors": {},
@@ -155,7 +170,7 @@
         "export_policy": "IBGP-OUT-POLICY",
         "import_policy": "",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65172,
         "multihop_ttl": 0,
         "multipath": false,
         "neighbors": {
@@ -165,7 +180,7 @@
                 "export_policy": "",
                 "import_policy": "",
                 "local_address": "",
-                "local_as": 0,
+                "local_as": 65172,
                 "nhs": false,
                 "prefix_limit": {
                     "inet": {
@@ -193,7 +208,7 @@
         "export_policy": "IBGP-OUT-POLICY",
         "import_policy": "",
         "local_address": "",
-        "local_as": 0,
+        "local_as": 65172,
         "multihop_ttl": 0,
         "multipath": false,
         "neighbors": {
@@ -203,7 +218,7 @@
                 "export_policy": "",
                 "import_policy": "",
                 "local_address": "",
-                "local_as": 0,
+                "local_as": 65172,
                 "nhs": false,
                 "prefix_limit": {
                     "inet6": {
