@@ -1,4 +1,5 @@
 """Helper functions for the NAPALM base."""
+
 import ipaddress
 import itertools
 import logging

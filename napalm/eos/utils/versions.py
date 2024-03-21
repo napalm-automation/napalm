@@ -1,4 +1,5 @@
 """Some functions to work with EOS version numbers"""
+
 import re
 
 

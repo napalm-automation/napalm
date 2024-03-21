@@ -1484,7 +1484,7 @@ class JunOSDriver(NetworkDriver):
             "RemovePrivateAS": "remove_private_as",
             "Multipath": "multipath",
             "Multihop": "multihop",
-            "AddressFamily": "local_address_configured"
+            "AddressFamily": "local_address_configured",
             # 'AuthKey'        : 'authentication_key_set'
             # but other vendors do not specify if auth key is set
             # other options:
@@ -1728,7 +1728,7 @@ class JunOSDriver(NetworkDriver):
 
         _FAMILY_VMAP_ = {
             "inet": "ipv4",
-            "inet6": "ipv6"
+            "inet6": "ipv6",
             # can add more mappings
         }
         _FAMILY_MAX_PREFIXLEN = {"inet": 32, "inet6": 128}

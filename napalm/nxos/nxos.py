@@ -673,15 +673,15 @@ class NXOSDriverBase(NetworkDriver):
             # Add field missing on IOS
             lldp_entry["parent_interface"] = ""
             # Translate the capability fields
-            lldp_entry[
-                "remote_system_capab"
-            ] = napalm.base.helpers.transform_lldp_capab(
-                lldp_entry["remote_system_capab"]
+            lldp_entry["remote_system_capab"] = (
+                napalm.base.helpers.transform_lldp_capab(
+                    lldp_entry["remote_system_capab"]
+                )
             )
-            lldp_entry[
-                "remote_system_enable_capab"
-            ] = napalm.base.helpers.transform_lldp_capab(
-                lldp_entry["remote_system_enable_capab"]
+            lldp_entry["remote_system_enable_capab"] = (
+                napalm.base.helpers.transform_lldp_capab(
+                    lldp_entry["remote_system_enable_capab"]
+                )
             )
             # Turn the interfaces into their long version
             local_intf = canonical_interface_name(local_intf)
@@ -1567,9 +1567,19 @@ class NXOSDriver(NXOSDriverBase):
             ][0]
             for psinfo in ps_info_table[ps_info_row_key]:
                 normalized[psinfo["psnum"]]["status"] = (
-                    psinfo.get("ps_status", "ok") == "ok"
+                    psinfo.get("ps_status", "ok").lower() == "ok"
                 )
-                normalized[psinfo["psnum"]]["output"] = float(psinfo.get("watts", -1.0))
+                # typically the power output is key'd by watts
+                # other times it is keyed by "actual_out"
+                if "watts" in psinfo:
+                    normalized[psinfo["psnum"]]["output"] = float(
+                        psinfo.get("watts", -1.0)
+                    )
+                else:
+                    # When the power output is keyed by actual_out, it appears like "99 W"
+                    normalized[psinfo["psnum"]]["output"] = float(
+                        psinfo.get("actual_out", -1.0).split()[0]
+                    )
                 # Newer nxos versions provide the total capacity in the `tot_capa` key
                 if "tot_capa" in psinfo:
                     normalized[psinfo["psnum"]]["capacity"] = float(

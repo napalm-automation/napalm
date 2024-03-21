@@ -287,6 +287,9 @@
                         <StateTransitionCount>
                             0
                         </StateTransitionCount>
+                        <LastStateTransitionTime>
+                            1682947558700282575
+                        </LastStateTransitionTime>
                         <IsDampeningEnabled>
                             false
                         </IsDampeningEnabled>

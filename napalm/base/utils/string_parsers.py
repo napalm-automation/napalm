@@ -1,4 +1,5 @@
 """ Common methods to normalize a string """
+
 import re
 import struct
 from typing import Union, List, Iterable, Dict, Optional, Tuple

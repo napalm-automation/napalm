@@ -1,4 +1,5 @@
 """Tests for versions utils"""
+
 from napalm.eos.utils.versions import EOSVersion
 
 
