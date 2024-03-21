@@ -59,7 +59,7 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 IPV4_ADDR_REGEX = IP_ADDR_REGEX
 IPV6_ADDR_REGEX_1 = r"::"
-IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{0,39}::[0-9a-fA-F:]{0,39}"
 IPV6_ADDR_REGEX_3 = (
     r"[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:"
     "[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"
@@ -1957,12 +1957,17 @@ class IOSDriver(NetworkDriver):
             # get neighbor_entry out of neighbor data
             neighbor_entry = None
             for neighbor in neighbor_data:
-                if (
-                    neighbor["afi"].lower() == afi
-                    and napalm.base.helpers.ip(neighbor["remote_addr"]) == remote_addr
-                ):
-                    neighbor_entry = neighbor
-                    break
+                current_neighbor = napalm.base.helpers.ip(neighbor["remote_addr"])
+                if neighbor["afi"].lower() == afi and current_neighbor == remote_addr:
+                    # Neighbor IPs in VRFs can overlap, so make sure
+                    # we haven't covered this VRF + IP already
+                    vrf = neighbor["vrf"] or "global"
+                    if (
+                        vrf == "global"
+                        or current_neighbor not in bgp_neighbor_data[vrf]["peers"]
+                    ):
+                        neighbor_entry = neighbor
+                        break
             # check for proper session data for the afi
             if neighbor_entry is None:
                 continue
@@ -3722,7 +3727,11 @@ class IOSDriver(NetworkDriver):
             return self._get_vlan_all_ports(output)
 
     def _get_vlan_all_ports(self, output):
-        find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")
+        find_regexp = re.compile(
+            r"^(\d+)\s+"  # vlan id
+            r"(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"  # vlan name
+            r"\w+(?:\/\w+)?\S+(\s+[A-Z][a-z].*)?$"  # ports
+        )
         continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
         output = output.splitlines()
         vlans = {}
@@ -3736,7 +3745,7 @@ class IOSDriver(NetworkDriver):
             if vlan_m:
                 was_vlan_or_cont = True
                 vlan_id = vlan_m.group(1)
-                vlan_name = vlan_m.group(2)
+                vlan_name = vlan_m.group(2).strip()
                 interfaces = vlan_m.group(3) or ""
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
 
@@ -3763,7 +3772,7 @@ class IOSDriver(NetworkDriver):
     def _get_vlan_from_id(self):
         command = "show vlan brief"
         output = self._send_command(command)
-        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        vlan_regexp = r"^(\d+)\W+(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"
         find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
         vlans = {}
         for vlan_id, vlan_name in find_vlan:
