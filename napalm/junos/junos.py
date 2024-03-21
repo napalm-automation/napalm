@@ -1335,9 +1335,10 @@ class JunOSDriver(NetworkDriver):
                 if key == "neighbors":
                     bgp_group_peers = value
                     continue
-                bgp_config[bgp_group_name].update(
-                    {key: napalm.base.helpers.convert(datatype, value, default)}
-                )
+                if datatype:
+                    bgp_config[bgp_group_name].update(
+                        {key: napalm.base.helpers.convert(datatype, value, default)}
+                    )
             prefix_limit_fields = {}
             for key, value in bgp_group_details:
                 if "_prefix_limit" in key and value is not None:
