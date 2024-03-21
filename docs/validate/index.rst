@@ -95,7 +95,9 @@ A few notes:
     * We can also use comparison on the conditions of numerical validate. For example, if you want 
       to validate there that the ``cpu``and ``memory`` into ``get_environment`` are ``15%`` or less.
       We can use writing comparison operators such as ``<15.0`` or ``>10.0`` in this case, or range
-      with the operator syntax of ``<->`` such as ``10.0<->20.0`` or ``10<->20``.
+      with the operator syntax of ``<->`` such as ``10.0<->20.0`` or ``10<->20``. In a similar vain
+      a percentage tolerance can be validated upon, for example ``10%20`` allows a 10% tolerance
+      either side of 20 (a range of 18 to 22).
     * Some methods require extra arguments, for example ``ping``. You can pass arguments to those
       methods using the magic keyword ``_kwargs``. In addition, an optional keyword ``_name`` can
       be specified to override the name in the report. Useful for having a more descriptive report

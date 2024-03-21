@@ -414,6 +414,8 @@ class TestValidate:
         assert validate._compare_numeric("<=2", 2)
         assert validate._compare_numeric("<3", "2")
         assert validate._compare_numeric("!=3", "2")
+        assert validate._compare_tolerance("10%20", 18)
+        assert validate._compare_tolerance("10%20", 22)
         with pytest.raises(ValueError):
             assert validate._compare_numeric("a2a", 2)
         with pytest.raises(ValueError):
