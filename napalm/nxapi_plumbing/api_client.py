@@ -3,6 +3,7 @@ Fork of pynxos library from network to code and mzbenami
 
 Reimplemented by ktbyers to support XML-RPC in addition to JSON-RPC
 """
+
 from __future__ import print_function, unicode_literals
 
 from builtins import super

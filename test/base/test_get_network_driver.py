@@ -1,4 +1,5 @@
 """Test the method get_network_driver."""
+
 import unittest
 from ddt import ddt, data
 

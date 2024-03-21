@@ -1395,7 +1395,7 @@ class EOSDriver(NetworkDriver):
                         interface_details.get("linkLocal", {})
                         .get("subnet", "::/0")
                         .split("/")[-1]
-                    )
+                    ),
                     # when no link-local set, address will be None and maslken 0
                 }
             )

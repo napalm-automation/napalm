@@ -3,9 +3,11 @@ Validation methods for the NAPALM base.
 
 See: https://napalm.readthedocs.io/en/latest/validate.html
 """
+
 import yaml
 import copy
 import re
+from math import isclose
 from typing import Dict, List, Union, TypeVar, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -16,6 +18,7 @@ from napalm.base import models
 
 # We put it here to compile it only once
 numeric_compare_regex = re.compile(r"^(<|>|<=|>=|==|!=)(\d+(\.\d+){0,1})$")
+numeric_tolerance_regex = re.compile(r"^(\d+)%(\d+)$")
 
 
 def _get_validation_file(validation_file: str) -> Dict[str, Dict]:
@@ -155,6 +158,9 @@ def compare(
         elif "<->" in src and len(src.split("<->")) == 2:
             cmp_result = _compare_range(src, dst)
             return cmp_result
+        elif re.search(r"^\d+%\d+$", src):
+            cmp_result = _compare_tolerance(src, dst)
+            return cmp_result
         else:
             m = re.search(src, str(dst))
             if m:
@@ -212,6 +218,22 @@ def _compare_range(src_num: str, dst_num: str) -> bool:
         return True
     else:
         return False
+
+
+def _compare_tolerance(src_num: str, dst_num: str) -> bool:
+    """Compare against a tolerance percentage either side. You can use 't%%d'."""
+    dst_num = float(dst_num)
+
+    match = numeric_tolerance_regex.match(src_num)
+    if not match:
+        error = "Failed tolerance comparison. Collected: {}. Expected: {}".format(
+            dst_num, src_num
+        )
+        raise ValueError(error)
+
+    src_num = float(match.group(2))
+    max_diff = src_num * int(match.group(1)) / 100
+    return isclose(src_num, dst_num, abs_tol=max_diff)
 
 
 def empty_tree(input_list: List) -> bool:

@@ -1,4 +1,5 @@
 """conf.py."""
+
 # -*- coding: utf-8 -*-
 #
 # napalm documentation build configuration file, created by

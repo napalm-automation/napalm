@@ -1,4 +1,5 @@
 """setup.py file."""
+
 from setuptools import setup, find_packages
 
 with open("requirements.txt", "r") as fs:
