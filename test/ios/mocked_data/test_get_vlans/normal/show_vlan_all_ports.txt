@@ -64,12 +64,13 @@ VLAN Name                             Status    Ports
 790  Vlan790                          active    Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 792  Vlan792                          active    Po1, Po2, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 794  Vlan794                          active    Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
-795  Vlan795                          active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+795  Vlan 795                         active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 1002 Vlan1002                         act/unsup Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 1003 Vlan1003                         act/unsup Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 1004 Vlan1004                         act/unsup Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 1005 Vlan1005                         act/unsup Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 1275 Vlan1275                         active
+1276 A1 - VIDEO                       active    Po1
 
 VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
 ---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
@@ -141,6 +142,7 @@ VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
 1004 fdnet 101004     1500  -      -      -        ieee -        0      0
 1005 trnet 101005     1500  -      -      -        ibm  -        0      0
 1275 enet  101275     1500  -      -      -        -    -        0      0
+1276 enet  101275     1500  -      -      -        -    -        0      0
 
 Primary Secondary Type              Ports
 ------- --------- ----------------- ------------------------------------------

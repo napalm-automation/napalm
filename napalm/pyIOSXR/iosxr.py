@@ -132,7 +132,6 @@ class IOSXR(object):
         """
 
         def _getattr(*args, **kwargs):
-
             cmd = item.replace("_", " ")
             for arg in args:
                 cmd += " %s" % arg
@@ -244,7 +243,6 @@ class IOSXR(object):
         )
 
     def _in_cli_mode(self):
-
         out = self._send_command_timing("\n")
         if not out:
             return False
@@ -253,7 +251,6 @@ class IOSXR(object):
         return False
 
     def _enter_xml_mode(self):
-
         self._unlock_xml_agent()
         # release - other commands should not have anyway access to the XML agent
         # when not in XML mode
@@ -283,7 +280,6 @@ class IOSXR(object):
         read_output=None,
         receive=False,
     ):
-
         if not expect_string:
             expect_string = self._XML_MODE_PROMPT
 
@@ -405,7 +401,6 @@ class IOSXR(object):
 
     # previous module function __execute_rpc__
     def _execute_rpc(self, command_xml, delay_factor=0.1):
-
         xml_rpc_command = (
             '<?xml version="1.0" encoding="UTF-8"?><Request MajorVersion="1" MinorVersion="0">'
             + command_xml
@@ -433,7 +428,6 @@ class IOSXR(object):
         result_summary = root.find("ResultSummary")
 
         if result_summary is not None and int(result_summary.get("ErrorCount", 0)) > 0:
-
             if "CLI" in childs:
                 error_msg = root.find("CLI").get("ErrorMsg") or ""
             elif "Commit" in childs:

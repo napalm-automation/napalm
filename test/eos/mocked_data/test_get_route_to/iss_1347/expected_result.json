@@ -1,1 +1,268 @@
-{"1.0.4.0/24": [{"current_active": true, "last_active": true, "age": 0, "next_hop": "169.254.224.6", "protocol": "eBGP", "outgoing_interface": "vxlan1", "preference": 200, "inactive_reason": "noReason", "routing_table": "TEST", "selected_next_hop": true, "protocol_attributes": {"metric": 0, "as_path": "65418 65419 65405", "local_preference": 100, "local_as": 65323, "remote_as": 65405, "remote_address": "169.254.216.2", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.224.6", "protocol": "eBGP", "outgoing_interface": "vxlan1", "preference": 200, "inactive_reason": "ecmpFast", "routing_table": "TEST", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419 65405", "local_preference": 100, "local_as": 65323, "remote_as": 65405, "remote_address": "169.254.216.3", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.224.6", "protocol": "eBGP", "outgoing_interface": "vxlan1", "preference": 200, "inactive_reason": "ecmpFast", "routing_table": "TEST", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419 65405", "local_preference": 100, "local_as": 65323, "remote_as": 65405, "remote_address": "169.254.216.4", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.224.6", "protocol": "eBGP", "outgoing_interface": "vxlan1", "preference": 200, "inactive_reason": "ecmpFast", "routing_table": "TEST", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419 65405", "local_preference": 100, "local_as": 65323, "remote_as": 65405, "remote_address": "169.254.216.1", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.224.6", "protocol": "eBGP", "outgoing_interface": "vxlan1", "preference": 200, "inactive_reason": "ecmpFast", "routing_table": "TEST", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419 65405", "local_preference": 100, "local_as": 65323, "remote_as": 65405, "remote_address": "169.254.216.4", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.224.6", "protocol": "eBGP", "outgoing_interface": "vxlan1", "preference": 200, "inactive_reason": "ecmpFast", "routing_table": "TEST", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419 65405", "local_preference": 100, "local_as": 65323, "remote_as": 65405, "remote_address": "169.254.216.3", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.224.6", "protocol": "eBGP", "outgoing_interface": "vxlan1", "preference": 200, "inactive_reason": "ecmpFast", "routing_table": "TEST", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419 65405", "local_preference": 100, "local_as": 65323, "remote_as": 65405, "remote_address": "169.254.216.1", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.224.6", "protocol": "eBGP", "outgoing_interface": "vxlan1", "preference": 200, "inactive_reason": "ecmpFast", "routing_table": "TEST", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419 65405", "local_preference": 100, "local_as": 65323, "remote_as": 65405, "remote_address": "169.254.216.2", "preference2": 0, "communities": []}}, {"current_active": true, "last_active": true, "age": 0, "next_hop": "169.254.232.160", "protocol": "eBGP", "outgoing_interface": "Ethernet4/1", "preference": 20, "inactive_reason": "noReason", "routing_table": "default", "selected_next_hop": true, "protocol_attributes": {"metric": 0, "as_path": "65418 65419", "local_preference": 100, "local_as": 65323, "remote_as": 65419, "remote_address": "169.254.232.160", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.232.156", "protocol": "eBGP", "outgoing_interface": "Ethernet3/1", "preference": 20, "inactive_reason": "ecmpFast", "routing_table": "default", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419", "local_preference": 100, "local_as": 65323, "remote_as": 65419, "remote_address": "169.254.232.156", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.232.148", "protocol": "eBGP", "outgoing_interface": "Ethernet1/1", "preference": 20, "inactive_reason": "ecmpFast", "routing_table": "default", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419", "local_preference": 100, "local_as": 65323, "remote_as": 65419, "remote_address": "169.254.232.148", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.232.152", "protocol": "eBGP", "outgoing_interface": "Ethernet2/1", "preference": 20, "inactive_reason": "ecmpFast", "routing_table": "default", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419", "local_preference": 100, "local_as": 65323, "remote_as": 65419, "remote_address": "169.254.232.152", "preference2": 0, "communities": []}}, {"current_active": true, "last_active": true, "age": 0, "next_hop": "169.254.232.160", "protocol": "eBGP", "outgoing_interface": "Ethernet4/1", "preference": 20, "inactive_reason": "noReason", "routing_table": "default", "selected_next_hop": true, "protocol_attributes": {"metric": 0, "as_path": "65418 65419", "local_preference": 100, "local_as": 65323, "remote_as": 65419, "remote_address": "169.254.232.160", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.232.156", "protocol": "eBGP", "outgoing_interface": "Ethernet3/1", "preference": 20, "inactive_reason": "ecmpFast", "routing_table": "default", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419", "local_preference": 100, "local_as": 65323, "remote_as": 65419, "remote_address": "169.254.232.156", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.232.148", "protocol": "eBGP", "outgoing_interface": "Ethernet1/1", "preference": 20, "inactive_reason": "ecmpFast", "routing_table": "default", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419", "local_preference": 100, "local_as": 65323, "remote_as": 65419, "remote_address": "169.254.232.148", "preference2": 0, "communities": []}}, {"current_active": false, "last_active": false, "age": 0, "next_hop": "169.254.232.152", "protocol": "eBGP", "outgoing_interface": "Ethernet2/1", "preference": 20, "inactive_reason": "ecmpFast", "routing_table": "default", "selected_next_hop": false, "protocol_attributes": {"metric": 0, "as_path": "65418 65419", "local_preference": 100, "local_as": 65323, "remote_as": 65419, "remote_address": "169.254.232.152", "preference2": 0, "communities": []}}]}
+{
+    "1.0.4.0/24": [
+        {
+            "current_active": true,
+            "last_active": true,
+            "age": 0,
+            "next_hop": "169.254.224.6",
+            "protocol": "eBGP",
+            "outgoing_interface": "vxlan1",
+            "preference": 200,
+            "inactive_reason": "noReason",
+            "routing_table": "TEST",
+            "selected_next_hop": true,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419 65405",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65405,
+                "remote_address": "169.254.216.2",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.224.6",
+            "protocol": "eBGP",
+            "outgoing_interface": "vxlan1",
+            "preference": 200,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "TEST",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419 65405",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65405,
+                "remote_address": "169.254.216.3",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.224.6",
+            "protocol": "eBGP",
+            "outgoing_interface": "vxlan1",
+            "preference": 200,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "TEST",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419 65405",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65405,
+                "remote_address": "169.254.216.4",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.224.6",
+            "protocol": "eBGP",
+            "outgoing_interface": "vxlan1",
+            "preference": 200,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "TEST",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419 65405",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65405,
+                "remote_address": "169.254.216.1",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.224.6",
+            "protocol": "eBGP",
+            "outgoing_interface": "vxlan1",
+            "preference": 200,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "TEST",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419 65405",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65405,
+                "remote_address": "169.254.216.4",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.224.6",
+            "protocol": "eBGP",
+            "outgoing_interface": "vxlan1",
+            "preference": 200,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "TEST",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419 65405",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65405,
+                "remote_address": "169.254.216.3",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.224.6",
+            "protocol": "eBGP",
+            "outgoing_interface": "vxlan1",
+            "preference": 200,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "TEST",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419 65405",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65405,
+                "remote_address": "169.254.216.1",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.224.6",
+            "protocol": "eBGP",
+            "outgoing_interface": "vxlan1",
+            "preference": 200,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "TEST",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419 65405",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65405,
+                "remote_address": "169.254.216.2",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": true,
+            "last_active": true,
+            "age": 0,
+            "next_hop": "169.254.232.160",
+            "protocol": "eBGP",
+            "outgoing_interface": "Ethernet4/1",
+            "preference": 20,
+            "inactive_reason": "noReason",
+            "routing_table": "default",
+            "selected_next_hop": true,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65419,
+                "remote_address": "169.254.232.160",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.232.156",
+            "protocol": "eBGP",
+            "outgoing_interface": "Ethernet3/1",
+            "preference": 20,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "default",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65419,
+                "remote_address": "169.254.232.156",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.232.148",
+            "protocol": "eBGP",
+            "outgoing_interface": "Ethernet1/1",
+            "preference": 20,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "default",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65419,
+                "remote_address": "169.254.232.148",
+                "preference2": 0,
+                "communities": []
+            }
+        },
+        {
+            "current_active": false,
+            "last_active": false,
+            "age": 0,
+            "next_hop": "169.254.232.152",
+            "protocol": "eBGP",
+            "outgoing_interface": "Ethernet2/1",
+            "preference": 20,
+            "inactive_reason": "ecmpFast",
+            "routing_table": "default",
+            "selected_next_hop": false,
+            "protocol_attributes": {
+                "metric": 0,
+                "as_path": "65418 65419",
+                "local_preference": 100,
+                "local_as": 65323,
+                "remote_as": 65419,
+                "remote_address": "169.254.232.152",
+                "preference2": 0,
+                "communities": []
+            }
+        }
+    ]
+}

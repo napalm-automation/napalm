@@ -24,7 +24,6 @@ Contributors fooelisa, mirceaulinic, et all
 
 class IOSXRException(Exception):
     def __init__(self, msg=None, dev=None):
-
         super(IOSXRException, self).__init__(msg)
         if dev:
             self._xr = dev
