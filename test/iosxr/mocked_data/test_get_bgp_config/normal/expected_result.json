@@ -1,13 +1,28 @@
 {
+  "_": {
+    "local_as": 13335,
+    "remove_private_as": false,
+    "import_policy": "",
+    "multihop_ttl": 0,
+    "neighbors": {},
+    "multipath": false,
+    "export_policy": "",
+    "type": "",
+    "apply_groups": [],
+    "remote_as": 0,
+    "prefix_limit": {},
+    "description": "",
+    "local_address": ""
+  },
   "4-public-anycast-peers": {
-    "local_as": 0,
+    "local_as": 13335,
     "remove_private_as": true,
     "import_policy": "4-public-anycast-peers-in",
     "multihop_ttl": 0,
     "neighbors": {
       "192.168.20.3": {
         "export_policy": "",
-        "local_as": 0,
+        "local_as": 13335,
         "prefix_limit": {
           "inet": {
             "unicast": {
@@ -29,7 +44,7 @@
       },
       "172.17.17.50": {
         "export_policy": "",
-        "local_as": 0,
+        "local_as": 13335,
         "prefix_limit": {
           "inet": {
             "unicast": {
@@ -51,7 +66,7 @@
       },
       "192.168.50.5": {
         "export_policy": "",
-        "local_as": 0,
+        "local_as": 13335,
         "prefix_limit": {
           "inet": {
             "unicast": {

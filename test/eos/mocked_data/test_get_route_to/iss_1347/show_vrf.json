@@ -1,0 +1,61 @@
+{
+  "vrfs": {
+    "default": {
+      "routeDistinguisher": "",
+      "protocols": {
+        "ipv4": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "up"
+        },
+        "ipv6": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "down"
+        }
+      },
+      "vrfState": "up",
+      "interfaces": [
+        "Ethernet1/1",
+        "Ethernet2/1",
+        "Ethernet3/1",
+        "Ethernet4/1",
+        "Loopback0",
+        "Loopback1",
+        "Vlan3001",
+        "Vlan3002",
+        "Vlan3003",
+        "Vlan3004",
+        "Vlan3005",
+        "Vlan3006"
+      ]
+    },
+    "TEST": {
+      "routeDistinguisher": "65323:631",
+      "protocols": {
+        "ipv4": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "up"
+        },
+        "ipv6": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "down"
+        }
+      },
+      "vrfState": "up",
+      "interfaces": [
+        "Vlan2001",
+        "Vlan2002",
+        "Vlan2003",
+        "Vlan2004",
+        "Vlan2005",
+        "Vlan2006",
+        "Vlan2007",
+        "Vlan2008",
+        "Vlan2009"
+      ]
+    }
+  }
+}

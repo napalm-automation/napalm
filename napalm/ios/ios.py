@@ -36,15 +36,17 @@ from napalm.base.exceptions import (
     CommitConfirmException,
 )
 from napalm.base.helpers import (
-    canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
-    split_interface,
-    abbreviated_interface_name,
     generate_regex_or,
     sanitize_configs,
 )
 from netaddr.core import AddrFormatError
+from netutils.interface import (
+    abbreviated_interface_name,
+    canonical_interface_name,
+    split_interface,
+)
 from napalm.base.netmiko_helpers import netmiko_args
 
 # Easier to store these as constants
@@ -57,7 +59,7 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 IPV4_ADDR_REGEX = IP_ADDR_REGEX
 IPV6_ADDR_REGEX_1 = r"::"
-IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{0,39}::[0-9a-fA-F:]{0,39}"
 IPV6_ADDR_REGEX_3 = (
     r"[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:"
     "[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"
@@ -781,7 +783,6 @@ class IOSDriver(NetworkDriver):
             use_scp = False
 
         with TransferClass(**kwargs) as transfer:
-
             # Check if file already exists and has correct MD5
             if transfer.check_file_exists() and transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
@@ -1218,7 +1219,6 @@ class IOSDriver(NetworkDriver):
 
         interface_dict = {}
         for line in output.splitlines():
-
             interface_regex_1 = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
             interface_regex_2 = r"^(\S+)\s+is\s+(up|down)"
             interface_regex_3 = (
@@ -1461,6 +1461,11 @@ class IOSDriver(NetworkDriver):
         bgp_config_list = napalm.base.helpers.netutils_parse_objects(
             "router bgp", cfg["running"]
         )
+
+        # No BGP configuration
+        if not bgp_config_list:
+            return {}
+
         bgp_asn = napalm.base.helpers.regex_find_txt(
             r"router bgp (\d+)", bgp_config_list, default=0
         )
@@ -1531,7 +1536,9 @@ class IOSDriver(NetworkDriver):
                 r" update-source (\w+)", neighbor_config
             )
             local_as = napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, default=0
+                r"local-as (\d+)",
+                neighbor_config,
+                default=bgp_asn,
             )
             password = napalm.base.helpers.regex_find_txt(
                 r"password (?:[0-9] )?([^\']+\')", neighbor_config
@@ -1565,29 +1572,32 @@ class IOSDriver(NetworkDriver):
                 "route_reflector_client": route_reflector_client,
             }
 
+        # Do not include the no-group ("_") if a group argument is passed in
+        # unless group argument is "_"
+        if not group or group == "_":
+            bgp_config["_"] = {
+                "apply_groups": [],
+                "description": "",
+                "local_as": bgp_asn,
+                "type": "",
+                "import_policy": "",
+                "export_policy": "",
+                "local_address": "",
+                "multipath": False,
+                "multihop_ttl": 0,
+                "remote_as": 0,
+                "remove_private_as": False,
+                "prefix_limit": {},
+                "neighbors": bgp_group_neighbors.get("_", {}),
+            }
+
         # Get the peer-group level config for each group
         for group_name in bgp_group_neighbors.keys():
             # If a group is passed in params, only continue on that group
             if group:
                 if group_name != group:
                     continue
-            # Default no group
             if group_name == "_":
-                bgp_config["_"] = {
-                    "apply_groups": [],
-                    "description": "",
-                    "local_as": 0,
-                    "type": "",
-                    "import_policy": "",
-                    "export_policy": "",
-                    "local_address": "",
-                    "multipath": False,
-                    "multihop_ttl": 0,
-                    "remote_as": 0,
-                    "remove_private_as": False,
-                    "prefix_limit": {},
-                    "neighbors": bgp_group_neighbors.get("_", {}),
-                }
                 continue
             neighbor_config = napalm.base.helpers.netutils_parse_objects(
                 group_name, bgp_config_list
@@ -1609,7 +1619,7 @@ class IOSDriver(NetworkDriver):
                 r" description ([^\']+)\'", neighbor_config
             )
             local_as = napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, default=0
+                r"local-as (\d+)", neighbor_config, default=bgp_asn
             )
             import_policy = napalm.base.helpers.regex_find_txt(
                 r"route-map ([^\s]+) in", neighbor_config
@@ -1947,12 +1957,17 @@ class IOSDriver(NetworkDriver):
             # get neighbor_entry out of neighbor data
             neighbor_entry = None
             for neighbor in neighbor_data:
-                if (
-                    neighbor["afi"].lower() == afi
-                    and napalm.base.helpers.ip(neighbor["remote_addr"]) == remote_addr
-                ):
-                    neighbor_entry = neighbor
-                    break
+                current_neighbor = napalm.base.helpers.ip(neighbor["remote_addr"])
+                if neighbor["afi"].lower() == afi and current_neighbor == remote_addr:
+                    # Neighbor IPs in VRFs can overlap, so make sure
+                    # we haven't covered this VRF + IP already
+                    vrf = neighbor["vrf"] or "global"
+                    if (
+                        vrf == "global"
+                        or current_neighbor not in bgp_neighbor_data[vrf]["peers"]
+                    ):
+                        neighbor_entry = neighbor
+                        break
             # check for proper session data for the afi
             if neighbor_entry is None:
                 continue
@@ -3123,7 +3138,7 @@ class IOSDriver(NetworkDriver):
             for cmditem in commands:
                 outvrf = self._send_command(cmditem)
                 output.append(outvrf)
-            for (outitem, _vrf) in zip(output, vrfs):  # for all VRFs
+            for outitem, _vrf in zip(output, vrfs):  # for all VRFs
                 route_proto_regex = RE_RP_FROM.search(outitem)
                 if route_proto_regex:
                     route_match = destination
@@ -3538,7 +3553,6 @@ class IOSDriver(NetworkDriver):
         return traceroute_dict
 
     def get_network_instances(self, name=""):
-
         instances = {}
         sh_vrf_detail = self._send_command("show vrf detail")
         show_ip_int_br = self._send_command("show ip interface brief")
@@ -3571,7 +3585,6 @@ class IOSDriver(NetworkDriver):
             return instances
 
         for vrf in sh_vrf_detail.split("\n\n"):
-
             first_part = vrf.split("Address family")[0]
 
             # retrieve the name of the VRF and the Route Distinguisher
@@ -3714,7 +3727,11 @@ class IOSDriver(NetworkDriver):
             return self._get_vlan_all_ports(output)
 
     def _get_vlan_all_ports(self, output):
-        find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")
+        find_regexp = re.compile(
+            r"^(\d+)\s+"  # vlan id
+            r"(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"  # vlan name
+            r"\w+(?:\/\w+)?\S+(\s+[A-Z][a-z].*)?$"  # ports
+        )
         continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
         output = output.splitlines()
         vlans = {}
@@ -3728,7 +3745,7 @@ class IOSDriver(NetworkDriver):
             if vlan_m:
                 was_vlan_or_cont = True
                 vlan_id = vlan_m.group(1)
-                vlan_name = vlan_m.group(2)
+                vlan_name = vlan_m.group(2).strip()
                 interfaces = vlan_m.group(3) or ""
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
 
@@ -3755,7 +3772,7 @@ class IOSDriver(NetworkDriver):
     def _get_vlan_from_id(self):
         command = "show vlan brief"
         output = self._send_command(command)
-        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        vlan_regexp = r"^(\d+)\W+(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"
         find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
         vlans = {}
         for vlan_id, vlan_name in find_vlan:

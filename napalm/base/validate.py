@@ -167,7 +167,7 @@ def compare(
             else:
                 return src == dst
 
-    elif type(src) == type(dst) == list:
+    elif isinstance(src, list) and isinstance(dst, list):
         pairs = zip(src, dst)
         diff_lists = [
             [(k, x[k], y[k]) for k in x if not re.search(x[k], y[k])]
