@@ -801,30 +801,30 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         ),
                         0,
                     )
-                    this_neighbor["address_family"][this_afi][
-                        "accepted_prefixes"
-                    ] = napalm.base.helpers.convert(
-                        int,
-                        self._find_txt(
-                            neighbor,
-                            "./bgp:af-data/bgp:prefixes-accepted",
-                            default="",
-                            namespaces=C.NS,
-                        ),
-                        0,
+                    this_neighbor["address_family"][this_afi]["accepted_prefixes"] = (
+                        napalm.base.helpers.convert(
+                            int,
+                            self._find_txt(
+                                neighbor,
+                                "./bgp:af-data/bgp:prefixes-accepted",
+                                default="",
+                                namespaces=C.NS,
+                            ),
+                            0,
+                        )
                     )
-                    this_neighbor["address_family"][this_afi][
-                        "sent_prefixes"
-                    ] = napalm.base.helpers.convert(
-                        int,
-                        self._find_txt(
-                            neighbor,
-                            "./bgp:af-data/\
+                    this_neighbor["address_family"][this_afi]["sent_prefixes"] = (
+                        napalm.base.helpers.convert(
+                            int,
+                            self._find_txt(
+                                neighbor,
+                                "./bgp:af-data/\
                             bgp:prefixes-advertised",
-                            default="",
-                            namespaces=C.NS,
-                        ),
-                        0,
+                                default="",
+                                namespaces=C.NS,
+                            ),
+                            0,
+                        )
                     )
                 except AttributeError:
                     this_neighbor["address_family"][this_afi]["received_prefixes"] = -1

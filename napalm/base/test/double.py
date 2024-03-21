@@ -1,4 +1,5 @@
 """Base class for Test doubles."""
+
 import json
 import re
 import os
