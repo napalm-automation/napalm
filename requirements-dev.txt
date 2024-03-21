@@ -3,7 +3,7 @@ coveralls==3.3.1
 ddt==1.6.0
 flake8-import-order==0.18.2
 pytest==7.3.1
-pytest-cov==4.0.0
+pytest-cov==4.1.0
 pytest-json-report==1.5.0
 pyflakes==3.0.1
 pylama==8.4.1
