@@ -13,5 +13,5 @@ types-PyYAML==6.0.12.10
 types-requests==2.31.0.20240311
 types-six==1.16.21.20240311
 types-setuptools==67.8.0.0
-ttp==0.9.4
+ttp==0.9.5
 ttp_templates==0.3.5
