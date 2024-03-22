@@ -1,6 +1,6 @@
 black==24.3.0
 coveralls==3.3.1
-ddt==1.6.0
+ddt==1.7.2
 flake8-import-order==0.18.2
 pytest==7.3.1
 pytest-cov==4.1.0
