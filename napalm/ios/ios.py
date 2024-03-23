@@ -3222,10 +3222,10 @@ class IOSDriver(NetworkDriver):
                             # was not specified
                             if protocol == "" or protocol == route_entry["protocol"]:
                                 if route_proto == "bgp":
-                                    route_entry["protocol_attributes"] = (
-                                        self._get_bgp_route_attr(
-                                            destination, _vrf, nh, ip_version
-                                        )
+                                    route_entry[
+                                        "protocol_attributes"
+                                    ] = self._get_bgp_route_attr(
+                                        destination, _vrf, nh, ip_version
                                     )
                                 nh_line_found = (
                                     False  # for next RT entry processing ...
@@ -3742,7 +3742,6 @@ class IOSDriver(NetworkDriver):
             return self._get_vlan_from_id()
         else:
             return self._get_vlan_all_ports(output, _vlan_id=None, _vlan_name=None)
-
 
     def _get_vlan_all_ports(self, output, _vlan_id, _vlan_name):
         find_regexp = re.compile(

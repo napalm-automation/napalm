@@ -1485,9 +1485,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                                 "preference": int(nh_metric),
                             }
                             if nh_source == "bgp":
-                                route_entry["protocol_attributes"] = (
-                                    self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
-                                )
+                                route_entry[
+                                    "protocol_attributes"
+                                ] = self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
                             else:
                                 route_entry["protocol_attributes"] = {}
                             nh_list.append(route_entry)

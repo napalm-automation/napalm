@@ -669,15 +669,15 @@ class NXOSDriverBase(NetworkDriver):
             # Add field missing on IOS
             lldp_entry["parent_interface"] = ""
             # Translate the capability fields
-            lldp_entry["remote_system_capab"] = (
-                napalm.base.helpers.transform_lldp_capab(
-                    lldp_entry["remote_system_capab"]
-                )
+            lldp_entry[
+                "remote_system_capab"
+            ] = napalm.base.helpers.transform_lldp_capab(
+                lldp_entry["remote_system_capab"]
             )
-            lldp_entry["remote_system_enable_capab"] = (
-                napalm.base.helpers.transform_lldp_capab(
-                    lldp_entry["remote_system_enable_capab"]
-                )
+            lldp_entry[
+                "remote_system_enable_capab"
+            ] = napalm.base.helpers.transform_lldp_capab(
+                lldp_entry["remote_system_enable_capab"]
             )
             # Turn the interfaces into their long version
             local_intf = canonical_interface_name(local_intf)
