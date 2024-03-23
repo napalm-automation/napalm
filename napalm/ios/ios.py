@@ -3222,10 +3222,10 @@ class IOSDriver(NetworkDriver):
                             # was not specified
                             if protocol == "" or protocol == route_entry["protocol"]:
                                 if route_proto == "bgp":
-                                    route_entry[
-                                        "protocol_attributes"
-                                    ] = self._get_bgp_route_attr(
-                                        destination, _vrf, nh, ip_version
+                                    route_entry["protocol_attributes"] = (
+                                        self._get_bgp_route_attr(
+                                            destination, _vrf, nh, ip_version
+                                        )
                                     )
                                 nh_line_found = (
                                     False  # for next RT entry processing ...

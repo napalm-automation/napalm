@@ -587,23 +587,23 @@ class IOSXRDriver(NetworkDriver):
                         ),
                         0,
                     )
-                    this_neighbor["address_family"][this_afi][
-                        "accepted_prefixes"
-                    ] = napalm.base.helpers.convert(
-                        int,
-                        napalm.base.helpers.find_txt(
-                            neighbor, "AFData/Entry/PrefixesAccepted"
-                        ),
-                        0,
+                    this_neighbor["address_family"][this_afi]["accepted_prefixes"] = (
+                        napalm.base.helpers.convert(
+                            int,
+                            napalm.base.helpers.find_txt(
+                                neighbor, "AFData/Entry/PrefixesAccepted"
+                            ),
+                            0,
+                        )
                     )
-                    this_neighbor["address_family"][this_afi][
-                        "sent_prefixes"
-                    ] = napalm.base.helpers.convert(
-                        int,
-                        napalm.base.helpers.find_txt(
-                            neighbor, "AFData/Entry/PrefixesAdvertised"
-                        ),
-                        0,
+                    this_neighbor["address_family"][this_afi]["sent_prefixes"] = (
+                        napalm.base.helpers.convert(
+                            int,
+                            napalm.base.helpers.find_txt(
+                                neighbor, "AFData/Entry/PrefixesAdvertised"
+                            ),
+                            0,
+                        )
                     )
                 except AttributeError:
                     this_neighbor["address_family"][this_afi]["received_prefixes"] = -1
@@ -947,11 +947,11 @@ class IOSXRDriver(NetworkDriver):
             try:
                 cli_output[str(command)] = str(self.device._execute_show(command))
             except TimeoutError:
-                cli_output[
-                    str(command)
-                ] = 'Execution of command \
+                cli_output[str(command)] = (
+                    'Execution of command \
                     "{command}" took too long! Please adjust your params!'.format(
-                    command=command
+                        command=command
+                    )
                 )
                 logger.error(str(cli_output))
                 raise CommandTimeoutException(str(cli_output))
@@ -2288,9 +2288,9 @@ class IOSXRDriver(NetworkDriver):
                 last_probe_host_name = tag_value
                 continue
             if tag_name == "DeltaTime":
-                last_hop_dict["probes"][last_probe_index][
-                    "rtt"
-                ] = napalm.base.helpers.convert(float, tag_value, 0.0)
+                last_hop_dict["probes"][last_probe_index]["rtt"] = (
+                    napalm.base.helpers.convert(float, tag_value, 0.0)
+                )
                 continue
 
         if last_hop_index:
