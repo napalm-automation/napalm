@@ -2,7 +2,7 @@
 	"TenGigE0/0/0/14": {
 		"is_enabled": true,
 		"description": "",
-		"last_flapped": -1.0,
+		"last_flapped": 1682947558.7002826,
 		"is_up": false,
 		"mac_address": "E0:AC:F1:64:71:52",
 		"mtu": 1514,

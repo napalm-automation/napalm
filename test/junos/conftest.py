@@ -1,4 +1,5 @@
 """Test fixtures."""
+
 import copy
 
 import lxml
@@ -126,7 +127,6 @@ class FakeJunOSDevice(BaseTestDouble):
 
 
 class FakeRPCObject:
-
     """
     Fake RPC caller.
     """
@@ -170,7 +170,6 @@ class FakeRPCObject:
 
 
 class FakeConnectionRPCObject:
-
     """
     Will make fake RPC requests that usually are directly made via netconf.
     """

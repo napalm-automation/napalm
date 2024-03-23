@@ -38,6 +38,22 @@
             "received_prefixes": 0
           }
         }
+      },
+      "192.0.2.4": {
+        "is_enabled": true,
+        "uptime": -1,
+        "remote_as": 65020,
+        "description": "",
+        "remote_id": "192.168.0.4",
+        "local_as": 65000,
+        "is_up": false,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": 19,
+            "accepted_prefixes": 0,
+            "received_prefixes": 12
+          }
+        }
       }
     }
   }
