@@ -44,22 +44,26 @@ Bulding on the previous example, we can create a a simple parse to return what o
 
 .. code-block:: python
 
-    def get_my_banner(self):
-        command = 'show banner motd'
-        output = self._send_command(command)
+    from napalm.ios.ios import IOSDriver
+    class CustomIOSDriver(IOSDriver):
+        """Custom NAPALM Cisco IOS Handler."""
 
-        return_vars = {}
-        for line in output.splitlines():
-            split_line = line.split()
-            if "Site:" == split_line[0]:
-                return_vars["site"] = split_line[1]
-            elif "Device:" == split_line[0]:
-                return_vars["device"] = split_line[1]
-            elif "Floor:" == split_line[0]:
-                return_vars["floor"] = split_line[1]
-            elif "Room:" == split_line[0]:
-                return_vars["room"] = split_line[1]
-        return return_vars
+        def get_my_banner(self):
+            command = 'show banner motd'
+            output = self._send_command(command)
+
+            return_vars = {}
+            for line in output.splitlines():
+                split_line = line.split()
+                if "Site:" == split_line[0]:
+                    return_vars["site"] = split_line[1]
+                elif "Device:" == split_line[0]:
+                    return_vars["device"] = split_line[1]
+                elif "Floor:" == split_line[0]:
+                    return_vars["floor"] = split_line[1]
+                elif "Room:" == split_line[0]:
+                    return_vars["room"] = split_line[1]
+            return return_vars
 
 Which can build.
 
@@ -85,8 +89,12 @@ be able to support their own environment.
 
 .. code-block:: python
 
-    def get_my_banner(self):
-        raise NotImplementedError
+    from napalm.ios.ios import IOSDriver
+    class CustomIOSDriver(IOSDriver):
+        """Custom NAPALM Cisco IOS Handler."""
+
+        def get_my_banner(self):
+            raise NotImplementedError
 
 This feature is meant to allow for maximum amount of flexibility, but it is up to the user to ensure they do
 not run into namespace issues, and follow best practices.

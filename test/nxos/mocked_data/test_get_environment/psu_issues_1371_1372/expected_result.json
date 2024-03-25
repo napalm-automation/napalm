@@ -1,0 +1,56 @@
+{
+  "power": {
+    "1": {
+      "status": true,
+      "output": 98,
+      "capacity": 400
+    },
+    "2": {
+      "status": false,
+      "output": 0,
+      "capacity": 0
+    }
+  },
+  "fans": {
+    "Fan1(sys_fan1)": {
+      "status": true
+    },
+    "Fan2(sys_fan2)": {
+      "status": true
+    },
+    "Fan3(sys_fan3)": {
+      "status": true
+    }
+  },
+  "temperature": {
+    "1-1 FRONT": {
+      "temperature": 27,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "1-2 BACK": {
+      "temperature": 27,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "1-3 CPU": {
+      "temperature": 35,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "1-4 Homewood": {
+      "temperature": 39,
+      "is_alert": false,
+      "is_critical": false
+    }
+  },
+  "cpu": {
+    "0": {
+      "%usage": 4.8 
+    }
+  },
+  "memory": {
+    "available_ram": 575000,
+    "used_ram": 52000
+  }
+}

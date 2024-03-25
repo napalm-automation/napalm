@@ -1,4 +1,5 @@
 """Test fixtures."""
+
 import pytest
 from lxml import etree
 from napalm.base.test import conftest as parent_conftest

@@ -1,4 +1,5 @@
 """Some common jinja filters."""
+
 from typing import Dict, Any
 
 
