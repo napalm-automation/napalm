@@ -2,6 +2,7 @@ urllib3==2.2.1 # https://github.com/readthedocs/readthedocs.org/issues/10290
 #sphinx==1.8.6
 sphinx==2.4.5
 sphinx-rtd-theme==1.2.0
+sphinxcontrib-applehelp==1.0.2
 #sphinxcontrib-napoleon==0.7
 invoke==2.2.0
 # Newer MarkupSafe requires newer Jinja2, but
