@@ -120,7 +120,6 @@ class NXOSDriverBase(NetworkDriver):
         self.timeout = timeout
         self.replace = True
         self.loaded = False
-        self.changed = False
         self.merge_candidate = ""
         self.candidate_cfg = "candidate_config.txt"
         self.rollback_cfg = "rollback_config.txt"
@@ -220,13 +219,11 @@ class NXOSDriverBase(NetworkDriver):
             if output and "Invalid command" in output:
                 raise MergeConfigException("Error while applying config!")
         except Exception as e:
-            self.changed = True
             self.rollback()
             err_header = "Configuration merge failed; automatic rollback attempted"
             merge_error = "{0}:\n{1}".format(err_header, repr(str(e)))
             raise MergeConfigException(merge_error)
 
-        self.changed = True
         # clear the merge buffer
         self.merge_candidate = ""
 
@@ -920,8 +917,6 @@ class NXOSDriver(NXOSDriverBase):
         except ConnectionError:
             # requests will raise an error with verbose warning output (don't fail on this).
             return
-        finally:
-            self.changed = True
 
         # For nx-api a list is returned so extract the result associated with the
         # 'rollback' command.
@@ -946,7 +941,6 @@ class NXOSDriver(NXOSDriverBase):
             raise ReplaceConfigException(msg)
         self.device.rollback(self.rollback_cfg)
         self._copy_run_start()
-        self.changed = False
 
     def get_facts(self) -> models.FactsDict:
         facts: models.FactsDict = {}  # type: ignore
