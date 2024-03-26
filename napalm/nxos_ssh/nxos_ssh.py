@@ -542,12 +542,9 @@ class NXOSSSHDriver(NXOSDriverBase):
             "no terminal dont-ask",
         ]
 
-        try:
-            rollback_result = self._send_command_list(
-                commands, expect_string=r"[#>]", read_timeout=90
-            )
-        finally:
-            self.changed = True
+        rollback_result = self._send_command_list(
+            commands, expect_string=r"[#>]", read_timeout=90
+        )
         msg = rollback_result
         if "Rollback failed." in msg:
             raise ReplaceConfigException(msg)
@@ -570,7 +567,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         # If hostname changes ensure Netmiko state is updated properly
         self._netmiko_device.set_base_prompt()
         self._copy_run_start()
-        self.changed = False
 
     def _apply_key_map(self, key_map, table):
         new_dict = {}
