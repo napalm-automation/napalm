@@ -1,0 +1,82 @@
+<switching-interface-information>
+    <interface>
+        <interface-name>ge-0/0/0.0</interface-name>
+        <interface-id>68</interface-id>
+        <interface-port-mode>Access</interface-port-mode>
+        <interface-state>down</interface-state>
+        <interface-ether-type>8100</interface-ether-type>
+        <interface-vlan-member-list>
+            <interface-vlan-member>
+                <interface-vlan-name>vlan_15</interface-vlan-name>
+                <interface-vlan-member-tagid>15</interface-vlan-member-tagid>
+                <interface-vlan-member-tagness>untagged</interface-vlan-member-tagness>
+                <interface-msti-id>0</interface-msti-id>
+                <blocking-status>blocked by STP</blocking-status>
+            </interface-vlan-member>
+        </interface-vlan-member-list>
+        <interface-mac-count>0</interface-mac-count>
+    </interface>
+    <interface>
+        <interface-name>ge-0/0/1.0</interface-name>
+        <interface-id>78</interface-id>
+        <interface-port-mode>Trunk</interface-port-mode>
+        <interface-state>down</interface-state>
+        <interface-native-vlan-name>vlan_1</interface-native-vlan-name>
+        <interface-ether-type>8100</interface-ether-type>
+        <interface-vlan-member-list>
+            <interface-vlan-member>
+                <interface-vlan-name>vlan_1</interface-vlan-name>
+                <interface-vlan-member-tagid>1</interface-vlan-member-tagid>
+                <interface-vlan-member-tagness>untagged</interface-vlan-member-tagness>
+                <interface-msti-id>0</interface-msti-id>
+                <blocking-status>blocked by STP</blocking-status>
+            </interface-vlan-member>
+            <interface-vlan-member>
+                <interface-vlan-name>vlan_2</interface-vlan-name>
+                <interface-vlan-member-tagid>2</interface-vlan-member-tagid>
+                <interface-vlan-member-tagness>tagged</interface-vlan-member-tagness>
+                <interface-msti-id>0</interface-msti-id>
+                <blocking-status>blocked by STP</blocking-status>
+            </interface-vlan-member>
+            <interface-vlan-member>
+                <interface-vlan-name>vlan_3</interface-vlan-name>
+                <interface-vlan-member-tagid>3</interface-vlan-member-tagid>
+                <interface-vlan-member-tagness>tagged</interface-vlan-member-tagness>
+                <interface-msti-id>0</interface-msti-id>
+                <blocking-status>blocked by STP</blocking-status>
+            </interface-vlan-member>
+            <interface-vlan-member>
+                <interface-vlan-name>vlan_4</interface-vlan-name>
+                <interface-vlan-member-tagid>4</interface-vlan-member-tagid>
+                <interface-vlan-member-tagness>tagged</interface-vlan-member-tagness>
+                <interface-msti-id>0</interface-msti-id>
+                <blocking-status>blocked by STP</blocking-status>
+            </interface-vlan-member>
+        </interface-vlan-member-list>
+        <interface-mac-count>0</interface-mac-count>
+    </interface>
+    <interface>
+        <interface-name>ge-0/0/2.0</interface-name>
+        <interface-id>79</interface-id>
+        <interface-port-mode>Access</interface-port-mode>
+        <interface-state>down</interface-state>
+        <interface-ether-type>8100</interface-ether-type>
+        <interface-vlan-member-list>
+            <interface-vlan-member>
+                <interface-vlan-name>vlan_1</interface-vlan-name>
+                <interface-vlan-member-tagid>1</interface-vlan-member-tagid>
+                <interface-vlan-member-tagness>untagged</interface-vlan-member-tagness>
+                <interface-msti-id>0</interface-msti-id>
+                <blocking-status>blocked by STP</blocking-status>
+            </interface-vlan-member>
+            <interface-vlan-member>
+                <interface-vlan-name>vlan_2</interface-vlan-name>
+                <interface-vlan-member-tagid>2</interface-vlan-member-tagid>
+                <interface-vlan-member-tagness>tagged</interface-vlan-member-tagness>
+                <interface-msti-id>0</interface-msti-id>
+                <blocking-status>blocked by STP</blocking-status>
+            </interface-vlan-member>
+        </interface-vlan-member-list>
+        <interface-mac-count>0</interface-mac-count>
+    </interface>
+</switching-interface-information>

@@ -1,0 +1,251 @@
+<ethernet-switching-interface-details>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/0.0</l2iff-interface-name>
+        <l2iff-interface-handle>0xe3f4a8</l2iff-interface-handle>
+        <l2iff-interface-interface-type>IFF</l2iff-interface-interface-type>
+        <l2iff-interface-index>558</l2iff-interface-index>
+        <l2iff-interface-generation>163</l2iff-interface-generation>
+        <l2iff-interface-flags>UP</l2iff-interface-flags>
+        <l2iff-interface-ifd-index>649</l2iff-interface-ifd-index>
+        <l2iff-interface-rt-index>7</l2iff-interface-rt-index>
+        <l2iff-interface-ifl-index>558</l2iff-interface-ifl-index>
+        <l2iff-interface-af-value>63</l2iff-interface-af-value>
+        <l2iff-interface-mac-sequence-number>0</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-sequence-number>0</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>1</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/0.0</l2iff-interface-name>
+        <l2iff-interface-interface-type>IFBD (static)</l2iff-interface-interface-type>
+        <l2iff-interface-handle>0x1188208</l2iff-interface-handle>
+        <l2iff-interface-index />
+        <l2iff-interface-generation>135</l2iff-interface-generation>
+        <l2iff-interface-trunk-vlan>0</l2iff-interface-trunk-vlan>
+        <l2iff-interface-flags>UP,</l2iff-interface-flags>
+        <l2iff-interface-rt-index>11</l2iff-interface-rt-index>
+        <l2iff-interface-ifd-index />
+        <l2iff-interface-ifl-index />
+        <l2iff-interface-af-value />
+        <l2iff-interface-vlan-id>15</l2iff-interface-vlan-id>
+        <l2iff-interface-vlan-name>vlan_15</l2iff-interface-vlan-name>
+        <l2iff-interface-sequence-number>39</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-sequence-number>39</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>1</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+        <l2iff-interface-vstp-index>2</l2iff-interface-vstp-index>
+        <l2iff-interface-vlan-member-stp-state>Forwarding</l2iff-interface-vlan-member-stp-state>
+        <l2iff-interface-vlan-member-tagness>untagged</l2iff-interface-vlan-member-tagness>
+        <l2iff-interface-rewrite-op />
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/1.0</l2iff-interface-name>
+        <l2iff-interface-handle>0xe401c8</l2iff-interface-handle>
+        <l2iff-interface-interface-type>IFF</l2iff-interface-interface-type>
+        <l2iff-interface-index>575</l2iff-interface-index>
+        <l2iff-interface-generation>180</l2iff-interface-generation>
+        <l2iff-interface-flags>UP</l2iff-interface-flags>
+        <l2iff-interface-ifd-index>658</l2iff-interface-ifd-index>
+        <l2iff-interface-rt-index>7</l2iff-interface-rt-index>
+        <l2iff-interface-ifl-index>575</l2iff-interface-ifl-index>
+        <l2iff-interface-af-value>63</l2iff-interface-af-value>
+        <l2iff-interface-mac-sequence-number>0</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-sequence-number>0</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>3</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/1.0</l2iff-interface-name>
+        <l2iff-interface-interface-type>IFBD (static)</l2iff-interface-interface-type>
+        <l2iff-interface-handle>0x1189ec8</l2iff-interface-handle>
+        <l2iff-interface-index />
+        <l2iff-interface-generation>183</l2iff-interface-generation>
+        <l2iff-interface-trunk-vlan>0</l2iff-interface-trunk-vlan>
+        <l2iff-interface-flags>UP,</l2iff-interface-flags>
+        <l2iff-interface-rt-index>11</l2iff-interface-rt-index>
+        <l2iff-interface-ifd-index />
+        <l2iff-interface-ifl-index />
+        <l2iff-interface-af-value />
+        <l2iff-interface-vlan-id>1</l2iff-interface-vlan-id>
+        <l2iff-interface-vlan-name>vlan_1</l2iff-interface-vlan-name>
+        <l2iff-interface-sequence-number>0</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-sequence-number>0</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>0</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+        <l2iff-interface-vstp-index>11</l2iff-interface-vstp-index>
+        <l2iff-interface-vlan-member-stp-state>Forwarding</l2iff-interface-vlan-member-stp-state>
+        <l2iff-interface-vlan-member-tagness>untagged</l2iff-interface-vlan-member-tagness>
+        <l2iff-interface-rewrite-op />
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/1.0</l2iff-interface-name>
+        <l2iff-interface-interface-type>IFBD (static)</l2iff-interface-interface-type>
+        <l2iff-interface-handle>0x11d7008</l2iff-interface-handle>
+        <l2iff-interface-index />
+        <l2iff-interface-generation>184</l2iff-interface-generation>
+        <l2iff-interface-trunk-vlan>0</l2iff-interface-trunk-vlan>
+        <l2iff-interface-flags>UP,</l2iff-interface-flags>
+        <l2iff-interface-rt-index>7</l2iff-interface-rt-index>
+        <l2iff-interface-ifd-index />
+        <l2iff-interface-ifl-index />
+        <l2iff-interface-af-value />
+        <l2iff-interface-vlan-id>2</l2iff-interface-vlan-id>
+        <l2iff-interface-vlan-name>vlan_2</l2iff-interface-vlan-name>
+        <l2iff-interface-sequence-number>0</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-sequence-number>0</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>0</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+        <l2iff-interface-vstp-index>11</l2iff-interface-vstp-index>
+        <l2iff-interface-vlan-member-stp-state>Forwarding</l2iff-interface-vlan-member-stp-state>
+        <l2iff-interface-vlan-member-tagness>tagged</l2iff-interface-vlan-member-tagness>
+        <l2iff-interface-rewrite-op />
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/1.0</l2iff-interface-name>
+        <l2iff-interface-interface-type>IFBD (static)</l2iff-interface-interface-type>
+        <l2iff-interface-handle>0x11d7148</l2iff-interface-handle>
+        <l2iff-interface-index />
+        <l2iff-interface-generation>185</l2iff-interface-generation>
+        <l2iff-interface-trunk-vlan>0</l2iff-interface-trunk-vlan>
+        <l2iff-interface-flags>UP,</l2iff-interface-flags>
+        <l2iff-interface-rt-index>8</l2iff-interface-rt-index>
+        <l2iff-interface-ifd-index />
+        <l2iff-interface-ifl-index />
+        <l2iff-interface-af-value />
+        <l2iff-interface-vlan-id>3</l2iff-interface-vlan-id>
+        <l2iff-interface-vlan-name>vlan_3</l2iff-interface-vlan-name>
+        <l2iff-interface-sequence-number>0</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-sequence-number>0</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>0</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+        <l2iff-interface-vstp-index>11</l2iff-interface-vstp-index>
+        <l2iff-interface-vlan-member-stp-state>Forwarding</l2iff-interface-vlan-member-stp-state>
+        <l2iff-interface-vlan-member-tagness>tagged</l2iff-interface-vlan-member-tagness>
+        <l2iff-interface-rewrite-op />
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/1.0</l2iff-interface-name>
+        <l2iff-interface-interface-type>IFBD (static)</l2iff-interface-interface-type>
+        <l2iff-interface-handle>0x11d7288</l2iff-interface-handle>
+        <l2iff-interface-index />
+        <l2iff-interface-generation>186</l2iff-interface-generation>
+        <l2iff-interface-trunk-vlan>0</l2iff-interface-trunk-vlan>
+        <l2iff-interface-flags>UP,</l2iff-interface-flags>
+        <l2iff-interface-rt-index>12</l2iff-interface-rt-index>
+        <l2iff-interface-ifd-index />
+        <l2iff-interface-ifl-index />
+        <l2iff-interface-af-value />
+        <l2iff-interface-vlan-id>4</l2iff-interface-vlan-id>
+        <l2iff-interface-vlan-name>vlan_4</l2iff-interface-vlan-name>
+        <l2iff-interface-sequence-number>0</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-sequence-number>0</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>0</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+        <l2iff-interface-vstp-index>11</l2iff-interface-vstp-index>
+        <l2iff-interface-vlan-member-stp-state>Forwarding</l2iff-interface-vlan-member-stp-state>
+        <l2iff-interface-vlan-member-tagness>tagged</l2iff-interface-vlan-member-tagness>
+        <l2iff-interface-rewrite-op />
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/2.0</l2iff-interface-name>
+        <l2iff-interface-handle>0xe3f188</l2iff-interface-handle>
+        <l2iff-interface-interface-type>IFF</l2iff-interface-interface-type>
+        <l2iff-interface-index>560</l2iff-interface-index>
+        <l2iff-interface-generation>165</l2iff-interface-generation>
+        <l2iff-interface-flags>UP</l2iff-interface-flags>
+        <l2iff-interface-ifd-index>650</l2iff-interface-ifd-index>
+        <l2iff-interface-rt-index>7</l2iff-interface-rt-index>
+        <l2iff-interface-ifl-index>560</l2iff-interface-ifl-index>
+        <l2iff-interface-af-value>63</l2iff-interface-af-value>
+        <l2iff-interface-mac-sequence-number>0</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-sequence-number>0</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>0</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/2.0</l2iff-interface-name>
+        <l2iff-interface-interface-type>IFBD (static)</l2iff-interface-interface-type>
+        <l2iff-interface-handle>0x1187d08</l2iff-interface-handle>
+        <l2iff-interface-index />
+        <l2iff-interface-generation>139</l2iff-interface-generation>
+        <l2iff-interface-trunk-vlan>0</l2iff-interface-trunk-vlan>
+        <l2iff-interface-flags>UP,</l2iff-interface-flags>
+        <l2iff-interface-rt-index>11</l2iff-interface-rt-index>
+        <l2iff-interface-ifd-index />
+        <l2iff-interface-ifl-index />
+        <l2iff-interface-af-value />
+        <l2iff-interface-vlan-id>1</l2iff-interface-vlan-id>
+        <l2iff-interface-vlan-name>vlan_1</l2iff-interface-vlan-name>
+        <l2iff-interface-sequence-number>2</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-sequence-number>2</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>0</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+        <l2iff-interface-vstp-index>3</l2iff-interface-vstp-index>
+        <l2iff-interface-vlan-member-stp-state>Discarding</l2iff-interface-vlan-member-stp-state>
+        <l2iff-interface-vlan-member-tagness>untagged</l2iff-interface-vlan-member-tagness>
+        <l2iff-interface-rewrite-op />
+    </l2ng-l2ald-iff-interface-entry>
+    <l2ng-l2ald-iff-interface-entry>
+        <l2iff-interface-name>ge-0/0/2.0</l2iff-interface-name>
+        <l2iff-interface-interface-type>IFBD (static)</l2iff-interface-interface-type>
+        <l2iff-interface-handle>0x1187bc8</l2iff-interface-handle>
+        <l2iff-interface-index />
+        <l2iff-interface-generation>140</l2iff-interface-generation>
+        <l2iff-interface-trunk-vlan>0</l2iff-interface-trunk-vlan>
+        <l2iff-interface-flags>UP,</l2iff-interface-flags>
+        <l2iff-interface-rt-index>10</l2iff-interface-rt-index>
+        <l2iff-interface-ifd-index />
+        <l2iff-interface-ifl-index />
+        <l2iff-interface-af-value />
+        <l2iff-interface-vlan-id>2</l2iff-interface-vlan-id>
+        <l2iff-interface-vlan-name>vlan_2</l2iff-interface-vlan-name>
+        <l2iff-interface-sequence-number>2</l2iff-interface-sequence-number>
+        <l2iff-interface-mac-sequence-number>2</l2iff-interface-mac-sequence-number>
+        <l2iff-interface-mac-limit>32768</l2iff-interface-mac-limit>
+        <l2iff-interface-macs-learned>0</l2iff-interface-macs-learned>
+        <l2iff-interface-config-smacs-learned>0</l2iff-interface-config-smacs-learned>
+        <l2iff-interface-non-config-smacs-learned>0</l2iff-interface-non-config-smacs-learned>
+        <l2iff-interface-mac-ip-limit>0</l2iff-interface-mac-ip-limit>
+        <l2iff-interface-mac-ip-learned>0</l2iff-interface-mac-ip-learned>
+        <l2iff-interface-vstp-index>3</l2iff-interface-vstp-index>
+        <l2iff-interface-vlan-member-stp-state>Discarding</l2iff-interface-vlan-member-stp-state>
+        <l2iff-interface-vlan-member-tagness>tagged</l2iff-interface-vlan-member-tagness>
+        <l2iff-interface-rewrite-op />
+    </l2ng-l2ald-iff-interface-entry>
+</ethernet-switching-interface-details>
