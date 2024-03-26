@@ -1,6 +1,7 @@
 """
 Load tables/views
 """
+
 import yaml
 import re
 from jnpr.junos.factory import FactoryLoader

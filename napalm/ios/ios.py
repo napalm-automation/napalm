@@ -1,4 +1,5 @@
 """NAPALM Cisco IOS Handler."""
+
 # Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -59,7 +60,7 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 IPV4_ADDR_REGEX = IP_ADDR_REGEX
 IPV6_ADDR_REGEX_1 = r"::"
-IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{0,39}::[0-9a-fA-F:]{0,39}"
 IPV6_ADDR_REGEX_3 = (
     r"[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:"
     "[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"
@@ -1957,12 +1958,17 @@ class IOSDriver(NetworkDriver):
             # get neighbor_entry out of neighbor data
             neighbor_entry = None
             for neighbor in neighbor_data:
-                if (
-                    neighbor["afi"].lower() == afi
-                    and napalm.base.helpers.ip(neighbor["remote_addr"]) == remote_addr
-                ):
-                    neighbor_entry = neighbor
-                    break
+                current_neighbor = napalm.base.helpers.ip(neighbor["remote_addr"])
+                if neighbor["afi"].lower() == afi and current_neighbor == remote_addr:
+                    # Neighbor IPs in VRFs can overlap, so make sure
+                    # we haven't covered this VRF + IP already
+                    vrf = neighbor["vrf"] or "global"
+                    if (
+                        vrf == "global"
+                        or current_neighbor not in bgp_neighbor_data[vrf]["peers"]
+                    ):
+                        neighbor_entry = neighbor
+                        break
             # check for proper session data for the afi
             if neighbor_entry is None:
                 continue
@@ -2095,46 +2101,54 @@ class IOSDriver(NetworkDriver):
                 "up": neigh["up"] != "never",
                 "local_as": napalm.base.helpers.as_number(neigh["local_as"]),
                 "remote_as": napalm.base.helpers.as_number(neigh["remote_as"]),
-                "router_id": napalm.base.helpers.ip(bgp_neigh["router_id"])
-                if bgp_neigh["router_id"]
-                else "",
-                "local_address": napalm.base.helpers.ip(bgp_neigh["local_address"])
-                if bgp_neigh["local_address"]
-                else "",
+                "router_id": (
+                    napalm.base.helpers.ip(bgp_neigh["router_id"])
+                    if bgp_neigh["router_id"]
+                    else ""
+                ),
+                "local_address": (
+                    napalm.base.helpers.ip(bgp_neigh["local_address"])
+                    if bgp_neigh["local_address"]
+                    else ""
+                ),
                 "local_address_configured": False,
-                "local_port": napalm.base.helpers.as_number(bgp_neigh["local_port"])
-                if bgp_neigh["local_port"]
-                else 0,
+                "local_port": (
+                    napalm.base.helpers.as_number(bgp_neigh["local_port"])
+                    if bgp_neigh["local_port"]
+                    else 0
+                ),
                 "routing_table": bgp_neigh["vrf"] if bgp_neigh["vrf"] else "global",
                 "remote_address": napalm.base.helpers.ip(bgp_neigh["neighbor"]),
-                "remote_port": napalm.base.helpers.as_number(bgp_neigh["remote_port"])
-                if bgp_neigh["remote_port"]
-                else 0,
+                "remote_port": (
+                    napalm.base.helpers.as_number(bgp_neigh["remote_port"])
+                    if bgp_neigh["remote_port"]
+                    else 0
+                ),
                 "multihop": False,
                 "multipath": False,
                 "remove_private_as": False,
                 "import_policy": "",
                 "export_policy": "",
-                "input_messages": napalm.base.helpers.as_number(
-                    bgp_neigh["msg_total_in"]
-                )
-                if bgp_neigh["msg_total_in"]
-                else 0,
-                "output_messages": napalm.base.helpers.as_number(
-                    bgp_neigh["msg_total_out"]
-                )
-                if bgp_neigh["msg_total_out"]
-                else 0,
-                "input_updates": napalm.base.helpers.as_number(
-                    bgp_neigh["msg_update_in"]
-                )
-                if bgp_neigh["msg_update_in"]
-                else 0,
-                "output_updates": napalm.base.helpers.as_number(
-                    bgp_neigh["msg_update_out"]
-                )
-                if bgp_neigh["msg_update_out"]
-                else 0,
+                "input_messages": (
+                    napalm.base.helpers.as_number(bgp_neigh["msg_total_in"])
+                    if bgp_neigh["msg_total_in"]
+                    else 0
+                ),
+                "output_messages": (
+                    napalm.base.helpers.as_number(bgp_neigh["msg_total_out"])
+                    if bgp_neigh["msg_total_out"]
+                    else 0
+                ),
+                "input_updates": (
+                    napalm.base.helpers.as_number(bgp_neigh["msg_update_in"])
+                    if bgp_neigh["msg_update_in"]
+                    else 0
+                ),
+                "output_updates": (
+                    napalm.base.helpers.as_number(bgp_neigh["msg_update_out"])
+                    if bgp_neigh["msg_update_out"]
+                    else 0
+                ),
                 "messages_queued_out": napalm.base.helpers.as_number(neigh["out_q"]),
                 "connection_state": bgp_neigh["bgp_state"],
                 "previous_connection_state": "",
@@ -2145,13 +2159,17 @@ class IOSDriver(NetworkDriver):
                     else False
                 ),
                 "local_as_prepend": False,
-                "holdtime": napalm.base.helpers.as_number(bgp_neigh["holdtime"])
-                if bgp_neigh["holdtime"]
-                else 0,
+                "holdtime": (
+                    napalm.base.helpers.as_number(bgp_neigh["holdtime"])
+                    if bgp_neigh["holdtime"]
+                    else 0
+                ),
                 "configured_holdtime": 0,
-                "keepalive": napalm.base.helpers.as_number(bgp_neigh["keepalive"])
-                if bgp_neigh["keepalive"]
-                else 0,
+                "keepalive": (
+                    napalm.base.helpers.as_number(bgp_neigh["keepalive"])
+                    if bgp_neigh["keepalive"]
+                    else 0
+                ),
                 "configured_keepalive": 0,
                 "active_prefix_count": 0,
                 "received_prefix_count": 0,
@@ -3204,10 +3222,10 @@ class IOSDriver(NetworkDriver):
                             # was not specified
                             if protocol == "" or protocol == route_entry["protocol"]:
                                 if route_proto == "bgp":
-                                    route_entry[
-                                        "protocol_attributes"
-                                    ] = self._get_bgp_route_attr(
-                                        destination, _vrf, nh, ip_version
+                                    route_entry["protocol_attributes"] = (
+                                        self._get_bgp_route_attr(
+                                            destination, _vrf, nh, ip_version
+                                        )
                                     )
                                 nh_line_found = (
                                     False  # for next RT entry processing ...
@@ -3300,12 +3318,16 @@ class IOSDriver(NetworkDriver):
             output = self._send_command(command)
         for match in re.finditer(username_regex, output, re.M):
             users[match.groupdict()["username"]] = {
-                "level": int(match.groupdict()["priv_level"])
-                if match.groupdict()["priv_level"]
-                else 1,
-                "password": match.groupdict()["pwd_hash"]
-                if match.groupdict()["pwd_hash"]
-                else "",
+                "level": (
+                    int(match.groupdict()["priv_level"])
+                    if match.groupdict()["priv_level"]
+                    else 1
+                ),
+                "password": (
+                    match.groupdict()["pwd_hash"]
+                    if match.groupdict()["pwd_hash"]
+                    else ""
+                ),
                 "sshkeys": [],
             }
         for match in re.finditer(pub_keychain_regex, output, re.M):
@@ -3722,7 +3744,11 @@ class IOSDriver(NetworkDriver):
             return self._get_vlan_all_ports(output)
 
     def _get_vlan_all_ports(self, output):
-        find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")
+        find_regexp = re.compile(
+            r"^(\d+)\s+"  # vlan id
+            r"(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"  # vlan name
+            r"\w+(?:\/\w+)?\S+(\s+[A-Z][a-z].*)?$"  # ports
+        )
         continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
         output = output.splitlines()
         vlans = {}
@@ -3736,7 +3762,7 @@ class IOSDriver(NetworkDriver):
             if vlan_m:
                 was_vlan_or_cont = True
                 vlan_id = vlan_m.group(1)
-                vlan_name = vlan_m.group(2)
+                vlan_name = vlan_m.group(2).strip()
                 interfaces = vlan_m.group(3) or ""
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
 
@@ -3763,7 +3789,7 @@ class IOSDriver(NetworkDriver):
     def _get_vlan_from_id(self):
         command = "show vlan brief"
         output = self._send_command(command)
-        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        vlan_regexp = r"^(\d+)\W+(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"
         find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
         vlans = {}
         for vlan_id, vlan_name in find_vlan:

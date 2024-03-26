@@ -1,4 +1,5 @@
 """Tests for the validate operation."""
+
 import json
 import os
 import yaml

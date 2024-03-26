@@ -49,6 +49,34 @@ get_bgp_neighbors:
                       is_enabled: {complies: true, nested: false}
                   nested: true
                 192.0.2.3: {complies: true, nested: true}
+                192.0.2.4:
+                  complies: false
+                  diff:
+                    complies: false
+                    extra: []
+                    missing: []
+                    present:
+                      address_family:
+                        complies: false
+                        diff:
+                          complies: false
+                          extra: []
+                          missing: []
+                          present:
+                            ipv4:
+                              complies: false
+                              diff:
+                                complies: false
+                                extra: []
+                                missing: []
+                                present:
+                                  received_prefixes: {actual_value: 12, expected_value: "10%10", complies: False,
+                                  nested: false}
+                                  sent_prefixes: {complies: true, nested: False}
+                              nested: true
+                        nested: true
+                      is_enabled: {complies: true, nested: false}
+                  nested: true
             nested: true
           router_id: {actual_value: 192.0.2.2, expected_value: 192.6.6.6, complies: false, nested: false}
       nested: true

@@ -1,0 +1,11 @@
+{
+    "systemStatus": "unknownTemperatureAlarmLevel",
+    "shutdownOnOverheat": false,
+    "powercycleOnOverheat": false,
+    "actionOnOverheat": "actionUnknown",
+    "recoveryModeOnOverheat": "recoveryModeNA",
+    "ambientThreshold": 45,
+    "tempSensors": [],
+    "cardSlots": [],
+    "powerSupplySlots": []
+}

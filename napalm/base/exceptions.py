@@ -67,6 +67,10 @@ class ConnectionClosedException(ConnectionException):
     pass
 
 
+class UnsupportedVersion(ConnectionException):
+    pass
+
+
 class ReplaceConfigException(NapalmException):
     pass
 

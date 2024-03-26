@@ -95,7 +95,6 @@ class FakeJunOSDevice:
 
 
 class FakeRPCObject:
-
     """
     Fake RPC caller.
     """
@@ -144,7 +143,6 @@ class FakeRPCObject:
 
 
 class FakeConnectionRPCObject:
-
     """
     Will make fake RPC requests that usually are directly made via netconf.
     """

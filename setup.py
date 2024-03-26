@@ -1,4 +1,5 @@
 """setup.py file."""
+
 from setuptools import setup, find_packages
 
 with open("requirements.txt", "r") as fs:
@@ -12,7 +13,7 @@ __author__ = "David Barroso <dbarrosop@dravetech.com>"
 
 setup(
     name="napalm",
-    version="4.1.0",
+    version="5.0.0",
     packages=find_packages(exclude=("test*",)),
     test_suite="test_base",
     author="David Barroso, Kirk Byers, Mircea Ulinic",
@@ -26,10 +27,11 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Operating System :: POSIX :: Linux",
         "Operating System :: MacOS",
     ],
