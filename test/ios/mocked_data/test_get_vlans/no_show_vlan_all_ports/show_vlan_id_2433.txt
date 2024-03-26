@@ -1,0 +1,15 @@
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+2433 Vlan2433                         active    Po1
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+2433 enet  102433     1500  -      -      -        -    -        0      0
+
+Remote SPAN VLAN
+----------------
+Disabled
+
+Primary Secondary Type              Ports
+------- --------- ----------------- ------------------------------------------
+2400    2433      community         Gi0/3, Gi0/4
