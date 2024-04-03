@@ -44,7 +44,7 @@ class NetworkDriver(object):
         username: str,
         password: str,
         timeout: int = 60,
-        optional_args: Dict = None,
+        optional_args: Optional[Dict] = None,
     ) -> None:
         """
         This is the base class you have to inherit from when writing your own Network Driver to
