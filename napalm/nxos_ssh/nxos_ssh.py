@@ -542,32 +542,31 @@ class NXOSSSHDriver(NXOSDriverBase):
             "no terminal dont-ask",
         ]
 
-        try:
-            rollback_result = self._send_command_list(
-                commands, expect_string=r"[#>]", read_timeout=90
-            )
-        finally:
-            self.changed = True
+        rollback_result = self._send_command_list(
+            commands, expect_string=r"[#>]", read_timeout=90
+        )
         msg = rollback_result
         if "Rollback failed." in msg:
             raise ReplaceConfigException(msg)
 
     def rollback(self):
-        if self.changed:
-            commands = [
-                "terminal dont-ask",
-                "rollback running-config file {}".format(self.rollback_cfg),
-                "no terminal dont-ask",
-            ]
-            result = self._send_command_list(
-                commands, expect_string=r"[#>]", read_timeout=90
-            )
-            if "completed" not in result.lower():
-                raise ReplaceConfigException(result)
-            # If hostname changes ensure Netmiko state is updated properly
-            self._netmiko_device.set_base_prompt()
-            self._copy_run_start()
-            self.changed = False
+        if not self._check_file_exists(self.rollback_cfg):
+            msg = f"Rollback file '{self.rollback_cfg}' does not exist on device."
+            raise ReplaceConfigException(msg)
+
+        commands = [
+            "terminal dont-ask",
+            "rollback running-config file {}".format(self.rollback_cfg),
+            "no terminal dont-ask",
+        ]
+        result = self._send_command_list(
+            commands, expect_string=r"[#>]", read_timeout=90
+        )
+        if "completed" not in result.lower():
+            raise ReplaceConfigException(result)
+        # If hostname changes ensure Netmiko state is updated properly
+        self._netmiko_device.set_base_prompt()
+        self._copy_run_start()
 
     def _apply_key_map(self, key_map, table):
         new_dict = {}
