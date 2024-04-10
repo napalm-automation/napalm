@@ -3111,7 +3111,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return users
 
-    def get_config(self, retrieve="all", full=False, sanitized=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False, format="text"):
         """Return device configuration."""
 
         encoding = self.config_encoding
