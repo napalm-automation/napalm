@@ -3796,7 +3796,7 @@ class IOSDriver(NetworkDriver):
             output = self._send_command("show vlan id {}".format(vlan_id))
             _vlans = self._get_vlan_all_ports(output)
             if len(_vlans) == 0:
-                vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+                vlans[vlan_id] = {"name": vlan_name.strip(), "interfaces": []}
             elif len(_vlans) == 1:
                 vlans.update(_vlans)
             elif len(_vlans.keys()) > 1:
