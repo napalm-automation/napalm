@@ -249,7 +249,7 @@ class BaseTestGetters(object):
         assert get_bgp_config == {} or len(get_bgp_config) > 0
 
         for bgp_group in get_bgp_config.values():
-            assert helpers.test_model(models.BPGConfigGroupDict, bgp_group)
+            assert helpers.test_model(models.BGPConfigGroupDict, bgp_group)
             for bgp_neighbor in bgp_group.get("neighbors", {}).values():
                 assert helpers.test_model(models.BGPConfigNeighborDict, bgp_neighbor)
 
