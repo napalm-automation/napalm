@@ -153,8 +153,8 @@ AFDict = TypedDict(
     "AFDict", {"sent_prefixes": int, "accepted_prefixes": int, "received_prefixes": int}
 )
 
-BPGConfigGroupDict = TypedDict(
-    "BPGConfigGroupDict",
+BGPConfigGroupDict = TypedDict(
+    "BGPConfigGroupDict",
     {
         "type": str,
         "description": str,

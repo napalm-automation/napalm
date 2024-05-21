@@ -323,7 +323,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_bgp_config) > 0
 
         for bgp_group in get_bgp_config.values():
-            result = result and self._test_model(models.BPGConfigGroupDict, bgp_group)
+            result = result and self._test_model(models.BGPConfigGroupDict, bgp_group)
             for bgp_neighbor in bgp_group.get("neighbors", {}).values():
                 result = result and self._test_model(
                     models.BGPConfigNeighborDict, bgp_neighbor

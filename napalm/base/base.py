@@ -639,7 +639,7 @@ class NetworkDriver(object):
 
     def get_bgp_config(
         self, group: str = "", neighbor: str = ""
-    ) -> models.BPGConfigGroupDict:
+    ) -> models.BGPConfigGroupDict:
         """
         Returns a dictionary containing the BGP configuration.
         Can return either the whole config, either the config only for a group or neighbor.
