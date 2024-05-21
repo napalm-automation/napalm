@@ -3635,7 +3635,7 @@ class IOSDriver(NetworkDriver):
         except AttributeError:
             raise ValueError("The vrf %s does not exist" % name)
 
-    def get_config(self, retrieve="all", full=False, sanitized=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False, format="text"):
         """Implementation of get_config for IOS.
 
         Returns the startup or/and running configuration as dictionary.
@@ -3820,7 +3820,7 @@ class IOSDriver(NetworkDriver):
             output = self._send_command("show vlan id {}".format(vlan_id))
             _vlans = self._get_vlan_all_ports(output, vlan_id, vlan_name)
             if len(_vlans) == 0:
-                vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+                vlans[vlan_id] = {"name": vlan_name.strip(), "interfaces": []}
             elif len(_vlans) == 1:
                 vlans.update(_vlans)
             elif len(_vlans.keys()) > 1:

@@ -90,6 +90,7 @@ class JunOSDriver(NetworkDriver):
         self.ssh_config_file = optional_args.get("ssh_config_file", None)
         self.ignore_warning = optional_args.get("ignore_warning", False)
         self.auto_probe = optional_args.get("auto_probe", 0)
+        self.huge_tree = optional_args.get("huge_tree", False)
 
         # Define locking method
         self.lock_disable = optional_args.get("lock_disable", False)
@@ -121,6 +122,7 @@ class JunOSDriver(NetworkDriver):
                 ssh_private_key_file=self.key_file,
                 ssh_config=self.ssh_config_file,
                 port=self.port,
+                huge_tree=self.huge_tree,
             )
         else:
             self.device = Device(
@@ -129,6 +131,7 @@ class JunOSDriver(NetworkDriver):
                 password=password,
                 port=self.port,
                 ssh_config=self.ssh_config_file,
+                huge_tree=self.huge_tree,
             )
 
         self.platform = "junos"
@@ -1246,6 +1249,8 @@ class JunOSDriver(NetworkDriver):
         }
         _GROUP_FIELDS_DATATYPE_MAP_.update(_COMMON_FIELDS_DATATYPE_)
 
+        _UNWANTED_GROUP_FIELDS = ["multihop", "cluster"]
+
         _DATATYPE_DEFAULT_ = {str: "", int: 0, bool: False, list: []}
 
         bgp_config = {}
@@ -1302,6 +1307,8 @@ class JunOSDriver(NetworkDriver):
             is_nhs, boolean = is_nhs_list[0]
             nhs_policies[policy_name] = boolean if boolean is not None else False
 
+        unwanted_group_fields = dict()
+
         for bgp_group in bgp_items:
             bgp_group_name = bgp_group[0]
             bgp_group_details = bgp_group[1]
@@ -1314,6 +1321,9 @@ class JunOSDriver(NetworkDriver):
             # Always overwrite with the system local_as (this will either be
             # valid or will be zero i.e. the same as the default value).
             bgp_config[bgp_group_name]["local_as"] = system_bgp_asn
+            unwanted_group_fields[bgp_group_name] = dict(
+                {key: False for key in _UNWANTED_GROUP_FIELDS}
+            )
 
             for key, value in bgp_group_details:
                 if "_prefix_limit" in key or value is None:
@@ -1335,6 +1345,10 @@ class JunOSDriver(NetworkDriver):
                 if key == "neighbors":
                     bgp_group_peers = value
                     continue
+
+                if key in _UNWANTED_GROUP_FIELDS:
+                    unwanted_group_fields[bgp_group_name][key] = True
+                    continue
                 if datatype:
                     bgp_config[bgp_group_name].update(
                         {key: napalm.base.helpers.convert(datatype, value, default)}
@@ -1354,9 +1368,7 @@ class JunOSDriver(NetworkDriver):
             bgp_config[bgp_group_name]["prefix_limit"] = build_prefix_limit(
                 **prefix_limit_fields
             )
-            if "multihop" in bgp_config[bgp_group_name].keys():
-                # Delete 'multihop' key from the output
-                del bgp_config[bgp_group_name]["multihop"]
+            if unwanted_group_fields[bgp_group_name]["multihop"]:
                 if bgp_config[bgp_group_name]["multihop_ttl"] == 0:
                     # Set ttl to default value 64
                     bgp_config[bgp_group_name]["multihop_ttl"] = 64
@@ -1411,7 +1423,7 @@ class JunOSDriver(NetworkDriver):
                         # we do not want cluster in the output
                         del bgp_peer_details["cluster"]
 
-                if "cluster" in bgp_config[bgp_group_name].keys():
+                if unwanted_group_fields[bgp_group_name]["cluster"]:
                     bgp_peer_details["route_reflector_client"] = True
                 prefix_limit_fields = {}
                 for key, value in bgp_group_details:
@@ -1433,10 +1445,6 @@ class JunOSDriver(NetworkDriver):
                 ] = bgp_peer_details
                 if neighbor and bgp_peer_address == neighbor_ip:
                     break  # found the desired neighbor
-
-            if "cluster" in bgp_config[bgp_group_name].keys():
-                # we do not want cluster in the output
-                del bgp_config[bgp_group_name]["cluster"]
 
         return bgp_config
 
@@ -2440,10 +2448,11 @@ class JunOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all", full=False, sanitized=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False, format="text"):
         rv = {"startup": "", "running": "", "candidate": ""}
 
-        options = {"format": "text", "database": "candidate"}
+        self.format = format
+        options = {"format": self.format, "database": "candidate"}
         sanitize_strings = {
             r"^(\s+community\s+)\w+(;.*|\s+{.*)$": r"\1<removed>\2",
             r'^(.*)"\$\d\$\S+"(;.*)$': r"\1<removed>\2",

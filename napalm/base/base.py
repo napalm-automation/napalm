@@ -44,7 +44,7 @@ class NetworkDriver(object):
         username: str,
         password: str,
         timeout: int = 60,
-        optional_args: Dict = None,
+        optional_args: Optional[Dict] = None,
     ) -> None:
         """
         This is the base class you have to inherit from when writing your own Network Driver to
@@ -1599,7 +1599,11 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def get_config(
-        self, retrieve: str = "all", full: bool = False, sanitized: bool = False
+        self,
+        retrieve: str = "all",
+        full: bool = False,
+        sanitized: bool = False,
+        format: str = "text",
     ) -> models.ConfigDict:
         """
         Return the configuration of a device.
@@ -1609,6 +1613,7 @@ class NetworkDriver(object):
                               The rest will be set to "".
             full(bool): Retrieve all the configuration. For instance, on ios, "sh run all".
             sanitized(bool): Remove secret data. Default: ``False``.
+            format(string): The configuration format style to be retrieved.
 
         Returns:
           The object returned is a dictionary with a key for each configuration store:

@@ -120,7 +120,6 @@ class NXOSDriverBase(NetworkDriver):
         self.timeout = timeout
         self.replace = True
         self.loaded = False
-        self.changed = False
         self.merge_candidate = ""
         self.candidate_cfg = "candidate_config.txt"
         self.rollback_cfg = "rollback_config.txt"
@@ -191,19 +190,40 @@ class NXOSDriverBase(NetworkDriver):
     ) -> Dict[str, Union[str, Dict[str, Any]]]:
         raise NotImplementedError
 
+    def _check_file_exists(self, cfg_file: str) -> bool:
+        """
+        Check that the file exists on remote device using full path.
+
+        cfg_file can be a full path, e.g.: bootflash:rollback_config.txt
+        or just a filename, e.g.: rollback_config.txt
+
+        For example
+        # dir rollback_config.txt
+            71803    Sep 06 14:13:33 2023  rollback_config.txt
+
+        Usage for bootflash://sup-local
+        6211682304 bytes used
+        110314684416 bytes free
+        116526366720 bytes total
+        """
+        cmd = f"dir {cfg_file}"
+        output = self._send_command(command=cmd, raw_text=True)
+        if "No such file or directory" in output:
+            return False
+        else:
+            return True
+
     def _commit_merge(self) -> None:
         try:
             output = self._send_config(self.merge_candidate)
             if output and "Invalid command" in output:
                 raise MergeConfigException("Error while applying config!")
         except Exception as e:
-            self.changed = True
             self.rollback()
             err_header = "Configuration merge failed; automatic rollback attempted"
             merge_error = "{0}:\n{1}".format(err_header, repr(str(e)))
             raise MergeConfigException(merge_error)
 
-        self.changed = True
         # clear the merge buffer
         self.merge_candidate = ""
 
@@ -583,7 +603,11 @@ class NXOSDriverBase(NetworkDriver):
         self._send_command_list(["terminal dont-ask"])
 
     def get_config(
-        self, retrieve: str = "all", full: bool = False, sanitized: bool = False
+        self,
+        retrieve: str = "all",
+        full: bool = False,
+        sanitized: bool = False,
+        format: str = "text",
     ) -> models.ConfigDict:
         # NX-OS adds some extra, unneeded lines that should be filtered.
         filter_strings = [
@@ -897,8 +921,6 @@ class NXOSDriver(NXOSDriverBase):
         except ConnectionError:
             # requests will raise an error with verbose warning output (don't fail on this).
             return
-        finally:
-            self.changed = True
 
         # For nx-api a list is returned so extract the result associated with the
         # 'rollback' command.
@@ -918,10 +940,11 @@ class NXOSDriver(NXOSDriverBase):
 
     def rollback(self) -> None:
         assert isinstance(self.device, NXOSDevice)
-        if self.changed:
-            self.device.rollback(self.rollback_cfg)
-            self._copy_run_start()
-            self.changed = False
+        if not self._check_file_exists(cfg_file=self.rollback_cfg):
+            msg = f"Rollback file '{self.rollback_cfg}' does not exist on device."
+            raise ReplaceConfigException(msg)
+        self.device.rollback(self.rollback_cfg)
+        self._copy_run_start()
 
     def get_facts(self) -> models.FactsDict:
         facts: models.FactsDict = {}  # type: ignore
