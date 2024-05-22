@@ -236,11 +236,21 @@ class JunOSDriver(NetworkDriver):
         return fmt
 
     def _load_candidate(self, filename, config, overwrite):
+        fmt = None
         if filename is None:
             configuration = config
         else:
             with open(filename) as f:
-                configuration = f.read()
+                try:
+                    configuration = etree.parse(f).getroot()
+                    fmt = "xml"
+                except etree.XMLSyntaxError:
+                    configuration = f.read()
+
+        if not fmt:
+            fmt = self._detect_config_format(configuration)
+            if fmt == "xml":
+                configuration = etree.XML(configuration)
 
         if (
             not self.lock_disable
@@ -251,11 +261,6 @@ class JunOSDriver(NetworkDriver):
             self._lock()
 
         try:
-            fmt = self._detect_config_format(configuration)
-
-            if fmt == "xml":
-                configuration = etree.XML(configuration)
-
             if self.config_private:
                 try:
                     self.device.rpc.open_configuration(private=True, normalize=True)
