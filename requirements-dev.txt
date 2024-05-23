@@ -12,6 +12,6 @@ mypy==1.10.0
 types-PyYAML==6.0.12.20240311
 types-requests==2.32.0.20240521
 types-six==1.16.21.20240513
-types-setuptools==69.5.0.20240519
+types-setuptools==69.5.0.20240522
 ttp==0.9.5
 ttp_templates==0.3.6
