@@ -568,6 +568,13 @@ class IOSDriver(NetworkDriver):
             ):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
+            elif "rollback aborted" in output.lower():
+                msg = (
+                    "Candidate config could not be applied, "
+                    "attempting rollback\n{}".format(output)
+                )
+                self.rollback()
+                raise ReplaceConfigException(msg)
             elif "%Please turn config archive on" in output:
                 if revert_in_min:
                     raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
