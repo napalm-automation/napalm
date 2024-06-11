@@ -12,3 +12,6 @@ VLAN Name                             Status    Ports
 1003 Vlan1003                         act/unsup
 1004 Vlan1004                         act/unsup
 1005 Vlan1005                         act/unsup
+2400 Vlan2400                         active
+2432 Vlan2432                         active
+2433 Vlan2433                         active
