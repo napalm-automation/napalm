@@ -13,5 +13,6 @@ types-PyYAML==6.0.12.20240311
 types-requests==2.32.0.20240521
 types-six==1.16.21.20240513
 types-setuptools==69.5.0.20240522
+types-python-dateutil
 ttp==0.9.5
 ttp_templates==0.3.6

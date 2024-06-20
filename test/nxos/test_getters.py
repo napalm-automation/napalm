@@ -27,3 +27,7 @@ class TestGetter(BaseTestGetters):
             assert helpers.test_model(models.InterfaceDict, interface_data)
 
         return get_interfaces
+
+    test_get_bgp_neighbors = patch("time.time", mock_time)(
+        BaseTestGetters.test_get_bgp_neighbors
+    )
