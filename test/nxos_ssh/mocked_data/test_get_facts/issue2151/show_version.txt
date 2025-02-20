@@ -1,0 +1,50 @@
+Cisco Nexus Operating System (NX-OS) Software
+TAC support: http://www.cisco.com/tac
+Copyright (C) 2002-2017, Cisco and/or its affiliates.
+All rights reserved.
+The copyrights to certain works contained in this software are
+owned by other third parties and used and distributed under their own
+licenses, such as open source.  This software is provided "as is," and unless
+otherwise stated, there is no warranty, express or implied, including but not
+limited to warranties of merchantability and fitness for a particular purpose.
+Certain components of this software are licensed under
+the GNU General Public License (GPL) version 2.0 or
+GNU General Public License (GPL) version 3.0  or the GNU
+Lesser General Public License (LGPL) Version 2.1 or
+Lesser General Public License (LGPL) Version 2.0.
+A copy of each such license is available at
+http://www.opensource.org/licenses/gpl-2.0.php and
+http://opensource.org/licenses/gpl-3.0.html and
+http://www.opensource.org/licenses/lgpl-2.1.php and
+http://www.gnu.org/licenses/old-licenses/library.txt.
+
+Software
+  BIOS: version 01.09
+  NXOS: version 10.3(5) [Maintenance Release]
+  Host NXOS: version 10.3(5)
+  BIOS compile time: 10/08/2023
+  NXOS image file is: bootflash:///nxos64-cs.10.3.5.M.bin
+  NXOS compile time: 4/30/2024 12:00:00 [05/08/2024 05:39:13]
+  NXOS boot mode: LXC
+
+Hardware
+  cisco Nexus 3048 Chassis
+  Intel(R) Celeron(R) CPU        P4505  @ 1.87GHz with 3903332 kB of memory.
+  Processor Board ID TM6012EC74B
+
+  Device name: SWITCH_NXOSv
+  bootflash:    1848240 kB
+  usb1:               0 kB (expansion flash)
+
+Kernel uptime is 50 day(s), 5 hour(s), 9 minute(s), 7 second(s)
+
+Last reset at 829281 usecs after  Thu Oct 26 20:25:34 2017
+
+  Reason: Reset Requested by CLI command reload
+  System version: 7.0(3)I4(7)
+  Service:
+
+plugin
+  Core Plugin, Ethernet Plugin
+
+Active Package(s):
