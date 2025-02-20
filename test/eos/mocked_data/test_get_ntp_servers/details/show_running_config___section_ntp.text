@@ -1,0 +1,2 @@
+ntp server vrf FOO 1.2.3.4 prefer iburst
+ntp server vrf FOO 4.3.2.1 local-interface Management0

@@ -1,0 +1,48 @@
+{
+  "interfaces": {
+      "Management0": {
+          "name": "Management0",
+          "lineProtocolStatus": "up",
+          "interfaceStatus": "connected",
+          "mtu": 1500,
+          "interfaceAddressBrief": {
+              "ipAddr": {
+                  "address": "172.20.20.2",
+                  "maskLen": 24
+              }
+          },
+          "ipv4Routable240": false,
+          "ipv4Routable0": false,
+          "enabled": true,
+          "description": "",
+          "interfaceAddress": {
+              "primaryIp": {
+                  "address": "172.20.20.2",
+                  "maskLen": 24
+              },
+              "secondaryIps": {},
+              "secondaryIpsOrderedList": [],
+              "virtualIp": {
+                  "address": "0.0.0.0",
+                  "maskLen": 0
+              },
+              "virtualSecondaryIps": {},
+              "virtualSecondaryIpsOrderedList": [],
+              "broadcastAddress": "255.255.255.255",
+              "dhcp": false
+          },
+          "proxyArp": false,
+          "proxyArpAllowDefault": false,
+          "localProxyArp": false,
+          "gratuitousArp": false,
+          "routedAddr": "00:1c:73:7b:8c:1d",
+          "isVrrpBackup": false,
+          "vrf": "default",
+          "urpf": "disable",
+          "addresslessForwarding": "isInvalid",
+          "directedBroadcastEnabled": false,
+          "maxMssIngress": 0,
+          "maxMssEgress": 0
+      }
+  }
+}

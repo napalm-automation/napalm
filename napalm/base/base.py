@@ -921,12 +921,23 @@ class NetworkDriver(object):
         """
         Returns the NTP servers configuration as dictionary.
         The keys of the dictionary represent the IP Addresses of the servers.
-        Inner dictionaries do not have yet any available keys.
+        Inner dictionaries MAY contain information regarding per-server configuration.
 
         Example::
 
             {
-                '192.168.0.1': {},
+                '192.168.0.1':
+                {
+                    'address': '192.168.0.1',
+                    'port': 123,
+                    'version': 4,
+                    'association_type': 'SERVER',
+                    'iburst': False,
+                    'prefer': False,
+                    'network_instance': 'default',
+                    'source_address': '192.0.2.1',
+                    'key_id': -1,
+                },
                 '17.72.148.53': {},
                 '37.187.56.220': {},
                 '162.158.20.18': {}
