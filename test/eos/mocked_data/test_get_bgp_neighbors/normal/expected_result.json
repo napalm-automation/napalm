@@ -1,91 +1,91 @@
 {
   "global": {
-    "router_id": "192.168.56.3",
     "peers": {
-      "192.168.56.4": {
-        "is_enabled": true,
-        "uptime": "...",
-        "remote_as": 65001,
-        "description": "",
-        "remote_id": "192.168.56.3",
-        "local_as": 65002,
-        "is_up": false,
-        "address_family": {
-          "ipv4": {
-            "sent_prefixes": 0,
-            "accepted_prefixes": -1,
-            "received_prefixes": 0
-          },
-          "ipv6": {
-            "sent_prefixes": 0,
-            "accepted_prefixes": -1,
-            "received_prefixes": 0
-          }
-        }
-      },
-      "192.168.56.2": {
-        "is_enabled": true,
-        "uptime": "...",
-        "remote_as": 65002,
-        "description": "",
-        "remote_id": "192.168.56.2",
+      "10.0.0.1": {
         "local_as": 65001,
-        "is_up": true,
-        "address_family": {
-          "ipv4": {
-            "sent_prefixes": 0,
-            "accepted_prefixes": -1,
-            "received_prefixes": 0
-          },
-          "ipv6": {
-            "sent_prefixes": 0,
-            "accepted_prefixes": -1,
-            "received_prefixes": 0
-          }
-        }
-      },
-      "2001:7f8::f10:0:2": {
-        "is_enabled": true,
-        "uptime": "...",
         "remote_as": 65002,
-        "description": "",
-        "remote_id": "192.168.56.2",
-        "local_as": 65001,
+        "remote_id": "192.168.0.1",
         "is_up": true,
+        "is_enabled": true,
+        "description": "",
+        "uptime": 121,
         "address_family": {
           "ipv4": {
-            "sent_prefixes": 0,
-            "accepted_prefixes": -1,
-            "received_prefixes": 0
+            "received_prefixes": 3,
+            "accepted_prefixes": 3,
+            "sent_prefixes": 4
           },
           "ipv6": {
-            "sent_prefixes": 0,
-            "accepted_prefixes": -1,
-            "received_prefixes": 0
+            "received_prefixes": 0,
+            "accepted_prefixes": 0,
+            "sent_prefixes": 0
           }
         }
       },
-      "2001:7f8::f10:0:3": {
-        "is_enabled": true,
-        "uptime": "...",
-        "remote_as": 65001,
-        "description": "",
-        "remote_id": "192.168.56.3",
-        "local_as": 65002,
+      "10.0.0.3": {
+        "local_as": 65001,
+        "remote_as": 65003,
+        "remote_id": "0.0.0.0",
         "is_up": false,
+        "is_enabled": true,
+        "description": "",
+        "uptime": -1,
         "address_family": {
           "ipv4": {
-            "sent_prefixes": 0,
-            "accepted_prefixes": -1,
-            "received_prefixes": 0
+            "received_prefixes": 0,
+            "accepted_prefixes": 0,
+            "sent_prefixes": 0
           },
           "ipv6": {
-            "sent_prefixes": 0,
-            "accepted_prefixes": -1,
-            "received_prefixes": 0
+            "received_prefixes": 0,
+            "accepted_prefixes": 0,
+            "sent_prefixes": 0
+          }
+        }
+      },
+      "2001:fb8:100::2": {
+        "local_as": 65001,
+        "remote_as": 65002,
+        "remote_id": "192.168.0.1",
+        "is_up": true,
+        "is_enabled": true,
+        "description": "",
+        "uptime": 165,
+        "address_family": {
+          "ipv4": {
+            "received_prefixes": 0,
+            "accepted_prefixes": 0,
+            "sent_prefixes": 0
+          },
+          "ipv6": {
+            "received_prefixes": 3,
+            "accepted_prefixes": 3,
+            "sent_prefixes": 4
+          }
+        }
+      },
+      "2001:fb8:200::2": {
+        "local_as": 65001,
+        "remote_as": 65003,
+        "remote_id": "192.168.0.2",
+        "is_up": true,
+        "is_enabled": true,
+        "description": "",
+        "uptime": 165,
+        "address_family": {
+          "ipv4": {
+            "received_prefixes": 0,
+            "accepted_prefixes": 0,
+            "sent_prefixes": 0
+          },
+          "ipv6": {
+            "received_prefixes": 0,
+            "accepted_prefixes": 0,
+            "sent_prefixes": 5
           }
         }
       }
-    }
+    },
+    "router_id": "192.168.0.0"
   }
 }

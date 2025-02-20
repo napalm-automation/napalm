@@ -59,6 +59,7 @@ docs/_static/
 .venv
 .vscode
 .devcontainer
+.python-version
 
 env
 *.swp
