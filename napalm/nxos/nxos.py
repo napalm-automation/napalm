@@ -1204,27 +1204,32 @@ class NXOSDriver(NXOSDriverBase):
             )
         return arp_table
 
-    def _get_ntp_entity(
-        self, peer_type: str
-    ) -> Dict[str, Union[models.NTPPeerDict, models.NTPServerDict]]:
-        ntp_entities: Dict[str, Union[models.NTPPeerDict, models.NTPServerDict]] = {}
+    def _filter_ntp_table(self, peer_type: str) -> List[str]:
+        ret = []
         command = "show ntp peers"
         ntp_peers_table = self._get_command_table(command, "TABLE_peers", "ROW_peers")
-
         for ntp_peer in ntp_peers_table:
             if ntp_peer.get("serv_peer", "").strip() != peer_type:
                 continue
             peer_addr = napalm.base.helpers.ip(ntp_peer.get("PeerIPAddress").strip())
-            # Ignore the type of the following line until NTP data is modelled
-            ntp_entities[peer_addr] = {}  # type: ignore
+            ret.append(peer_addr)
+        return ret
+
+    def get_ntp_peers(self) -> Dict[str, models.NTPPeerDict]:
+        ntp_entities: Dict[str, models.NTPPeerDict] = {}
+        peers = self._filter_ntp_table("Peer")
+        for peer_addr in peers:
+            ntp_entities[peer_addr] = {}
 
         return ntp_entities
 
-    def get_ntp_peers(self) -> Dict[str, models.NTPPeerDict]:
-        return self._get_ntp_entity("Peer")
-
     def get_ntp_servers(self) -> Dict[str, models.NTPServerDict]:
-        return self._get_ntp_entity("Server")
+        ntp_entities: Dict[str, models.NTPServerDict] = {}
+        peers = self._filter_ntp_table("Server")
+        for peer_addr in peers:
+            ntp_entities[peer_addr] = {}
+
+        return ntp_entities
 
     def get_ntp_stats(self) -> List[models.NTPStats]:
         ntp_stats: List[models.NTPStats] = []
