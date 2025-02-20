@@ -1,0 +1,415 @@
+{
+  "vrfs": {
+    "default": {
+      "peerList": [
+        {
+          "peerAddress": "2001:fb8:100::2",
+          "asn": "65002",
+          "linkType": "external",
+          "routerId": "192.168.0.1",
+          "vrf": "default",
+          "version": 4,
+          "negotiatedVersion": 4,
+          "updateGroupIndex": -1,
+          "lastRcvd": 33,
+          "lastSent": 23,
+          "holdTime": 180,
+          "keepaliveTime": 60,
+          "configHoldTime": 180,
+          "configKeepaliveTime": 60,
+          "minHoldTime": 3,
+          "configMinHoldTime": 3,
+          "holdTimeLeft": 0,
+          "keepaliveTimeLeft": 0,
+          "state": "Established",
+          "establishedTime": 165,
+          "establishedTransitions": 1,
+          "lastState": "OpenConfirm",
+          "lastEvent": "Established",
+          "lastSocketOutErrorMsg": "Bind (Cannot assign requested address)",
+          "lastSocketOutErrorTimeInfo": {
+            "time": 166
+          },
+          "enRRefreshstalePathRemoval": false,
+          "outboundEnRRefreshEnabled": true,
+          "neighborCapabilities": {
+            "negotiationDisabled": false,
+            "unsupportedCapReceived": false,
+            "multiprotocolCaps": {
+              "ipv6Unicast": {
+                "advertised": true,
+                "received": true,
+                "enabled": true
+              }
+            },
+            "fourOctetAsnCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "routeRefreshCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "enhancedRouteRefreshCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "sendEorMessages": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "addPathsCaps": {
+              "ipv6Unicast": {
+                "receivingAddPaths": {
+                  "receiveCapabilityAdvertised": true,
+                  "sendCapabilityReceived": false,
+                  "enabled": false
+                },
+                "sendingAddPaths": {
+                  "sendCapabilityAdvertised": false,
+                  "receiveCapabilityReceived": true,
+                  "enabled": false
+                }
+              }
+            }
+          },
+          "endOfRibs": {
+            "incoming": {
+              "ipv6Unicast": {
+                "status": "received",
+                "eorReceivedTime": 1721080528.104721,
+                "stalePathsDeleted": 0
+              }
+            }
+          },
+          "nexthopLuOriginateIpv4Uni": false,
+          "thirdPartyNexthopLuOriginateIpv4Uni": false,
+          "nexthopLuOriginateLfibBackupIpForwardIpv4Uni": false,
+          "nexthopLuOriginateIpv6Uni": false,
+          "thirdPartyNexthopLuOriginateIpv6Uni": false,
+          "nexthopLuOriginateLfibBackupIpForwardIpv6Uni": false,
+          "aigpSessionIpv4Uni": false,
+          "aigpSessionIpv4LabeledUni": false,
+          "aigpSessionIpv6Uni": false,
+          "aigpSessionIpv6LabeledUni": false,
+          "fwdFailoverTriggerSessionIpv4Uni": false,
+          "fwdFailoverTriggerSessionIpv6Uni": false,
+          "outMessageStats": {
+            "opens": 1,
+            "notifications": 0,
+            "updates": 2,
+            "keepalives": 4,
+            "rtRefreshes": 0,
+            "beginOfRtRefreshes": 0,
+            "endOfRtRefreshes": 0
+          },
+          "inMessageStats": {
+            "opens": 1,
+            "notifications": 0,
+            "updates": 2,
+            "keepalives": 5,
+            "rtRefreshes": 0,
+            "beginOfRtRefreshes": 0,
+            "endOfRtRefreshes": 0
+          },
+          "sentMessages": 7,
+          "receivedMessages": 8,
+          "prefixesSent": 0,
+          "prefixesReceived": 0,
+          "v4BestPaths": 0,
+          "v4BestEcmpPaths": 0,
+          "v6PrefixesSent": 4,
+          "v6PrefixesReceived": 3,
+          "v6BestPaths": 1,
+          "v6BestEcmpPaths": 0,
+          "totalRoutesWarnLimit": 204800,
+          "maxTotalRoutes": 256000,
+          "dropStats": {
+            "inDropAsloop": 0,
+            "inDropClusterIdLoop": 0,
+            "inDropMalformedMpbgp": 0,
+            "inDropOrigId": 0,
+            "inDropNhLocal": 0,
+            "inDropNhAfV6": 0,
+            "prefixDroppedMartianV4": 0,
+            "prefixDroppedMartianV6": 0,
+            "prefixLuDroppedV4": 0,
+            "prefixLuDroppedMartianV4": 0,
+            "prefixLuDroppedV6": 0,
+            "prefixLuDroppedMartianV6": 0,
+            "prefixEvpnDroppedUnsupportedRouteType": 0,
+            "prefixBgpLsDroppedReceptionUnsupported": 0,
+            "outDropV4LocalAddr": 0,
+            "outDropV6LocalAddr": 0,
+            "prefixVpnIpv4DroppedImportMatchFailure": 0,
+            "prefixVpnIpv6DroppedImportMatchFailure": 0,
+            "prefixEvpnDroppedImportMatchFailure": 0,
+            "prefixRtMembershipDroppedLocalAsReject": 0
+          },
+          "peerInUpdateErrors": {
+            "inUpdErrWithdraw": 0,
+            "inUpdErrIgnore": 0,
+            "inUpdErrDisableAfiSafi": 0,
+            "disabledAfiSafi": "None",
+            "lastUpdErrTime": 0
+          },
+          "bgpSoftReconfigInbound": "Default",
+          "rpkiOriginValidationMethod": "disabled",
+          "rpkiOriginValidationSendExtComm": false,
+          "rpkiOriginValidationRouteMap": "",
+          "orrPosition": {},
+          "localAsn": "65001",
+          "localRouterId": "192.168.0.0",
+          "ttl": 1,
+          "maxTtlHops": 255,
+          "updateSource": "2001:fb8:100::1",
+          "localPort": 42927,
+          "remotePort": 179,
+          "prependOwnDisabled": false,
+          "peerTcpInfo": {
+            "state": "ESTABLISHED",
+            "options": 7,
+            "sendWindowScale": 7,
+            "rcvWindowScale": 7,
+            "retransTimeout": 220000,
+            "delayedAckTimeout": 40000,
+            "maxSegmentSize": 1428,
+            "sndRtt": 19886,
+            "sndRttVariance": 18189,
+            "slowStartThreshold": 2147483647,
+            "congestionWindow": 10,
+            "rcvRtt": 0,
+            "rcvWindow": 14280,
+            "totalRetrans": 0,
+            "outputQueueLength": 0,
+            "outputMaxQueueLength": 87040,
+            "inputQueueLength": 0,
+            "inputMaxQueueLength": 32768,
+            "connectionOptions": {
+              "timestampsEnabled": true,
+              "selectiveAcknowledgementsEnabled": true,
+              "windowScaleEnabled": true,
+              "ecnEnabled": false
+            }
+          },
+          "ifName": "Ethernet1",
+          "afiSafiInfo": {
+            "ipv6Unicast": {
+              "localNexthop": "2001:fb8:100::1"
+            }
+          }
+        },
+        {
+          "peerAddress": "2001:fb8:200::2",
+          "asn": "65003",
+          "linkType": "external",
+          "routerId": "192.168.0.2",
+          "vrf": "default",
+          "version": 4,
+          "negotiatedVersion": 4,
+          "updateGroupIndex": -1,
+          "lastRcvd": 27,
+          "lastSent": 33,
+          "holdTime": 180,
+          "keepaliveTime": 60,
+          "configHoldTime": 180,
+          "configKeepaliveTime": 60,
+          "minHoldTime": 3,
+          "configMinHoldTime": 3,
+          "holdTimeLeft": 0,
+          "keepaliveTimeLeft": 0,
+          "state": "Established",
+          "establishedTime": 165,
+          "establishedTransitions": 1,
+          "lastState": "OpenConfirm",
+          "lastEvent": "Established",
+          "lastErrorCode": "Cease",
+          "lastErrorSubcode": "connection collision resolution",
+          "lastErrorTimeInfo": {
+            "time": 165
+          },
+          "lastSocketOutErrorMsg": "Bind (Cannot assign requested address)",
+          "lastSocketOutErrorTimeInfo": {
+            "time": 166
+          },
+          "enRRefreshstalePathRemoval": false,
+          "outboundEnRRefreshEnabled": true,
+          "neighborCapabilities": {
+            "negotiationDisabled": false,
+            "unsupportedCapReceived": false,
+            "multiprotocolCaps": {
+              "ipv6Unicast": {
+                "advertised": true,
+                "received": true,
+                "enabled": true
+              }
+            },
+            "fourOctetAsnCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "routeRefreshCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "enhancedRouteRefreshCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "sendEorMessages": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "addPathsCaps": {
+              "ipv6Unicast": {
+                "receivingAddPaths": {
+                  "receiveCapabilityAdvertised": true,
+                  "sendCapabilityReceived": false,
+                  "enabled": false
+                },
+                "sendingAddPaths": {
+                  "sendCapabilityAdvertised": false,
+                  "receiveCapabilityReceived": true,
+                  "enabled": false
+                }
+              }
+            }
+          },
+          "endOfRibs": {
+            "incoming": {
+              "ipv6Unicast": {
+                "status": "received",
+                "eorReceivedTime": 1721080528.112453,
+                "stalePathsDeleted": 0
+              }
+            }
+          },
+          "nexthopLuOriginateIpv4Uni": false,
+          "thirdPartyNexthopLuOriginateIpv4Uni": false,
+          "nexthopLuOriginateLfibBackupIpForwardIpv4Uni": false,
+          "nexthopLuOriginateIpv6Uni": false,
+          "thirdPartyNexthopLuOriginateIpv6Uni": false,
+          "nexthopLuOriginateLfibBackupIpForwardIpv6Uni": false,
+          "aigpSessionIpv4Uni": false,
+          "aigpSessionIpv4LabeledUni": false,
+          "aigpSessionIpv6Uni": false,
+          "aigpSessionIpv6LabeledUni": false,
+          "fwdFailoverTriggerSessionIpv4Uni": false,
+          "fwdFailoverTriggerSessionIpv6Uni": false,
+          "outMessageStats": {
+            "opens": 2,
+            "notifications": 1,
+            "updates": 3,
+            "keepalives": 5,
+            "rtRefreshes": 0,
+            "beginOfRtRefreshes": 0,
+            "endOfRtRefreshes": 0
+          },
+          "inMessageStats": {
+            "opens": 1,
+            "notifications": 0,
+            "updates": 1,
+            "keepalives": 5,
+            "rtRefreshes": 0,
+            "beginOfRtRefreshes": 0,
+            "endOfRtRefreshes": 0
+          },
+          "sentMessages": 11,
+          "receivedMessages": 7,
+          "prefixesSent": 0,
+          "prefixesReceived": 0,
+          "v4BestPaths": 0,
+          "v4BestEcmpPaths": 0,
+          "v6PrefixesSent": 5,
+          "v6PrefixesReceived": 0,
+          "v6BestPaths": 0,
+          "v6BestEcmpPaths": 0,
+          "totalRoutesWarnLimit": 204800,
+          "maxTotalRoutes": 256000,
+          "dropStats": {
+            "inDropAsloop": 0,
+            "inDropClusterIdLoop": 0,
+            "inDropMalformedMpbgp": 0,
+            "inDropOrigId": 0,
+            "inDropNhLocal": 0,
+            "inDropNhAfV6": 0,
+            "prefixDroppedMartianV4": 0,
+            "prefixDroppedMartianV6": 0,
+            "prefixLuDroppedV4": 0,
+            "prefixLuDroppedMartianV4": 0,
+            "prefixLuDroppedV6": 0,
+            "prefixLuDroppedMartianV6": 0,
+            "prefixEvpnDroppedUnsupportedRouteType": 0,
+            "prefixBgpLsDroppedReceptionUnsupported": 0,
+            "outDropV4LocalAddr": 0,
+            "outDropV6LocalAddr": 0,
+            "prefixVpnIpv4DroppedImportMatchFailure": 0,
+            "prefixVpnIpv6DroppedImportMatchFailure": 0,
+            "prefixEvpnDroppedImportMatchFailure": 0,
+            "prefixRtMembershipDroppedLocalAsReject": 0
+          },
+          "peerInUpdateErrors": {
+            "inUpdErrWithdraw": 0,
+            "inUpdErrIgnore": 0,
+            "inUpdErrDisableAfiSafi": 0,
+            "disabledAfiSafi": "None",
+            "lastUpdErrTime": 0
+          },
+          "bgpSoftReconfigInbound": "Default",
+          "rpkiOriginValidationMethod": "disabled",
+          "rpkiOriginValidationSendExtComm": false,
+          "rpkiOriginValidationRouteMap": "",
+          "orrPosition": {},
+          "localAsn": "65001",
+          "localRouterId": "192.168.0.0",
+          "ttl": 1,
+          "maxTtlHops": 255,
+          "updateSource": "2001:fb8:200::1",
+          "localPort": 179,
+          "remotePort": 33055,
+          "prependOwnDisabled": false,
+          "peerTcpInfo": {
+            "state": "ESTABLISHED",
+            "options": 7,
+            "sendWindowScale": 7,
+            "rcvWindowScale": 7,
+            "retransTimeout": 532000,
+            "delayedAckTimeout": 40000,
+            "maxSegmentSize": 1428,
+            "sndRtt": 71654,
+            "sndRttVariance": 104009,
+            "slowStartThreshold": 2147483647,
+            "congestionWindow": 10,
+            "rcvRtt": 0,
+            "rcvWindow": 14400,
+            "totalRetrans": 0,
+            "outputQueueLength": 0,
+            "outputMaxQueueLength": 87040,
+            "inputQueueLength": 0,
+            "inputMaxQueueLength": 32768,
+            "connectionOptions": {
+              "timestampsEnabled": true,
+              "selectiveAcknowledgementsEnabled": true,
+              "windowScaleEnabled": true,
+              "ecnEnabled": false
+            }
+          },
+          "ifName": "Ethernet2",
+          "afiSafiInfo": {
+            "ipv6Unicast": {
+              "localNexthop": "2001:fb8:200::1"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

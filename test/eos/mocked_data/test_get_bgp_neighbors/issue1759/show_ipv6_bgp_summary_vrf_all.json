@@ -1,76 +1,50 @@
 {
-    "vrfs": {
-        "default": {
-            "routerId": "172.18.4.2",
-            "peers": {
-                "fe80::a8c1:abff:fe0b:7b5f%Et5": {
-                    "msgSent": 239193,
-                    "inMsgQueue": 0,
-                    "prefixReceived": 2,
-                    "upDownTime": 1664912777.128896,
-                    "version": 4,
-                    "prefixAccepted": 2,
-                    "msgReceived": 203664,
-                    "peerState": "Established",
-                    "outMsgQueue": 0,
-                    "underMaintenance": false,
-                    "asn": "65000.8"
-                },
-                "fe80::a8c1:abff:fe27:69e9%Et2": {
-                    "msgSent": 11995,
-                    "inMsgQueue": 0,
-                    "prefixReceived": 5,
-                    "upDownTime": 1664912780.356703,
-                    "version": 4,
-                    "prefixAccepted": 5,
-                    "msgReceived": 11970,
-                    "peerState": "Established",
-                    "outMsgQueue": 0,
-                    "underMaintenance": false,
-                    "asn": "65002.2049"
-                },
-                "fe80::a8c1:abff:fe35:51d9%Et1": {
-                    "msgSent": 11982,
-                    "inMsgQueue": 0,
-                    "prefixReceived": 5,
-                    "upDownTime": 1664912783.670674,
-                    "version": 4,
-                    "prefixAccepted": 5,
-                    "msgReceived": 11977,
-                    "peerState": "Established",
-                    "outMsgQueue": 0,
-                    "underMaintenance": false,
-                    "asn": "65002.2048"
-                },
-                "fe80::a8c1:abff:fe5d:9706%Et4": {
-                    "msgSent": 239135,
-                    "inMsgQueue": 0,
-                    "prefixReceived": 2,
-                    "upDownTime": 1664912777.50903,
-                    "version": 4,
-                    "prefixAccepted": 2,
-                    "msgReceived": 203688,
-                    "peerState": "Established",
-                    "outMsgQueue": 0,
-                    "underMaintenance": false,
-                    "asn": "65000.7"
-                },
-                "fe80::a8c1:abff:fe95:fa49%Et3": {
-                    "msgSent": 239080,
-                    "inMsgQueue": 0,
-                    "prefixReceived": 2,
-                    "upDownTime": 1664912777.604791,
-                    "version": 4,
-                    "prefixAccepted": 2,
-                    "msgReceived": 203688,
-                    "peerState": "Established",
-                    "outMsgQueue": 0,
-                    "underMaintenance": false,
-                    "asn": "65000.5"
-                }
-            },
-            "vrf": "default",
-            "asn": "65001.1026"
+  "vrfs": {
+    "default": {
+      "vrf": "default",
+      "routerId": "172.18.8.0",
+      "asn": "65002.2048",
+      "peers": {
+        "fe80::a8c1:abff:fe94:4171%Et3": {
+          "version": 4,
+          "msgReceived": 25,
+          "msgSent": 24,
+          "inMsgQueue": 0,
+          "outMsgQueue": 0,
+          "asn": "65001.1028",
+          "prefixAccepted": 3,
+          "prefixReceived": 3,
+          "upDownTime": 1721149910.529753,
+          "underMaintenance": false,
+          "peerState": "Established"
+        },
+        "fe80::a8c1:abff:fea1:b618%Et2": {
+          "version": 4,
+          "msgReceived": 14,
+          "msgSent": 22,
+          "inMsgQueue": 0,
+          "outMsgQueue": 0,
+          "asn": "65001.1027",
+          "prefixAccepted": 5,
+          "prefixReceived": 5,
+          "upDownTime": 1721149910.47622,
+          "underMaintenance": false,
+          "peerState": "Established"
+        },
+        "fe80::a8c1:abff:fedc:fb58%Et1": {
+          "version": 4,
+          "msgReceived": 20,
+          "msgSent": 22,
+          "inMsgQueue": 0,
+          "outMsgQueue": 0,
+          "asn": "65001.1026",
+          "prefixAccepted": 6,
+          "prefixReceived": 6,
+          "upDownTime": 1721149910.456982,
+          "underMaintenance": false,
+          "peerState": "Established"
         }
+      }
     }
+  }
 }

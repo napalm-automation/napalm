@@ -1,0 +1,46 @@
+{
+  "interfaces": {
+      "Management0": {
+          "name": "Management0",
+          "lineProtocolStatus": "up",
+          "interfaceStatus": "connected",
+          "mtu": 1500,
+          "linkLocal": {
+              "address": "fe80::21c:73ff:fe7b:8c1d",
+              "subnet": "fe80::/64",
+              "active": true,
+              "leastpref": false,
+              "dadfailed": false
+          },
+          "state": "enabled",
+          "addresses": [
+              {
+                  "address": "2001:172:20:20::2",
+                  "subnet": "2001:172:20:20::/64",
+                  "active": true,
+                  "leastpref": false,
+                  "dadfailed": false
+              }
+          ],
+          "globalAddressesAreVirtual": false,
+          "multicastGroupAddresses": [
+              "ff02::1",
+              "ff02::1:ff00:2",
+              "ff02::1:ff7b:8c1d"
+          ],
+          "dadStatus": "unavailable",
+          "dadAttempts": -1,
+          "ndReachableTime": 30000,
+          "ndRetransmitInterval": 1000,
+          "enhancedDad": false,
+          "autoConfigStatus": "stateless",
+          "urpf": "disable",
+          "urpfV4V6Mismatch": false,
+          "vrf": "default",
+          "addrSource": "manual",
+          "maxMssIngress": 0,
+          "maxMssEgress": 0,
+          "acceptUnsolicitedNa": false
+      }
+  }
+}

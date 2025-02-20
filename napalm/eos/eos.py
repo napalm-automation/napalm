@@ -34,11 +34,12 @@ from collections import defaultdict
 import pyeapi
 from pyeapi.eapilib import ConnectionError, EapiConnection
 from netmiko import ConfigInvalidException
+from typing import Dict
 
 # NAPALM base
 import napalm.base.helpers
 from napalm.base.netmiko_helpers import netmiko_args
-from napalm.base.base import NetworkDriver
+from napalm.base.base import NetworkDriver, models
 from napalm.base.utils import string_parsers
 from napalm.base.exceptions import (
     CommitError,
@@ -672,140 +673,84 @@ class EOSDriver(NetworkDriver):
             )
         return interface_counters
 
-    def get_bgp_neighbors(self):
-        def get_re_group(res, key, default=None):
-            """Small helper to retrieve data from re match groups"""
-            try:
-                return res.group(key)
-            except KeyError:
-                return default
-
-        NEIGHBOR_FILTER = "vrf all | include IPv[46] (Unicast|6PE):.*[0-9]+ | grep -v ' IPv[46] Unicast:/.' | remote AS |^Local AS|Desc|BGP state |remote router ID"  # noqa
-        output_summary_cmds = self._run_commands(
-            ["show ipv6 bgp summary vrf all", "show ip bgp summary vrf all"],
+    def get_bgp_neighbors(self) -> Dict[str, models.BGPStateNeighborsPerVRFDict]:
+        cmd_outputs = self._run_commands(
+            [
+                "show ip bgp summary vrf all",
+                "show ipv6 bgp summary vrf all",
+                "show ip bgp neighbors vrf all",
+                "show ipv6 bgp peers vrf all",
+            ],
             encoding="json",
         )
-        output_neighbor_cmds = self._run_commands(
-            [
-                "show ip bgp neighbors " + NEIGHBOR_FILTER,
-                "show ipv6 bgp peers " + NEIGHBOR_FILTER,
-            ],
-            encoding="text",
-        )
 
-        bgp_counters = defaultdict(lambda: dict(peers={}))
-        for summary in output_summary_cmds:
-            """
-            Json output looks as follows
-            "vrfs": {
-                "default": {
-                    "routerId": 1,
-                    "asn": 1,
-                    "peers": {
-                        "1.1.1.1": {
-                            "msgSent": 1,
-                            "inMsgQueue": 0,
-                            "prefixReceived": 3926,
-                            "upDownTime": 1449501378.418644,
-                            "version": 4,
-                            "msgReceived": 59616,
-                            "prefixAccepted": 3926,
-                            "peerState": "Established",
-                            "outMsgQueue": 0,
-                            "underMaintenance": false,
-                            "asn": 1
-                        }
-                    }
-                }
-            }
-            """
-            for vrf, vrf_data in summary["vrfs"].items():
-                bgp_counters[vrf]["router_id"] = vrf_data["routerId"]
-                for peer, peer_data in vrf_data["peers"].items():
-                    if peer_data["peerState"] == "Idle":
+        bgp_counters = defaultdict(
+            lambda: models.BGPStateNeighborsPerVRFDict(
+                peers=models.BGPStateNeighborDict()  # type: ignore
+            )  # type: ignore
+        )  # type: ignore
+        # Iterate IPv4 and IPv6 neighbor details
+        for cmd in cmd_outputs[2:]:
+            for vrf_name, vrf_data in cmd["vrfs"].items():
+                vrf = bgp_counters[vrf_name]
+                for peer in vrf_data["peerList"]:
+                    peer_ip = napalm.base.helpers.ip(peer["peerAddress"])
+                    v4_summary = cmd_outputs[0]["vrfs"][vrf_name]["peers"].get(
+                        peer_ip, {}
+                    )
+                    v6_summary = cmd_outputs[1]["vrfs"][vrf_name]["peers"].get(
+                        peer_ip, {}
+                    )
+                    local_as = napalm.base.helpers.as_number(peer["localAsn"])
+                    remote_as = napalm.base.helpers.as_number(peer["asn"])
+                    remote_id = napalm.base.helpers.ip(peer["routerId"])
+                    if peer["state"] == "Idle":
                         is_enabled = (
                             True
-                            if peer_data["peerStateIdleReason"] != "Admin"
+                            if peer["idleReason"] != "Administratively shut down"
                             else False
                         )
                     else:
                         is_enabled = True
-                    peer_info = {
-                        "is_up": peer_data["peerState"] == "Established",
-                        "is_enabled": is_enabled,
-                        "uptime": int(time.time() - float(peer_data["upDownTime"])),
-                        "description": peer_data.get("description", ""),
+                    is_up = peer["state"] == "Established"
+                    description = peer.get("description", "")
+                    uptime = int(peer.get("establishedTime", -1))
+                    v4: models.BGPStateAddressFamilyDict = {
+                        "received_prefixes": peer["prefixesReceived"],
+                        "accepted_prefixes": (
+                            v4_summary["prefixAccepted"] if v4_summary else 0
+                        ),
+                        "sent_prefixes": peer["prefixesSent"],
                     }
-                    bgp_counters[vrf]["peers"][napalm.base.helpers.ip(peer)] = peer_info
-        lines = []
-        [lines.extend(x["output"].splitlines()) for x in output_neighbor_cmds]
-        while lines:
-            """
-            Raw output from the command looks like the following:
+                    v6: models.BGPStateAddressFamilyDict = {
+                        "received_prefixes": peer["v6PrefixesReceived"],
+                        "accepted_prefixes": (
+                            v6_summary["prefixAccepted"] if v6_summary else 0
+                        ),
+                        "sent_prefixes": peer["v6PrefixesSent"],
+                    }
+                    peer_data: models.BGPStateNeighborDict = {
+                        "local_as": local_as,
+                        "remote_as": remote_as,
+                        "remote_id": remote_id,
+                        "is_up": is_up,
+                        "is_enabled": is_enabled,
+                        "description": description,
+                        "uptime": uptime,
+                        "address_family": {
+                            "ipv4": v4,
+                            "ipv6": v6,
+                        },
+                    }
+                    vrf["peers"][peer_ip] = peer_data
 
-              BGP neighbor is 1.1.1.1, remote AS 1, external link
-                Description: Very info such descriptive
-                BGP version 4, remote router ID 1.1.1.1, VRF my_vrf
-                BGP state is Idle, Administratively shut down
-                 IPv4 Unicast:         683        78
-                 IPv6 Unicast:           0         0
-              Local AS is 2, local router ID 2.2.2.2
-            """
-            neighbor_info = re.match(self._RE_BGP_INFO, lines.pop(0))
-            # this line can be either description or rid info
-            next_line = lines.pop(0)
-            desc = re.match(self._RE_BGP_DESC, next_line)
-            if desc is None:
-                rid_info = re.match(self._RE_BGP_RID_INFO, next_line)
-                desc = ""
-            else:
-                rid_info = re.match(self._RE_BGP_RID_INFO, lines.pop(0))
-                desc = desc.group("description")
-            lines.pop(0)
-            v4_stats = re.match(self._RE_BGP_PREFIX, lines.pop(0))
-            v6_stats = re.match(self._RE_BGP_PREFIX, lines.pop(0))
-            local_as = re.match(self._RE_BGP_LOCAL, lines.pop(0))
-            data = {
-                "remote_as": napalm.base.helpers.as_number(neighbor_info.group("as")),
-                "remote_id": napalm.base.helpers.ip(
-                    get_re_group(rid_info, "rid", "0.0.0.0")
-                ),
-                "local_as": napalm.base.helpers.as_number(local_as.group("as")),
-                "description": str(desc),
-                "address_family": {
-                    "ipv4": {
-                        "sent_prefixes": int(get_re_group(v4_stats, "sent", -1)),
-                        "received_prefixes": int(
-                            get_re_group(v4_stats, "received", -1)
-                        ),
-                        "accepted_prefixes": -1,
-                    },
-                    "ipv6": {
-                        "sent_prefixes": int(get_re_group(v6_stats, "sent", -1)),
-                        "received_prefixes": int(
-                            get_re_group(v6_stats, "received", -1)
-                        ),
-                        "accepted_prefixes": -1,
-                    },
-                },
-            }
-            peer_addr = napalm.base.helpers.ip(neighbor_info.group("neighbor"))
-            vrf = rid_info.group("vrf")
-            if peer_addr not in bgp_counters[vrf]["peers"]:
-                bgp_counters[vrf]["peers"][peer_addr] = {
-                    "is_up": False,  # if not found, means it was not found in the oper stats
-                    # i.e. neighbor down,
-                    "uptime": 0,
-                    "is_enabled": True,
-                }
-            if (
-                "description" in bgp_counters[vrf]["peers"][peer_addr]
-                and not data["description"]
-            ):
-                data["description"] = bgp_counters[vrf]["peers"][peer_addr][
-                    "description"
-                ]
-            bgp_counters[vrf]["peers"][peer_addr].update(data)
+        # Iterate IPv4 and IPv6 summary details for router-id assignment
+        for cmd in cmd_outputs[:2]:
+            for vrf_name, vrf_data in cmd["vrfs"].items():
+                bgp_counters[vrf_name]["router_id"] = napalm.base.helpers.ip(
+                    vrf_data["routerId"]
+                )
+
         if "default" in bgp_counters:
             bgp_counters["global"] = bgp_counters.pop("default")
         return dict(bgp_counters)
@@ -1257,21 +1202,78 @@ class EOSDriver(NetworkDriver):
         return arp_table
 
     def get_ntp_servers(self):
+        result = {}
+
         commands = ["show running-config | section ntp"]
 
-        raw_ntp_config = self._run_commands(commands, encoding="text")[0].get(
-            "output", ""
+        raw_ntp_config = (
+            self._run_commands(commands, encoding="text")[0]
+            .get("output", "")
+            .splitlines()
         )
 
-        ntp_config = napalm.base.helpers.textfsm_extractor(
-            self, "ntp_peers", raw_ntp_config
-        )
+        for server in raw_ntp_config:
+            details = {
+                "port": 123,
+                "version": 4,
+                "association_type": "SERVER",
+                "iburst": False,
+                "prefer": False,
+                "network_instance": "default",
+                "source_address": "",
+                "key_id": -1,
+            }
+            tokens = server.split()
+            if tokens[2] == "vrf":
+                details["network_instance"] = tokens[3]
+                server_ip = details["address"] = tokens[4]
+                idx = 5
+            else:
+                server_ip = details["address"] = tokens[2]
+                idx = 3
+            try:
+                parsed_address = napalm.base.helpers.ipaddress.ip_address(server_ip)
+                family = parsed_address.version
+            except ValueError:
+                # Assume family of 4, unless local-interface has no IPv4 addresses
+                family = 4
+            while idx < len(tokens):
+                if tokens[idx] == "iburst":
+                    details["iburst"] = True
+                    idx += 1
 
-        return {
-            str(ntp_peer.get("ntppeer")): {}
-            for ntp_peer in ntp_config
-            if ntp_peer.get("ntppeer", "")
-        }
+                elif tokens[idx] == "key":
+                    details["key_id"] = int(tokens[idx + 1])
+                    idx += 2
+
+                elif tokens[idx] == "local-interface":
+                    interfaces = self.get_interfaces_ip()
+                    intf = tokens[idx + 1]
+                    if family == 6 and interfaces[intf]["ipv6"]:
+                        details["source_address"] = list(
+                            interfaces[intf]["ipv6"].keys()
+                        )[0]
+                    elif interfaces[intf]["ipv4"]:
+                        details["source_address"] = list(
+                            interfaces[intf]["ipv4"].keys()
+                        )[0]
+                    elif interfaces[intf]["ipv6"]:
+                        details["source_address"] = list(
+                            interfaces[intf]["ipv6"].keys()
+                        )[0]
+                    idx += 2
+
+                elif tokens[idx] == "version":
+                    details["version"] = int(tokens[idx + 1])
+                    idx += 2
+
+                elif tokens[idx] == "prefer":
+                    details["prefer"] = True
+                    idx += 1
+
+            result[server_ip] = details
+
+        return result
 
     def get_ntp_stats(self):
         ntp_stats = []
@@ -1742,7 +1744,7 @@ class EOSDriver(NetworkDriver):
         commands = []
 
         if vrf:
-            commands.append("routing-context vrf {vrf}".format(vrf=vrf))
+            commands.append("cli vrf {vrf}".format(vrf=vrf))
 
         if source:
             source_opt = "-s {source}".format(source=source)
@@ -2248,7 +2250,7 @@ class EOSDriver(NetworkDriver):
         commands = []
 
         if vrf:
-            commands.append("routing-context vrf {vrf}".format(vrf=vrf))
+            commands.append("cli vrf {vrf}".format(vrf=vrf))
 
         command = "ping {}".format(destination)
         command += " timeout {}".format(timeout)

@@ -1,0 +1,362 @@
+{
+  "vrfs": {
+    "default": {
+      "peerList": [
+        {
+          "peerAddress": "10.0.0.1",
+          "asn": "65002",
+          "linkType": "external",
+          "routerId": "192.168.0.1",
+          "vrf": "default",
+          "version": 4,
+          "negotiatedVersion": 4,
+          "updateGroupIndex": -1,
+          "lastRcvd": 32,
+          "lastSent": 31,
+          "holdTime": 180,
+          "keepaliveTime": 60,
+          "configHoldTime": 180,
+          "configKeepaliveTime": 60,
+          "minHoldTime": 3,
+          "configMinHoldTime": 3,
+          "holdTimeLeft": 0,
+          "keepaliveTimeLeft": 0,
+          "state": "Established",
+          "establishedTime": 121,
+          "establishedTransitions": 1,
+          "lastState": "OpenConfirm",
+          "lastEvent": "ReapplyInboundPolicy",
+          "enRRefreshstalePathRemoval": false,
+          "outboundEnRRefreshEnabled": true,
+          "neighborCapabilities": {
+            "negotiationDisabled": false,
+            "unsupportedCapReceived": false,
+            "multiprotocolCaps": {
+              "ipv4Unicast": {
+                "advertised": true,
+                "received": true,
+                "enabled": true
+              }
+            },
+            "fourOctetAsnCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "routeRefreshCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "enhancedRouteRefreshCap": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "sendEorMessages": {
+              "advertised": true,
+              "received": true,
+              "enabled": true
+            },
+            "addPathsCaps": {
+              "ipv4Unicast": {
+                "receivingAddPaths": {
+                  "receiveCapabilityAdvertised": true,
+                  "sendCapabilityReceived": false,
+                  "enabled": false
+                },
+                "sendingAddPaths": {
+                  "sendCapabilityAdvertised": false,
+                  "receiveCapabilityReceived": true,
+                  "enabled": false
+                }
+              }
+            }
+          },
+          "endOfRibs": {
+            "incoming": {
+              "ipv4Unicast": {
+                "status": "received",
+                "eorReceivedTime": 1721080528.064628,
+                "stalePathsDeleted": 0
+              }
+            }
+          },
+          "nexthopLuOriginateIpv4Uni": false,
+          "thirdPartyNexthopLuOriginateIpv4Uni": false,
+          "nexthopLuOriginateLfibBackupIpForwardIpv4Uni": false,
+          "nexthopLuOriginateIpv6Uni": false,
+          "thirdPartyNexthopLuOriginateIpv6Uni": false,
+          "nexthopLuOriginateLfibBackupIpForwardIpv6Uni": false,
+          "aigpSessionIpv4Uni": false,
+          "aigpSessionIpv4LabeledUni": false,
+          "aigpSessionIpv6Uni": false,
+          "aigpSessionIpv6LabeledUni": false,
+          "fwdFailoverTriggerSessionIpv4Uni": false,
+          "fwdFailoverTriggerSessionIpv6Uni": false,
+          "outMessageStats": {
+            "opens": 1,
+            "notifications": 0,
+            "updates": 2,
+            "keepalives": 4,
+            "rtRefreshes": 0,
+            "beginOfRtRefreshes": 0,
+            "endOfRtRefreshes": 0
+          },
+          "inMessageStats": {
+            "opens": 1,
+            "notifications": 0,
+            "updates": 2,
+            "keepalives": 4,
+            "rtRefreshes": 0,
+            "beginOfRtRefreshes": 0,
+            "endOfRtRefreshes": 0
+          },
+          "sentMessages": 7,
+          "receivedMessages": 7,
+          "prefixesSent": 4,
+          "prefixesReceived": 3,
+          "v4BestPaths": 1,
+          "v4BestEcmpPaths": 0,
+          "v6PrefixesSent": 0,
+          "v6PrefixesReceived": 0,
+          "v6BestPaths": 0,
+          "v6BestEcmpPaths": 0,
+          "totalRoutesWarnLimit": 204800,
+          "maxTotalRoutes": 256000,
+          "dropStats": {
+            "inDropAsloop": 0,
+            "inDropClusterIdLoop": 0,
+            "inDropMalformedMpbgp": 0,
+            "inDropOrigId": 0,
+            "inDropNhLocal": 0,
+            "inDropNhAfV6": 0,
+            "prefixDroppedMartianV4": 0,
+            "prefixDroppedMartianV6": 0,
+            "prefixLuDroppedV4": 0,
+            "prefixLuDroppedMartianV4": 0,
+            "prefixLuDroppedV6": 0,
+            "prefixLuDroppedMartianV6": 0,
+            "prefixEvpnDroppedUnsupportedRouteType": 0,
+            "prefixBgpLsDroppedReceptionUnsupported": 0,
+            "outDropV4LocalAddr": 0,
+            "outDropV6LocalAddr": 0,
+            "prefixVpnIpv4DroppedImportMatchFailure": 0,
+            "prefixVpnIpv6DroppedImportMatchFailure": 0,
+            "prefixEvpnDroppedImportMatchFailure": 0,
+            "prefixRtMembershipDroppedLocalAsReject": 0
+          },
+          "peerInUpdateErrors": {
+            "inUpdErrWithdraw": 0,
+            "inUpdErrIgnore": 0,
+            "inUpdErrDisableAfiSafi": 0,
+            "disabledAfiSafi": "None",
+            "lastUpdErrTime": 0
+          },
+          "bgpSoftReconfigInbound": "Default",
+          "rpkiOriginValidationMethod": "disabled",
+          "rpkiOriginValidationSendExtComm": false,
+          "rpkiOriginValidationRouteMap": "",
+          "orrPosition": {},
+          "localAsn": "65001",
+          "localRouterId": "192.168.0.0",
+          "ttl": 1,
+          "maxTtlHops": 255,
+          "updateSource": "10.0.0.0",
+          "localPort": 179,
+          "remotePort": 41273,
+          "prependOwnDisabled": false,
+          "peerTcpInfo": {
+            "state": "ESTABLISHED",
+            "options": 7,
+            "sendWindowScale": 7,
+            "rcvWindowScale": 7,
+            "retransTimeout": 208000,
+            "delayedAckTimeout": 40000,
+            "maxSegmentSize": 1448,
+            "sndRtt": 4287,
+            "sndRttVariance": 8486,
+            "slowStartThreshold": 2147483647,
+            "congestionWindow": 10,
+            "rcvRtt": 0,
+            "rcvWindow": 14600,
+            "totalRetrans": 0,
+            "outputQueueLength": 0,
+            "outputMaxQueueLength": 87040,
+            "inputQueueLength": 0,
+            "inputMaxQueueLength": 32768,
+            "connectionOptions": {
+              "timestampsEnabled": true,
+              "selectiveAcknowledgementsEnabled": true,
+              "windowScaleEnabled": true,
+              "ecnEnabled": false
+            }
+          },
+          "ifName": "Ethernet1",
+          "afiSafiInfo": {
+            "ipv4Unicast": {
+              "localNexthop": "10.0.0.0"
+            }
+          }
+        },
+        {
+          "peerAddress": "10.0.0.3",
+          "asn": "65003",
+          "linkType": "external",
+          "routerId": "0.0.0.0",
+          "vrf": "default",
+          "version": 4,
+          "negotiatedVersion": 4,
+          "updateGroupIndex": -1,
+          "lastRcvd": 21,
+          "lastSent": 21,
+          "holdTime": 0,
+          "keepaliveTime": 0,
+          "configHoldTime": 180,
+          "configKeepaliveTime": 60,
+          "minHoldTime": 3,
+          "configMinHoldTime": 3,
+          "connectTimeLeft": 0,
+          "connectInterval": 64,
+          "connectFailed": 7,
+          "state": "Active",
+          "establishFailHint": "Cease/connection rejected",
+          "establishedTransitions": 0,
+          "lastState": "Idle",
+          "lastEvent": "Start",
+          "lastErrorRcvdCode": "Cease",
+          "lastErrorRcvdSubcode": "connection rejected",
+          "lastErrorRcvdTimeInfo": {
+            "time": 21,
+            "firstTime": 121,
+            "repeats": 6
+          },
+          "neighborCapabilities": {
+            "negotiationDisabled": false,
+            "unsupportedCapReceived": false,
+            "multiprotocolCaps": {
+              "ipv4Unicast": {
+                "advertised": true,
+                "received": false,
+                "enabled": false
+              }
+            },
+            "fourOctetAsnCap": {
+              "advertised": true,
+              "received": false,
+              "enabled": false
+            },
+            "routeRefreshCap": {
+              "advertised": true,
+              "received": false,
+              "enabled": false
+            },
+            "enhancedRouteRefreshCap": {
+              "advertised": true,
+              "received": false,
+              "enabled": false
+            },
+            "sendEorMessages": {
+              "advertised": true,
+              "received": false,
+              "enabled": false
+            },
+            "addPathsCaps": {
+              "ipv4Unicast": {
+                "receivingAddPaths": {
+                  "receiveCapabilityAdvertised": true,
+                  "sendCapabilityReceived": false,
+                  "enabled": false
+                }
+              }
+            }
+          },
+          "endOfRibs": {
+            "incoming": {}
+          },
+          "nexthopLuOriginateIpv4Uni": false,
+          "thirdPartyNexthopLuOriginateIpv4Uni": false,
+          "nexthopLuOriginateLfibBackupIpForwardIpv4Uni": false,
+          "nexthopLuOriginateIpv6Uni": false,
+          "thirdPartyNexthopLuOriginateIpv6Uni": false,
+          "nexthopLuOriginateLfibBackupIpForwardIpv6Uni": false,
+          "aigpSessionIpv4Uni": false,
+          "aigpSessionIpv4LabeledUni": false,
+          "aigpSessionIpv6Uni": false,
+          "aigpSessionIpv6LabeledUni": false,
+          "fwdFailoverTriggerSessionIpv4Uni": false,
+          "fwdFailoverTriggerSessionIpv6Uni": false,
+          "outMessageStats": {
+            "opens": 7,
+            "notifications": 0,
+            "updates": 0,
+            "keepalives": 0,
+            "rtRefreshes": 0
+          },
+          "inMessageStats": {
+            "opens": 0,
+            "notifications": 7,
+            "updates": 0,
+            "keepalives": 0,
+            "rtRefreshes": 0
+          },
+          "sentMessages": 7,
+          "receivedMessages": 7,
+          "prefixesSent": 0,
+          "prefixesReceived": 0,
+          "v4BestPaths": 0,
+          "v4BestEcmpPaths": 0,
+          "v6PrefixesSent": 0,
+          "v6PrefixesReceived": 0,
+          "v6BestPaths": 0,
+          "v6BestEcmpPaths": 0,
+          "totalRoutesWarnLimit": 204800,
+          "maxTotalRoutes": 256000,
+          "dropStats": {
+            "inDropAsloop": 0,
+            "inDropClusterIdLoop": 0,
+            "inDropMalformedMpbgp": 0,
+            "inDropOrigId": 0,
+            "inDropNhLocal": 0,
+            "inDropNhAfV6": 0,
+            "prefixDroppedMartianV4": 0,
+            "prefixDroppedMartianV6": 0,
+            "prefixLuDroppedV4": 0,
+            "prefixLuDroppedMartianV4": 0,
+            "prefixLuDroppedV6": 0,
+            "prefixLuDroppedMartianV6": 0,
+            "prefixEvpnDroppedUnsupportedRouteType": 0,
+            "prefixBgpLsDroppedReceptionUnsupported": 0,
+            "outDropV4LocalAddr": 0,
+            "outDropV6LocalAddr": 0,
+            "prefixVpnIpv4DroppedImportMatchFailure": 0,
+            "prefixVpnIpv6DroppedImportMatchFailure": 0,
+            "prefixEvpnDroppedImportMatchFailure": 0,
+            "prefixRtMembershipDroppedLocalAsReject": 0
+          },
+          "peerInUpdateErrors": {
+            "inUpdErrWithdraw": 0,
+            "inUpdErrIgnore": 0,
+            "inUpdErrDisableAfiSafi": 0,
+            "disabledAfiSafi": "None",
+            "lastUpdErrTime": 0
+          },
+          "bgpSoftReconfigInbound": "Default",
+          "rpkiOriginValidationMethod": "disabled",
+          "rpkiOriginValidationSendExtComm": false,
+          "rpkiOriginValidationRouteMap": "",
+          "orrPosition": {},
+          "localAsn": "65001",
+          "localRouterId": "192.168.0.0",
+          "ttl": 1,
+          "maxTtlHops": 255,
+          "updateSource": "10.0.0.2",
+          "localPort": 0,
+          "remotePort": 179,
+          "prependOwnDisabled": false,
+          "afiSafiInfo": {}
+        }
+      ]
+    }
+  }
+}

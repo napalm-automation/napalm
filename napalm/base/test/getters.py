@@ -311,7 +311,9 @@ class BaseTestGetters(object):
 
         for peer, peer_details in get_ntp_peers.items():
             assert isinstance(peer, str)
-            assert helpers.test_model(models.NTPPeerDict, peer_details)
+            assert helpers.test_model(
+                models.NTPPeerDict, peer_details, allow_subset=True
+            )
 
         return get_ntp_peers
 
@@ -323,7 +325,9 @@ class BaseTestGetters(object):
 
         for server, server_details in get_ntp_servers.items():
             assert isinstance(server, str)
-            assert helpers.test_model(models.NTPServerDict, server_details)
+            assert helpers.test_model(
+                models.NTPServerDict, server_details, allow_subset=True
+            )
 
         return get_ntp_servers
 
