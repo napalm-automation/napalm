@@ -1,37 +1,37 @@
 {
-"vrfs": {
-"default": {
-"routerId": "192.168.56.3",
-"peers": {
-"2001:7f8::f10:0:2": {
-"msgSent": 5,
-"inMsgQueue": 0,
-"prefixReceived": 0,
-"upDownTime": 1452681618.167685,
-"version": 4,
-"msgReceived": 5,
-"prefixAccepted": 0,
-"peerState": "Established",
-"outMsgQueue": 0,
-"underMaintenance": false,
-"asn": 65002
-},
-"2001:7f8::f10:0:3": {
-"msgSent": 267,
-"inMsgQueue": 0,
-"prefixReceived": 0,
-"upDownTime": 1452696202.499104,
-"version": 4,
-"msgReceived": 263,
-"prefixAccepted": 0,
-"peerState": "Active",
-"outMsgQueue": 0,
-"underMaintenance": false,
-"asn": 65001
-}
-},
-"vrf": "default",
-"asn": 65001
-}
-}
+  "vrfs": {
+    "default": {
+      "vrf": "default",
+      "routerId": "192.168.0.0",
+      "asn": "65001",
+      "peers": {
+        "2001:fb8:100::2": {
+          "version": 4,
+          "msgReceived": 7,
+          "msgSent": 5,
+          "inMsgQueue": 0,
+          "outMsgQueue": 0,
+          "asn": "65002",
+          "prefixAccepted": 3,
+          "prefixReceived": 3,
+          "upDownTime": 1721080528.062069,
+          "underMaintenance": false,
+          "peerState": "Established"
+        },
+        "2001:fb8:200::2": {
+          "version": 4,
+          "msgReceived": 5,
+          "msgSent": 8,
+          "inMsgQueue": 0,
+          "outMsgQueue": 0,
+          "asn": "65003",
+          "prefixAccepted": 0,
+          "prefixReceived": 0,
+          "upDownTime": 1721080528.069422,
+          "underMaintenance": false,
+          "peerState": "Established"
+        }
+      }
+    }
+  }
 }

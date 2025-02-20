@@ -1,112 +1,70 @@
 {
   "global": {
     "peers": {
-      "fe80::a8c1:abff:fe0b:7b5f%Et5": {
+      "fe80::a8c1:abff:fe94:4171%Et3": {
+        "local_as": 4259973120,
+        "remote_as": 4259906564,
+        "remote_id": "172.18.4.4",
         "is_up": true,
         "is_enabled": true,
-        "uptime": "...",
         "description": "",
-        "remote_as": 4259840008,
-        "remote_id": "172.18.0.8",
-        "local_as": 4259906562,
+        "uptime": 9,
         "address_family": {
           "ipv4": {
-            "sent_prefixes": 9,
-            "received_prefixes": 2,
-            "accepted_prefixes": -1
+            "received_prefixes": 3,
+            "accepted_prefixes": 3,
+            "sent_prefixes": 9
           },
           "ipv6": {
-            "sent_prefixes": 9,
-            "received_prefixes": 2,
-            "accepted_prefixes": -1
+            "received_prefixes": 3,
+            "accepted_prefixes": 3,
+            "sent_prefixes": 9
           }
         }
       },
-      "fe80::a8c1:abff:fe27:69e9%Et2": {
+      "fe80::a8c1:abff:fea1:b618%Et2": {
+        "local_as": 4259973120,
+        "remote_as": 4259906563,
+        "remote_id": "172.18.4.3",
         "is_up": true,
         "is_enabled": true,
-        "uptime": "...",
         "description": "",
-        "remote_as": 4259973121,
-        "remote_id": "172.18.8.1",
-        "local_as": 4259906562,
+        "uptime": 9,
         "address_family": {
           "ipv4": {
-            "sent_prefixes": 9,
             "received_prefixes": 5,
-            "accepted_prefixes": -1
+            "accepted_prefixes": 5,
+            "sent_prefixes": 8
           },
           "ipv6": {
-            "sent_prefixes": 9,
             "received_prefixes": 5,
-            "accepted_prefixes": -1
+            "accepted_prefixes": 5,
+            "sent_prefixes": 8
           }
         }
       },
-      "fe80::a8c1:abff:fe35:51d9%Et1": {
+      "fe80::a8c1:abff:fedc:fb58%Et1": {
+        "local_as": 4259973120,
+        "remote_as": 4259906562,
+        "remote_id": "172.18.4.2",
         "is_up": true,
         "is_enabled": true,
-        "uptime": "...",
         "description": "",
-        "remote_as": 4259973120,
-        "remote_id": "172.18.8.0",
-        "local_as": 4259906562,
+        "uptime": 9,
         "address_family": {
           "ipv4": {
-            "sent_prefixes": 6,
-            "received_prefixes": 5,
-            "accepted_prefixes": -1
+            "received_prefixes": 6,
+            "accepted_prefixes": 6,
+            "sent_prefixes": 5
           },
           "ipv6": {
-            "sent_prefixes": 6,
-            "received_prefixes": 5,
-            "accepted_prefixes": -1
-          }
-        }
-      },
-      "fe80::a8c1:abff:fe5d:9706%Et4": {
-        "is_up": true,
-        "is_enabled": true,
-        "uptime": "...",
-        "description": "",
-        "remote_as": 4259840007,
-        "remote_id": "172.18.0.7",
-        "local_as": 4259906562,
-        "address_family": {
-          "ipv4": {
-            "sent_prefixes": 9,
-            "received_prefixes": 2,
-            "accepted_prefixes": -1
-          },
-          "ipv6": {
-            "sent_prefixes": 9,
-            "received_prefixes": 2,
-            "accepted_prefixes": -1
-          }
-        }
-      },
-      "fe80::a8c1:abff:fe95:fa49%Et3": {
-        "is_up": true,
-        "is_enabled": true,
-        "uptime": "...",
-        "description": "",
-        "remote_as": 4259840005,
-        "remote_id": "172.18.0.5",
-        "local_as": 4259906562,
-        "address_family": {
-          "ipv4": {
-            "sent_prefixes": 9,
-            "received_prefixes": 2,
-            "accepted_prefixes": -1
-          },
-          "ipv6": {
-            "sent_prefixes": 9,
-            "received_prefixes": 2,
-            "accepted_prefixes": -1
+            "received_prefixes": 6,
+            "accepted_prefixes": 6,
+            "sent_prefixes": 5
           }
         }
       }
     },
-    "router_id": "172.18.4.2"
+    "router_id": "172.18.8.0"
   }
 }
