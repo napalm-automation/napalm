@@ -2,7 +2,7 @@ black==24.4.2
 coveralls==4.0.1
 ddt==1.7.2
 flake8-import-order==0.18.2
-pytest==8.3.2
+pytest==8.3.4
 pytest-cov==5.0.0
 pytest-json-report==1.5.0
 pyflakes==3.2.0
