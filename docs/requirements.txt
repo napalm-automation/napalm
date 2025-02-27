@@ -5,4 +5,4 @@ invoke==2.2.0
 jinja2==3.1.4
 MarkupSafe==3.0.2
 pytest==8.3.4
-ansible==11.2.0
+ansible==11.3.0
