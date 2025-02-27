@@ -399,7 +399,7 @@ OpticsPerChannelDict = TypedDict(
 )
 
 OpticsPhysicalChannelsDict = TypedDict(
-    "OpticsPhysicalChannelsDict", {"channels": OpticsPerChannelDict}
+    "OpticsPhysicalChannelsDict", {"channels": List[OpticsPerChannelDict]}
 )
 
 OpticsDict = TypedDict("OpticsDict", {"physical_channels": OpticsPhysicalChannelsDict})
