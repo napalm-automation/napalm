@@ -9,7 +9,7 @@ pyflakes==3.2.0
 pylama==8.4.1
 mock==5.1.0
 mypy==1.11.1
-types-PyYAML==6.0.12.20240808
+types-PyYAML==6.0.12.20241230
 types-requests==2.32.0.20241016
 types-six==1.16.21.20240513
 types-setuptools==69.5.0.20240522
