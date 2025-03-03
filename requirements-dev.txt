@@ -10,7 +10,7 @@ pylama==8.4.1
 mock==5.2.0
 mypy==1.11.1
 types-PyYAML==6.0.12.20241230
-types-requests==2.32.0.20241016
+types-requests==2.32.0.20250301
 types-six==1.17.0.20241205
 types-setuptools==69.5.0.20240522
 ttp==0.9.5
