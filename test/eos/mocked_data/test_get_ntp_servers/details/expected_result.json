@@ -1,0 +1,24 @@
+{
+  "1.2.3.4": {
+    "port": 123,
+    "version": 4,
+    "association_type": "SERVER",
+    "iburst": true,
+    "prefer": true,
+    "network_instance": "FOO",
+    "source_address": "",
+    "key_id": -1,
+    "address": "1.2.3.4"
+  },
+  "4.3.2.1": {
+    "port": 123,
+    "version": 4,
+    "association_type": "SERVER",
+    "iburst": false,
+    "prefer": false,
+    "network_instance": "FOO",
+    "source_address": "172.20.20.2",
+    "key_id": -1,
+    "address": "4.3.2.1"
+  }
+}
