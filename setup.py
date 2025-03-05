@@ -3,7 +3,11 @@
 from setuptools import setup, find_packages
 
 with open("requirements.txt", "r") as fs:
-    reqs = [r for r in fs.read().splitlines() if (len(r) > 0 and not r.startswith("#"))]
+    reqs = [
+        r
+        for r in fs.read().splitlines()
+        if (len(r) > 0 and not (r.startswith("#") or r.startswith("git+")))
+    ]
 
 with open("README.md", "r") as fs:
     long_description = fs.read()
