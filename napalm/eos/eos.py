@@ -530,7 +530,7 @@ class EOSDriver(NetworkDriver):
                 "configure session {} commit".format(self.config_session),
                 "write memory",
             ]
-            self._run_commands(commands)
+            self._run_commands(commands, encoding="text")
             self.config_session = None
         else:
             raise CommitError("No pending commit-confirm found!")
