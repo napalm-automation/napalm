@@ -1,0 +1,7 @@
+ip access-list test-acl
+    10 remark ntp
+    20 permit udp any eq ntp any
+    30 permit udp any any eq ntp
+ntp server 1.2.3.4
+ntp server 5.6.7.8
+ntp server 2001:0db8:0a0b:12f0:0000:0000:0000:0001
