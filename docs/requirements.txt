@@ -2,7 +2,7 @@ urllib3==2.3.0 # https://github.com/readthedocs/readthedocs.org/issues/10290
 sphinx==7.3.7
 sphinx-rtd-theme==2.0.0
 invoke==2.2.0
-jinja2==3.1.5
+jinja2==3.1.6
 MarkupSafe==3.0.2
 pytest==8.3.5
 ansible==11.3.0
