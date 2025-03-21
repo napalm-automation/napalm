@@ -530,7 +530,7 @@ class EOSDriver(NetworkDriver):
                 "configure session {} commit".format(self.config_session),
                 "write memory",
             ]
-            self._run_commands(commands)
+            self._run_commands(commands, encoding="text")
             self.config_session = None
         else:
             raise CommitError("No pending commit-confirm found!")
@@ -1224,6 +1224,8 @@ class EOSDriver(NetworkDriver):
                 "key_id": -1,
             }
             tokens = server.split()
+            if tokens[0] != "ntp":
+                continue
             if tokens[2] == "vrf":
                 details["network_instance"] = tokens[3]
                 server_ip = details["address"] = tokens[4]
@@ -1269,6 +1271,8 @@ class EOSDriver(NetworkDriver):
 
                 elif tokens[idx] == "prefer":
                     details["prefer"] = True
+                    idx += 1
+                else:  # Shouldn't happen
                     idx += 1
 
             result[server_ip] = details
