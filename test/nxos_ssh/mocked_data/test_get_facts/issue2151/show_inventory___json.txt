@@ -1,0 +1,34 @@
+{
+  "TABLE_inv": {
+    "ROW_inv": [
+      {
+        "name": "Chassis",
+        "desc": "Nexus 6001 Chassis",
+        "productid": "N6K-C6001-64P",
+        "vendorid": "V01",
+        "serialnum": "TM6012EC74B"
+      },
+      {
+        "name": "Module 1",
+        "desc": "Nexus 64 Supervisor",
+        "productid": "N6K-C6001-64P",
+        "vendorid": "V01",
+        "serialnum": "FOC11111111"
+      },
+      {
+        "name": "Module 2",
+        "desc": "Nexus 4xQSFP Ethernet Module",
+        "productid": "N6K-C6001-M4Q",
+        "vendorid": "V01",
+        "serialnum": "FOC11111111"
+      },
+      {
+        "name": "Fan 1",
+        "desc": "Chassis fan module",
+        "productid": "N6K-C6001-FAN-B",
+        "vendorid": "N/A",
+        "serialnum": "N/A"
+      }
+    ]
+  }
+}

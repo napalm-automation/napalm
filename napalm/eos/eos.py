@@ -530,7 +530,7 @@ class EOSDriver(NetworkDriver):
                 "configure session {} commit".format(self.config_session),
                 "write memory",
             ]
-            self._run_commands(commands)
+            self._run_commands(commands, encoding="text")
             self.config_session = None
         else:
             raise CommitError("No pending commit-confirm found!")
@@ -1202,21 +1202,82 @@ class EOSDriver(NetworkDriver):
         return arp_table
 
     def get_ntp_servers(self):
+        result = {}
+
         commands = ["show running-config | section ntp"]
 
-        raw_ntp_config = self._run_commands(commands, encoding="text")[0].get(
-            "output", ""
+        raw_ntp_config = (
+            self._run_commands(commands, encoding="text")[0]
+            .get("output", "")
+            .splitlines()
         )
 
-        ntp_config = napalm.base.helpers.textfsm_extractor(
-            self, "ntp_peers", raw_ntp_config
-        )
+        for server in raw_ntp_config:
+            details = {
+                "port": 123,
+                "version": 4,
+                "association_type": "SERVER",
+                "iburst": False,
+                "prefer": False,
+                "network_instance": "default",
+                "source_address": "",
+                "key_id": -1,
+            }
+            tokens = server.split()
+            if tokens[0] != "ntp":
+                continue
+            if tokens[2] == "vrf":
+                details["network_instance"] = tokens[3]
+                server_ip = details["address"] = tokens[4]
+                idx = 5
+            else:
+                server_ip = details["address"] = tokens[2]
+                idx = 3
+            try:
+                parsed_address = napalm.base.helpers.ipaddress.ip_address(server_ip)
+                family = parsed_address.version
+            except ValueError:
+                # Assume family of 4, unless local-interface has no IPv4 addresses
+                family = 4
+            while idx < len(tokens):
+                if tokens[idx] == "iburst":
+                    details["iburst"] = True
+                    idx += 1
 
-        return {
-            str(ntp_peer.get("ntppeer")): {}
-            for ntp_peer in ntp_config
-            if ntp_peer.get("ntppeer", "")
-        }
+                elif tokens[idx] == "key":
+                    details["key_id"] = int(tokens[idx + 1])
+                    idx += 2
+
+                elif tokens[idx] == "local-interface":
+                    interfaces = self.get_interfaces_ip()
+                    intf = tokens[idx + 1]
+                    if family == 6 and interfaces[intf]["ipv6"]:
+                        details["source_address"] = list(
+                            interfaces[intf]["ipv6"].keys()
+                        )[0]
+                    elif interfaces[intf]["ipv4"]:
+                        details["source_address"] = list(
+                            interfaces[intf]["ipv4"].keys()
+                        )[0]
+                    elif interfaces[intf]["ipv6"]:
+                        details["source_address"] = list(
+                            interfaces[intf]["ipv6"].keys()
+                        )[0]
+                    idx += 2
+
+                elif tokens[idx] == "version":
+                    details["version"] = int(tokens[idx + 1])
+                    idx += 2
+
+                elif tokens[idx] == "prefer":
+                    details["prefer"] = True
+                    idx += 1
+                else:  # Shouldn't happen
+                    idx += 1
+
+            result[server_ip] = details
+
+        return result
 
     def get_ntp_stats(self):
         ntp_stats = []
@@ -1687,7 +1748,7 @@ class EOSDriver(NetworkDriver):
         commands = []
 
         if vrf:
-            commands.append("routing-context vrf {vrf}".format(vrf=vrf))
+            commands.append("cli vrf {vrf}".format(vrf=vrf))
 
         if source:
             source_opt = "-s {source}".format(source=source)
@@ -2193,7 +2254,7 @@ class EOSDriver(NetworkDriver):
         commands = []
 
         if vrf:
-            commands.append("routing-context vrf {vrf}".format(vrf=vrf))
+            commands.append("cli vrf {vrf}".format(vrf=vrf))
 
         command = "ping {}".format(destination)
         command += " timeout {}".format(timeout)
