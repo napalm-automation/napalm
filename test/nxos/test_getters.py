@@ -1,11 +1,12 @@
 """Tests for getters."""
 
+from unittest.mock import patch
+
 from napalm.base.test.getters import BaseTestGetters, wrap_test_cases
 from napalm.base.test import helpers
 from napalm.base import models
 
 import pytest
-from mock import patch
 
 
 def mock_time():

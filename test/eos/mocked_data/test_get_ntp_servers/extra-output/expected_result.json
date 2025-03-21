@@ -1,0 +1,35 @@
+{
+  "1.2.3.4": {
+    "port": 123,
+    "version": 4,
+    "association_type": "SERVER",
+    "iburst": false,
+    "prefer": false,
+    "network_instance": "default",
+    "source_address": "",
+    "key_id": -1,
+    "address": "1.2.3.4"
+  },
+  "5.6.7.8": {
+    "port": 123,
+    "version": 4,
+    "association_type": "SERVER",
+    "iburst": false,
+    "prefer": false,
+    "network_instance": "default",
+    "source_address": "",
+    "key_id": -1,
+    "address": "5.6.7.8"
+  },
+  "2001:0db8:0a0b:12f0:0000:0000:0000:0001": {
+    "port": 123,
+    "version": 4,
+    "association_type": "SERVER",
+    "iburst": false,
+    "prefer": false,
+    "network_instance": "default",
+    "source_address": "",
+    "key_id": -1,
+    "address": "2001:0db8:0a0b:12f0:0000:0000:0000:0001"
+  }
+}
