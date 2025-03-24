@@ -3,7 +3,11 @@
 from setuptools import setup, find_packages
 
 with open("requirements.txt", "r") as fs:
-    reqs = [r for r in fs.read().splitlines() if (len(r) > 0 and not r.startswith("#"))]
+    reqs = [
+        r
+        for r in fs.read().splitlines()
+        if (len(r) > 0 and not (r.startswith("#") or r.startswith("git+")))
+    ]
 
 with open("README.md", "r") as fs:
     long_description = fs.read()
@@ -19,7 +23,7 @@ setup(
     author="David Barroso, Kirk Byers, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, ping@mirceaulinic.net, ktbyers@twb-tech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
-    license="Apache 2.0",
+    license="Apache-2.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
@@ -32,6 +36,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Operating System :: POSIX :: Linux",
         "Operating System :: MacOS",
     ],
