@@ -19,7 +19,7 @@ import ipaddress
 import os
 import re
 import socket
-import telnetlib
+from netmiko._telnetlib import telnetlib
 import tempfile
 import uuid
 
