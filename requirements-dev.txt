@@ -11,7 +11,7 @@ pylama==8.4.1
 mypy==1.15.0
 types-PyYAML==6.0.12.20241230
 types-requests==2.32.0.20241016
-types-six==1.17.0.20241205
+types-six==1.17.0.20250304
 types-setuptools==69.5.0.20240522
 ttp==0.9.5
 ttp_templates==0.3.7
