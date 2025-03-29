@@ -1,0 +1,44 @@
+Cisco Nexus Operating System (NX-OS) Software
+TAC support: http://www.cisco.com/tac
+Documents: http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html
+Copyright (c) 2002-2014, Cisco Systems, Inc. All rights reserved.
+The copyrights to certain works contained in this software are
+owned by other third parties and used and distributed under
+license. Certain components of this software are licensed under
+the GNU General Public License (GPL) version 2.0 or the GNU
+Lesser General Public License (LGPL) Version 2.1. A copy of each
+such license is available at
+http://www.opensource.org/licenses/gpl-2.0.php and
+http://www.opensource.org/licenses/lgpl-2.1.php
+
+Software
+BIOS: version 05.52
+kickstart: version 16.1(2.133b) [build 16.1(2.133b)]
+system: version 16.1(2.133b) [build 16.1(2.133b)]
+PE: version 6.1(2.125b)
+BIOS compile time: 12/03/2024
+kickstart image file is: /bootflash/aci-n9000-dk9.16.1.2.133b.bin
+kickstart compile time: 03/04/2025 22:43:17 [03/04/2025 22:43:17]
+system image file is: /bootflash/auto-s
+system compile time: 03/04/2025 22:43:17 [03/04/2025 22:43:17]
+
+Hardware
+cisco N9K-C93180YC-FX ("supervisor")
+Intel(R) Xeon(R) CPU D-1528 @ 1.90GHz with 24418304 kB of memory.
+Processor Board ID FDO23330XHX
+
+Device name: xxxxxxxxx
+bootflash: 125029376 kB
+
+Kernel uptime is 16 day(s), 04 hour(s), 33 minute(s), 59 second(s)
+
+Last reset at 259000 usecs after Tue Mar 11 14:53:00 2025 UTC
+Reason: system-power-cycled-due-to-ssd-firmware-upgrade
+System version: 16.1(2.133b)
+Service: module reloaded
+
+plugin
+Core Plugin, Ethernet Plugin
+
+Therefore the stanza in get_facts() beginning at line 629:
+
