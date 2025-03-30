@@ -1,6 +1,6 @@
 {
   "os_version": "16.1(2.133b)",
-  "uptime": 4338547,
+  "uptime": 1398839.0,
   "interface_list": [
     "Management0",
     "Ethernet1/1",
@@ -57,19 +57,13 @@
     "Ethernet1/52",
     "Port-channel1",
     "Port-channel16",
-    "Port-channel17",
-    "Port-channel32",
-    "Port-channel33",
-    "Port-channel34",
-    "Port-channel35",
-    "Port-channel50",
-    "Port-channel51",
-    "Port-channel360",
     "Vlan1",
-    "Vlan351"
+    "Vlan351",
+    "Tunnel1",
+    "Tunnel2"
   ],
   "vendor": "Cisco",
-  "serial_number": "TM6012EC74B",
+  "serial_number": "FD123456789",
   "model": "N9K-C93180YC-FX",
   "hostname": "SWITCH_NXOSv",
   "fqdn": "SWITCH_NXOSv.y.z.a.com"

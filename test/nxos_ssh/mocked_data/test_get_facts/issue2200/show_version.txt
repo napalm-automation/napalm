@@ -40,5 +40,4 @@ Service: module reloaded
 plugin
 Core Plugin, Ethernet Plugin
 
-Therefore the stanza in get_facts() beginning at line 629:
 

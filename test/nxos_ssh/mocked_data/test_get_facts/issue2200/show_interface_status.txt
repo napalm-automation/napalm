@@ -57,14 +57,6 @@ Eth1/51       --                 connected trunk     full    1000    1000base-SX
 Eth1/52       --                 connected trunk     full    1000    1000base-SX
 Po1           --                 connected trunk     full    1000    --         
 Po16          --                 connected trunk     full    1000    --         
-Po17          --                 connected trunk     full    1000    --         
-Po32          --                 connected trunk     full    1000    --         
-Po33          --                 connected trunk     full    1000    --         
-Po34          --                 connected trunk     full    1000    --         
-Po35          --                 connected trunk     full    1000    --         
-Po50          --                 connected trunk     full    1000    --         
-Po51          --                 connected trunk     full    1000    --         
-Po360         --                 connected trunk     full    1000    --         
 Vlan1         --                 down      routed    auto    auto    --
 Vlan351       --                 connected routed    auto    auto    --
 ----------------------------------------------------------------------------------
