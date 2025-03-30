@@ -59,8 +59,8 @@
     "Port-channel16",
     "Vlan1",
     "Vlan351",
-    "Tunnel1",
-    "Tunnel2"
+    "Tunnel",
+    "Tunnel"
   ],
   "vendor": "Cisco",
   "serial_number": "FD123456789",
