@@ -512,6 +512,8 @@ class IOSXR(object):
         self._unlock_xml_agent()  # this refers to the XML agent
         if hasattr(self.device, "remote_conn"):
             self.device.remote_conn.close()  # close the underlying SSH session
+        # run netmiko cleanup for session before __exit__
+        self.device.disconnect()
 
     def lock(self):
         """
