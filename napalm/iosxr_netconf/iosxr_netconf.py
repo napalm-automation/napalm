@@ -70,6 +70,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.lock_on_connect = self.optional_args.pop("config_lock", False)
         self.key_file = self.optional_args.pop("key_file", None)
         self.config_encoding = self.optional_args.pop("config_encoding", "cli")
+        if "ssh_config_file" in self.optional_args:
+            self.optional_args["ssh_config"] = self.optional_args.pop("ssh_config_file")
         if self.config_encoding not in C.CONFIG_ENCODINGS:
             raise ValueError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
