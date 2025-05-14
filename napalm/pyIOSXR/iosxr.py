@@ -510,8 +510,7 @@ class IOSXR(object):
         if self.lock_on_connect or self.locked:
             self.unlock()  # this refers to the config DB
         self._unlock_xml_agent()  # this refers to the XML agent
-        if hasattr(self.device, "remote_conn"):
-            self.device.remote_conn.close()  # close the underlying SSH session
+        self.device.disconnect()  # close the underlying SSH session
 
     def lock(self):
         """

@@ -35,6 +35,9 @@ class _MockedNetMikoDevice(object):
 
         self.remote_conn = _MockedParamikoTransport()
 
+    def disconnect(self):
+        self.remote_conn.close()
+
     @staticmethod
     def get_mock_file(command, format="xml"):
         filename = (
