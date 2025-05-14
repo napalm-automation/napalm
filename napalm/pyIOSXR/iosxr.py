@@ -510,7 +510,10 @@ class IOSXR(object):
         if self.lock_on_connect or self.locked:
             self.unlock()  # this refers to the config DB
         self._unlock_xml_agent()  # this refers to the XML agent
-        self.device.disconnect()  # close the underlying SSH session
+        # Both of the following methods are needed to cleanup the IOSXR connection successfully.
+        if hasattr(self.device, "remote_conn"):
+            self.device.remote_conn.close()  # close the underlying Paramiko/Netmiko channel.
+        self.device.disconnect()  # close the Netmiko session, inclusive of SSH cleanup if used.
 
     def lock(self):
         """
