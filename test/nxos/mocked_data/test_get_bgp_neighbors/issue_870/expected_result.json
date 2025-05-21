@@ -159,7 +159,7 @@
             "received_prefixes": 13
           }
         }, 
-        "uptime": -1, 
+        "uptime": 4088562,
         "remote_as": 64862, 
         "description": "", 
         "remote_id": "10.1.1.179", 
@@ -175,7 +175,7 @@
             "received_prefixes": 0 
           }
         }, 
-        "uptime": -1, 
+        "uptime": 1496562,
         "remote_as": 64862, 
         "description": "", 
         "remote_id": "10.1.1.177", 

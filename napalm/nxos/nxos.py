@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+import datetime
 import ipaddress
 import json
 import os
@@ -25,6 +26,7 @@ import uuid
 from abc import abstractmethod
 from builtins import super
 from collections import defaultdict
+from dateutil import relativedelta
 
 # import third party lib
 from typing import (
@@ -78,6 +80,55 @@ ShowIPInterfaceReturn = TypedDict(
         "masklen": str,
     },
 )
+
+# Some uptimes are given in ISO8601 duration format
+# This regexp implements a subset of that format, as used by the
+# nxos switches, with integer values only.
+ISO8601_INTEGER_PERIOD_REGEX = re.compile(
+    r"""(?x)
+        ^P(?!\b) # start with the literal letter P, with no word boundaries
+        ((?P<years>[0-9]+)Y)?
+        ((?P<months>[0-9]+)M)?
+        ((?P<weeks>[0-9]+)W)?
+        ((?P<days>[0-9]+)D)?
+        (T # optional time component
+          ((?P<hours>[0-9]+)H)?
+          ((?P<minutes>[0-9]+)M)?
+          ((?P<seconds>[0-9]+)S)?
+        )?$
+    """
+)
+
+
+def duration_to_seconds(
+    duration: str, endtime: Optional[datetime.datetime] = None
+) -> int:
+    """
+    Try to convert an ISO8601 to seconds, using the current time as a base.
+
+    The current time is needed as the duration may include "years" and "months",
+    which have a variable number of seconds depending on when we start counting from.
+    """
+    if not endtime:
+        # Use fromtimestamp for ease/uniformity of mocking in unit tests
+        endtime = datetime.datetime.fromtimestamp(time.time())
+    match = ISO8601_INTEGER_PERIOD_REGEX.match(duration)
+    if not match:
+        raise ValueError("Can't parse ISO8601 duration")
+
+    mg = match.groupdict(default="0")
+    rd = relativedelta.relativedelta(
+        years=int(mg["years"]),
+        months=int(mg["months"]),
+        weeks=int(mg["weeks"]),
+        days=int(mg["days"]),
+        hours=int(mg["hours"]),
+        minutes=int(mg["minutes"]),
+        seconds=int(mg["seconds"]),
+    )
+    starttime = endtime - rd
+    timediff = endtime - starttime
+    return int(timediff.total_seconds())
 
 
 def ensure_netmiko_conn(func: F) -> F:
@@ -1090,6 +1141,9 @@ class NXOSDriver(NXOSDriverBase):
         except NXAPICommandError:
             vrf_list = []
 
+        # Use fromtimestamp for ease/uniformity of mocking in unit tests
+        dtnow = datetime.datetime.fromtimestamp(time.time())
+
         for vrf_dict in vrf_list:
             result_vrf_dict: models.BGPStateNeighborsPerVRFDict = {
                 "router_id": str(vrf_dict["vrf-router-id"]),
@@ -1117,13 +1171,18 @@ class NXOSDriver(NXOSDriverBase):
                     bgp_state = bgp_state_dict[state]
                     afid_dict = af_name_dict[int(af_dict["af-id"])]
                     safi_name = afid_dict[int(saf_dict["safi"])]
+                    uptime = -1
+                    try:
+                        uptime = duration_to_seconds(neighbor_dict["time"], dtnow)
+                    except ValueError:
+                        pass
 
                     result_peer_dict: models.BGPStateNeighborDict = {
                         "local_as": as_number(vrf_dict["vrf-local-as"]),
                         "remote_as": remoteas,
                         "remote_id": neighborid,
                         "is_enabled": bgp_state["is_enabled"],
-                        "uptime": -1,
+                        "uptime": uptime,
                         "description": "",
                         "is_up": bgp_state["is_up"],
                         "address_family": {
