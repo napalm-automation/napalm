@@ -10,7 +10,6 @@ pyeapi>=1.0.2
 netmiko>=4.4.0
 # Temp fix until PyEZ 2.7.4 is released (PY3.13 support)
 git+https://github.com/Juniper/py-junos-eznc.git@39bd1cfb007b6adea654baeaf78a26d1ad35f385
-scp
 lxml>=4.3.0
 ncclient
 ttp
