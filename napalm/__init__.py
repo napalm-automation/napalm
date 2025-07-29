@@ -1,4 +1,4 @@
-import pkg_resources
+from importlib.metadata import version, PackageNotFoundError
 import sys
 import logging
 
@@ -23,8 +23,8 @@ except AttributeError:
     raise RuntimeError("NAPALM requires Python 3.7 or greater")
 
 try:
-    __version__ = pkg_resources.get_distribution("napalm").version
-except pkg_resources.DistributionNotFound:
+    __version__ = version("napalm")
+except PackageNotFoundError:
     __version__ = "Not installed"
 
 __all__ = ("get_network_driver", "SUPPORTED_DRIVERS")

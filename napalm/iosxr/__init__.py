@@ -15,15 +15,7 @@
 
 """napalm.iosxr package."""
 
-# Import stdlib
-import pkg_resources
-
 # Import local modules
 from napalm.iosxr.iosxr import IOSXRDriver  # noqa
 
 __all__ = ("IOSXRDriver",)
-
-try:
-    __version__ = pkg_resources.get_distribution("napalm-iosxr").version
-except pkg_resources.DistributionNotFound:
-    __version__ = "Not installed"
