@@ -9,9 +9,9 @@ pytest-json-report==1.5.0
 pyflakes==3.2.0
 pylama==8.4.1
 mypy==1.15.0
-types-PyYAML==6.0.12.20241230
-types-requests==2.32.0.20250306
-types-six==1.17.0.20250304
-types-setuptools==69.5.0.20240522
+types-PyYAML==6.0.12.20250516
+types-requests==2.32.4.20250611
+types-six==1.17.0.20250515
+types-setuptools==80.9.0.20250801
 ttp==0.9.5
 ttp_templates==0.3.7
