@@ -90,7 +90,7 @@ def wrap_test_cases(func):
             attr.current_test = ""  # Empty them to avoid side effects
             attr.current_test_case = ""  # Empty them to avoid side effects
 
-        return result
+        return None
 
     @functools.wraps(func)
     def real_wrapper(cls, test_case):
