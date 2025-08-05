@@ -7,7 +7,8 @@ import json
 import logging
 import argparse
 import getpass
-import pkg_resources
+import pkgutil
+from importlib.metadata import version
 from functools import wraps
 
 
@@ -156,9 +157,9 @@ def check_installed_packages():
     logger.debug("Gathering napalm packages")
     napalm_packages = sorted(
         [
-            "{}=={}".format(i.key, i.version)
-            for i in pkg_resources.working_set
-            if i.key.startswith("napalm")
+            "{}=={}".format(i.name, version(i.name))
+            for i in list(pkgutil.iter_modules())
+            if i.name.startswith("napalm")
         ]
     )
     for n in napalm_packages:
