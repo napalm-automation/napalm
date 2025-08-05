@@ -21,7 +21,10 @@ setup(
     packages=find_packages(exclude=("test*",)),
     test_suite="test_base",
     author="David Barroso, Kirk Byers, Mircea Ulinic, Brandon Ewing",
-    author_email="dbarrosop@dravetech.com, ping@mirceaulinic.net, ktbyers@twb-tech.com, brandon.ewing@warningg.com",
+    author_email=(
+        "dbarrosop@dravetech.com, ping@mirceaulinic.net, "
+        "ktbyers@twb-tech.com, brandon.ewing@warningg.com"
+    ),
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
     license="Apache-2.0",
     long_description=long_description,
