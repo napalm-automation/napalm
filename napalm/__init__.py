@@ -17,10 +17,10 @@ import napalm.nxapi_plumbing  # noqa
 
 # Verify Python Version that is running
 try:
-    if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
-        raise RuntimeError("NAPALM requires Python 3.7 or greater")
+    if not (sys.version_info.major == 3 and sys.version_info.minor >= 9):
+        raise RuntimeError("NAPALM requires Python 3.9 or greater")
 except AttributeError:
-    raise RuntimeError("NAPALM requires Python 3.7 or greater")
+    raise RuntimeError("NAPALM requires Python 3.9 or greater")
 
 try:
     __version__ = version("napalm")
