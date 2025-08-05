@@ -2,8 +2,8 @@ black==24.4.2
 # Temp for PY3.13 support
 git+https://github.com/TheKevJames/coveralls-python.git@0ff8f20fd57f68486a4127b0b7f88a5922b910c3
 ddt==1.7.2
-flake8-import-order==0.18.2
-pytest==8.3.5
+flake8-import-order==0.19.2
+pytest==8.4.1
 pytest-cov==6.2.1
 pytest-json-report==1.5.0
 pyflakes==3.4.0
