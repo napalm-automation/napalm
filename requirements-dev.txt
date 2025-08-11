@@ -9,7 +9,7 @@ pytest-json-report==1.5.0
 pyflakes==3.4.0
 pylama==8.4.1
 mypy==1.15.0
-types-PyYAML==6.0.12.20250516
+types-PyYAML==6.0.12.20250809
 types-requests==2.32.4.20250611
 types-six==1.17.0.20250515
 types-setuptools==80.9.0.20250801
