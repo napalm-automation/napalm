@@ -17,11 +17,14 @@ __author__ = "David Barroso <dbarrosop@dravetech.com>"
 
 setup(
     name="napalm",
-    version="5.0.0",
+    version="5.1.0",
     packages=find_packages(exclude=("test*",)),
     test_suite="test_base",
-    author="David Barroso, Kirk Byers, Mircea Ulinic",
-    author_email="dbarrosop@dravetech.com, ping@mirceaulinic.net, ktbyers@twb-tech.com",
+    author="David Barroso, Kirk Byers, Mircea Ulinic, Brandon Ewing",
+    author_email=(
+        "dbarrosop@dravetech.com, ping@mirceaulinic.net, "
+        "ktbyers@twb-tech.com, brandon.ewing@warningg.com"
+    ),
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
     license="Apache-2.0",
     long_description=long_description,
@@ -31,7 +34,6 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",

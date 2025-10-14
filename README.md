@@ -8,7 +8,7 @@ NAPALM
 ======
 NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support) is a Python library that implements a set of functions to interact with different router vendor devices using a unified API.
 
-![NAPALM logo](static/logo.png?raw=true "NAPALM logo")
+![NAPALM logo](https://raw.githubusercontent.com/napalm-automation/napalm/develop/static/logo.png "NAPALM logo")
 
 NAPALM supports several methods to connect to the devices, to manipulate configurations or to retrieve data.
 
@@ -141,6 +141,7 @@ Authors
  * Mircea Ulinic ([ping@mirceaulinic.net](mailto:ping@mirceaulinic.net))
  * Kirk Byers ([ktbyers@twb-tech.com](mailto:ktbyers@twb-tech.com))
  * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
+ * Brandon Ewing ([brandon.ewing@warningg.com](mailto: brandon.ewing@warningg.com))
  * Many others, check the [contributors](https://github.com/napalm-automation/napalm/graphs/contributors) page for details.
 
 
