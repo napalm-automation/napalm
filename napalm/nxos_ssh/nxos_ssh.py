@@ -1618,6 +1618,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         vendor_rev_re = re.compile("revision is (.*)$", re.M)
         serial_no_re = re.compile("serial number is (.*)$", re.M)
         type_no_re = re.compile("type is (.*)$", re.M)
+        lanes_re = re.compile(
+            r"^Lane Number:\d+.*?(?=Lane Number:|\Z)", re.M | re.DOTALL
+        )
         rx_instant_re = re.compile(r"Rx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
         tx_instant_re = re.compile(r"Tx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
         current_instant_re = re.compile(r"Current[ ]+(?:(\S+?)[ ]+mA|(N.A))", re.M)
@@ -1646,59 +1649,65 @@ class NXOSSSHDriver(NXOSDriverBase):
                 "connector_type": self.connector_type_map.get(type_s, "Unknown"),
             }
             if "DOM is not supported" not in port_ts:
-                res = rx_instant_re.search(port_ts)
-                input_power = res.group(1) or res.group(2)
-                res = tx_instant_re.search(port_ts)
-                output_power = res.group(1) or res.group(2)
-                res = current_instant_re.search(port_ts)
-                current = res.group(1) or res.group(2)
+                # Some transceivers have multiple lanes/channels
+                lanes = lanes_re.findall(port_ts)
+                if not lanes:
+                    lanes = [port_ts]
 
-                # If interface is shutdown it returns "N/A" as output power
-                # or "N/A" as input power
-                # Converting that to -100.0 float
-                try:
-                    float(output_power)
-                except ValueError:
-                    output_power = -100.0
-                try:
-                    float(input_power)
-                except ValueError:
-                    input_power = -100.0
-                try:
-                    float(current)
-                except ValueError:
-                    current = -100.0
+                for index, lane in enumerate(lanes):
+                    res = rx_instant_re.search(lane)
+                    input_power = res.group(1) or res.group(2)
+                    res = tx_instant_re.search(lane)
+                    output_power = res.group(1) or res.group(2)
+                    res = current_instant_re.search(lane)
+                    current = res.group(1) or res.group(2)
 
-                # Defaulting avg, min, max values to -100.0 since device does not
-                # return these values
-                optic_states = {
-                    "index": 0,
-                    "state": {
-                        "input_power": {
-                            "instant": (
-                                float(input_power) if "input_power" else -100.0
-                            ),
-                            "avg": -100.0,
-                            "min": -100.0,
-                            "max": -100.0,
+                    # If interface is shutdown it returns "N/A" as output power
+                    # or "N/A" as input power
+                    # Converting that to -100.0 float
+                    try:
+                        float(output_power)
+                    except ValueError:
+                        output_power = -100.0
+                    try:
+                        float(input_power)
+                    except ValueError:
+                        input_power = -100.0
+                    try:
+                        float(current)
+                    except ValueError:
+                        current = -100.0
+
+                    # Defaulting avg, min, max values to -100.0 since device does not
+                    # return these values
+                    optic_states = {
+                        "index": index,
+                        "state": {
+                            "input_power": {
+                                "instant": (
+                                    float(input_power) if "input_power" else -100.0
+                                ),
+                                "avg": -100.0,
+                                "min": -100.0,
+                                "max": -100.0,
+                            },
+                            "output_power": {
+                                "instant": (
+                                    float(output_power) if "output_power" else -100.0
+                                ),
+                                "avg": -100.0,
+                                "min": -100.0,
+                                "max": -100.0,
+                            },
+                            "laser_bias_current": {
+                                "instant": (float(current) if "current" else -100.0),
+                                "avg": 0.0,
+                                "min": 0.0,
+                                "max": 0.0,
+                            },
                         },
-                        "output_power": {
-                            "instant": (
-                                float(output_power) if "output_power" else -100.0
-                            ),
-                            "avg": -100.0,
-                            "min": -100.0,
-                            "max": -100.0,
-                        },
-                        "laser_bias_current": {
-                            "instant": (float(current) if "current" else -100.0),
-                            "avg": 0.0,
-                            "min": 0.0,
-                            "max": 0.0,
-                        },
-                    },
-                }
-                port_detail["physical_channels"]["channel"].append(optic_states)
+                    }
+                    port_detail["physical_channels"]["channel"].append(optic_states)
 
             port_detail["state"] = state
             optics_detail[port] = port_detail
