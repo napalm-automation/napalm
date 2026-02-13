@@ -2085,7 +2085,7 @@ class EOSDriver(NetworkDriver):
             startup_cfg = str(output[0]["output"]) if get_startup else ""
             if sanitized and startup_cfg:
                 startup_cfg = napalm.base.helpers.sanitize_config(
-                    startup_cfg, c.CISCO_SANITIZE_FILTERS
+                    startup_cfg, c.EOS_SANITIZE_FILTERS
                 )
             return {
                 "startup": startup_cfg,
@@ -2094,17 +2094,28 @@ class EOSDriver(NetworkDriver):
             }
         elif get_startup or get_running:
             if retrieve == "running":
-                commands = ["show {}-config{}".format(retrieve, run_full)]
+                commands = [
+                    "show {}-config{}{}".format(retrieve, run_full, run_sanitized)
+                ]
             elif retrieve == "startup":
                 commands = ["show {}-config".format(retrieve)]
             output = self._run_commands(commands, encoding="text")
+            startup_cfg = str(output[0]["output"]) if get_startup else ""
+            if sanitized and get_startup and startup_cfg:
+                startup_cfg = napalm.base.helpers.sanitize_config(
+                    startup_cfg, c.EOS_SANITIZE_FILTERS
+                )
             return {
-                "startup": str(output[0]["output"]) if get_startup else "",
+                "startup": startup_cfg,
                 "running": str(output[0]["output"]) if get_running else "",
                 "candidate": "",
             }
         elif get_candidate:
-            commands = ["show session-config named {}".format(self.config_session)]
+            commands = [
+                "show session-config named {}{}".format(
+                    self.config_session, run_sanitized
+                )
+            ]
             output = self._run_commands(commands, encoding="text")
             return {"startup": "", "running": "", "candidate": str(output[0]["output"])}
         elif retrieve == "candidate":

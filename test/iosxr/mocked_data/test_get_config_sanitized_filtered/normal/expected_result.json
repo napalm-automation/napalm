@@ -1,0 +1,5 @@
+{
+  "startup": "",
+  "running": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response MajorVersion=\"1\" MinorVersion=\"0\"><CLI><Configuration>\n\n\n!! Last configuration change at Wed Aug 17 16:49:00 2016 by vagrant\n!\ntelnet vrf default ipv4 server max-servers 10\nusername vagrant\n group root-lr\n group cisco-support\n secret <removed>\n!\ntpa\n address-family ipv4\n  update-source MgmtEth0/RP0/CPU0/0\n !\n!\ninterface MgmtEth0/RP0/CPU0/0\n description testing parallel commits\n ipv4 address dhcp\n!\ninterface GigabitEthernet0/0/0/0\n shutdown\n!\ninterface GigabitEthernet0/0/0/1\n shutdown\n!\ninterface GigabitEthernet0/0/0/2\n shutdown\n!\ninterface GigabitEthernet0/0/0/3\n shutdown\n!\nrouter static\n address-family ipv4 unicast\n  0.0.0.0/0 MgmtEth0/RP0/CPU0/0 10.0.2.2\n !\n!\ngrpc\n port 57777\n!\nxml agent tty\n iteration on size 1\n!\nssh server v2\nssh server vrf default\nend\n\n</Configuration></CLI><ResultSummary ErrorCount=\"0\"/></Response>\n",
+  "candidate": ""
+}

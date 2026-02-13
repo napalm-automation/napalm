@@ -100,3 +100,9 @@ CISCO_SANITIZE_FILTERS = {
     r"^((tacacs|radius) server [^\n]+\n(\s+[^\n]+\n)*\s+key) [^\n]+$": r"\1 <removed>",
     r"^(\s+ppp (chap|pap) password \d) .+$": r"\1 <removed>",
 }
+
+EOS_SANITIZE_FILTERS = {
+    **CISCO_SANITIZE_FILTERS,
+    r"^(\s+aaa root secret \d) .+$": r"\1 <removed>",
+    r"^(\s+username .+ (password|secret) \d) .+$": r"\1 <removed>",
+}

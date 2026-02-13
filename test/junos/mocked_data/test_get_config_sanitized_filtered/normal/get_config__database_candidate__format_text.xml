@@ -1,0 +1,48 @@
+<configuration-text>
+version 18.1;
+system {
+    host-name some-switch;
+    domain-name example.com;
+    time-zone UTC;
+    authentication-order [ password radius ];
+    root-authentication {
+        encrypted-password "$1$kasfbiuw98p43hnfwe.";
+    }
+    radius-server {
+        10.0.0.1 {
+            secret "$9$sdnfh2p9f8whefi2p98fehwuinoief98p2hif3beuis98ehfoi2";
+            timeout 3;
+            retry 1;
+        }
+    }
+    login {
+        user test-user {
+            uid 1717;
+            class admin;
+            authentication {
+                encrypted-password "$1$xMvNFGd6$HKlqUxgVJMkxMeDhQMFtR/";
+            }
+            }
+        }
+    }
+    services {
+        ssh {
+            protocol-version v2;
+        }
+        netconf {
+            ssh;
+        }
+    }
+    ntp {
+        server 10.17.0.1;
+    }
+}
+snmp {
+    location napalm;
+    contact "contact@napalm-automation.net";
+    community public;
+    community secure {
+        authorization read-only;
+    }
+}
+</configuration-text>

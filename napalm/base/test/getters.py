@@ -542,6 +542,30 @@ class BaseTestGetters(object):
         return get_config
 
     @wrap_test_cases
+    def test_get_config_sanitized_filtered(self, test_case):
+        """Test get_config with both sanitized=True and retrieve parameter."""
+        return_config = {}
+        get_config = self.device.get_config(retrieve="running", sanitized=True)
+        assert isinstance(get_config, dict)
+        assert helpers.test_model(models.ConfigDict, get_config)
+        assert get_config["startup"] == ""
+        assert get_config["candidate"] == ""
+        assert get_config["running"] != ""
+        return_config["running"] = get_config["running"]
+
+        get_config = self.device.get_config(retrieve="startup", sanitized=True)
+        assert isinstance(get_config, dict)
+        assert helpers.test_model(models.ConfigDict, get_config)
+        assert get_config["running"] == ""
+        assert get_config["candidate"] == ""
+
+        return_config["startup"] = get_config["startup"]
+
+        return_config["candidate"] = ""
+
+        return return_config
+
+    @wrap_test_cases
     def test_get_network_instances(self, test_case):
         """Test get_network_instances method."""
         get_network_instances = self.device.get_network_instances()
