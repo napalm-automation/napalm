@@ -1062,8 +1062,6 @@ class EOSDriver(NetworkDriver):
         return parsers.parse_arp_table_response(result[0], vrf)
 
     def get_ntp_servers(self):
-        result = {}
-
         commands = ["show running-config | section ntp"]
 
         raw_ntp_config = (
@@ -1072,84 +1070,12 @@ class EOSDriver(NetworkDriver):
             .splitlines()
         )
 
-        for server in raw_ntp_config:
-            details = {
-                "port": 123,
-                "version": 4,
-                "association_type": "SERVER",
-                "iburst": False,
-                "prefer": False,
-                "network_instance": "default",
-                "source_address": "",
-                "key_id": -1,
-            }
-            tokens = server.split()
-            if tokens[0] != "ntp":
-                continue
-            if tokens[2] == "vrf":
-                details["network_instance"] = tokens[3]
-                server_ip = details["address"] = tokens[4]
-                idx = 5
-            else:
-                server_ip = details["address"] = tokens[2]
-                idx = 3
-            try:
-                parsed_address = napalm.base.helpers.ipaddress.ip_address(server_ip)
-                family = parsed_address.version
-            except ValueError:
-                # Assume family of 4, unless local-interface has no IPv4 addresses
-                family = 4
-            while idx < len(tokens):
-                if tokens[idx] == "iburst":
-                    details["iburst"] = True
-                    idx += 1
+        needs_interfaces = any("local-interface" in line for line in raw_ntp_config)
+        interfaces = self.get_interfaces_ip() if needs_interfaces else {}
 
-                elif tokens[idx] == "key":
-                    details["key_id"] = int(tokens[idx + 1])
-                    idx += 2
-
-                elif tokens[idx] == "local-interface":
-                    interfaces = self.get_interfaces_ip()
-                    intf = tokens[idx + 1]
-                    if family == 6 and interfaces[intf]["ipv6"]:
-                        details["source_address"] = list(
-                            interfaces[intf]["ipv6"].keys()
-                        )[0]
-                    elif interfaces[intf]["ipv4"]:
-                        details["source_address"] = list(
-                            interfaces[intf]["ipv4"].keys()
-                        )[0]
-                    elif interfaces[intf]["ipv6"]:
-                        details["source_address"] = list(
-                            interfaces[intf]["ipv6"].keys()
-                        )[0]
-                    idx += 2
-
-                elif tokens[idx] == "version":
-                    details["version"] = int(tokens[idx + 1])
-                    idx += 2
-
-                elif tokens[idx] == "prefer":
-                    details["prefer"] = True
-                    idx += 1
-                else:  # Shouldn't happen
-                    idx += 1
-
-            result[server_ip] = details
-
-        return result
+        return parsers.parse_ntp_servers_response(raw_ntp_config, interfaces)
 
     def get_ntp_stats(self):
-        ntp_stats = []
-
-        REGEX = (
-            r"^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)"
-            r"\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})"
-            r"\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)"
-            r"\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)"
-            r"\s+([0-9\.]+)\s?$"
-        )
-
         commands = ["show ntp associations"]
 
         # output = self.device.run_commands(commands)
@@ -1160,33 +1086,8 @@ class EOSDriver(NetworkDriver):
         ntp_assoc = self._run_commands(commands, encoding="text")[0].get(
             "output", "\n\n"
         )
-        ntp_assoc_lines = ntp_assoc.splitlines()[2:]
 
-        for ntp_assoc in ntp_assoc_lines:
-            line_search = re.search(REGEX, ntp_assoc, re.I)
-            if not line_search:
-                continue  # pattern not found
-            line_groups = line_search.groups()
-            try:
-                ntp_stats.append(
-                    {
-                        "remote": str(line_groups[1]),
-                        "synchronized": (line_groups[0] == "*"),
-                        "referenceid": str(line_groups[2]),
-                        "stratum": int(line_groups[3]),
-                        "type": str(line_groups[4]),
-                        "when": str(line_groups[5]),
-                        "hostpoll": int(line_groups[6]),
-                        "reachability": int(line_groups[7]),
-                        "delay": float(line_groups[8]),
-                        "offset": float(line_groups[9]),
-                        "jitter": float(line_groups[10]),
-                    }
-                )
-            except Exception:
-                continue  # jump to next line
-
-        return ntp_stats
+        return parsers.parse_ntp_stats_response(ntp_assoc)
 
     def get_interfaces_ip(self):
         interfaces_ip = {}
@@ -1804,48 +1705,7 @@ class EOSDriver(NetworkDriver):
 
         output = self._run_commands(command, encoding="json")[0]["interfaces"]
 
-        # Formatting data into return data structure
-        optics_detail = {}
-
-        for port, port_values in output.items():
-            port_detail = {"physical_channels": {"channel": []}}
-
-            # Defaulting avg, min, max values to 0.0 since device does not
-            # return these values
-            optic_states = {
-                "index": 0,
-                "state": {
-                    "input_power": {
-                        "instant": (
-                            port_values["rxPower"] if "rxPower" in port_values else 0.0
-                        ),
-                        "avg": 0.0,
-                        "min": 0.0,
-                        "max": 0.0,
-                    },
-                    "output_power": {
-                        "instant": (
-                            port_values["txPower"] if "txPower" in port_values else 0.0
-                        ),
-                        "avg": 0.0,
-                        "min": 0.0,
-                        "max": 0.0,
-                    },
-                    "laser_bias_current": {
-                        "instant": (
-                            port_values["txBias"] if "txBias" in port_values else 0.0
-                        ),
-                        "avg": 0.0,
-                        "min": 0.0,
-                        "max": 0.0,
-                    },
-                },
-            }
-
-            port_detail["physical_channels"]["channel"].append(optic_states)
-            optics_detail[port] = port_detail
-
-        return optics_detail
+        return parsers.parse_optics_response(output)
 
     def get_config(self, retrieve="all", full=False, sanitized=False, format="text"):
         """get_config implementation for EOS."""
@@ -2137,12 +1997,4 @@ class EOSDriver(NetworkDriver):
     def get_vlans(self):
         command = ["show vlan"]
         output = self._run_commands(command, encoding="json")[0]["vlans"]
-
-        vlans = {}
-        for vlan, vlan_config in output.items():
-            vlans[vlan] = {
-                "name": vlan_config["name"],
-                "interfaces": list(vlan_config["interfaces"].keys()),
-            }
-
-        return vlans
+        return parsers.parse_vlans_response(output)
