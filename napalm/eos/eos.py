@@ -28,7 +28,6 @@ import json
 import socket
 
 from datetime import datetime
-from collections import defaultdict
 
 # third party libs
 import pyeapi
@@ -603,77 +602,7 @@ class EOSDriver(NetworkDriver):
             ],
             encoding="json",
         )
-
-        bgp_counters = defaultdict(
-            lambda: models.BGPStateNeighborsPerVRFDict(
-                peers=models.BGPStateNeighborDict()  # type: ignore
-            )  # type: ignore
-        )  # type: ignore
-        # Iterate IPv4 and IPv6 neighbor details
-        for cmd in cmd_outputs[2:]:
-            for vrf_name, vrf_data in cmd["vrfs"].items():
-                vrf = bgp_counters[vrf_name]
-                for peer in vrf_data["peerList"]:
-                    peer_ip = napalm.base.helpers.ip(peer["peerAddress"])
-                    v4_summary = cmd_outputs[0]["vrfs"][vrf_name]["peers"].get(
-                        peer_ip, {}
-                    )
-                    v6_summary = cmd_outputs[1]["vrfs"][vrf_name]["peers"].get(
-                        peer_ip, {}
-                    )
-                    local_as = napalm.base.helpers.as_number(peer["localAsn"])
-                    remote_as = napalm.base.helpers.as_number(peer["asn"])
-                    remote_id = napalm.base.helpers.ip(peer["routerId"])
-                    if peer["state"] == "Idle":
-                        is_enabled = (
-                            True
-                            if peer["idleReason"] != "Administratively shut down"
-                            else False
-                        )
-                    else:
-                        is_enabled = True
-                    is_up = peer["state"] == "Established"
-                    description = peer.get("description", "")
-                    uptime = int(peer.get("establishedTime", -1))
-                    v4: models.BGPStateAddressFamilyDict = {
-                        "received_prefixes": peer["prefixesReceived"],
-                        "accepted_prefixes": (
-                            v4_summary["prefixAccepted"] if v4_summary else 0
-                        ),
-                        "sent_prefixes": peer["prefixesSent"],
-                    }
-                    v6: models.BGPStateAddressFamilyDict = {
-                        "received_prefixes": peer["v6PrefixesReceived"],
-                        "accepted_prefixes": (
-                            v6_summary["prefixAccepted"] if v6_summary else 0
-                        ),
-                        "sent_prefixes": peer["v6PrefixesSent"],
-                    }
-                    peer_data: models.BGPStateNeighborDict = {
-                        "local_as": local_as,
-                        "remote_as": remote_as,
-                        "remote_id": remote_id,
-                        "is_up": is_up,
-                        "is_enabled": is_enabled,
-                        "description": description,
-                        "uptime": uptime,
-                        "address_family": {
-                            "ipv4": v4,
-                            "ipv6": v6,
-                        },
-                    }
-                    vrf["peers"][peer_ip] = peer_data
-
-        # Iterate IPv4 and IPv6 summary details for router-id assignment
-        for cmd in cmd_outputs[:2]:
-            for vrf_name, vrf_data in cmd["vrfs"].items():
-                bgp_counters[vrf_name]["router_id"] = napalm.base.helpers.ip(
-                    vrf_data["routerId"]
-                )
-
-        if "default" in bgp_counters:
-            bgp_counters["global"] = bgp_counters.pop("default")
-        return dict(bgp_counters)
+        return parsers.parse_bgp_neighbors_response(*cmd_outputs)
 
     def get_environment(self):
         sh_version_out = self._run_commands(["show version"])
@@ -809,8 +738,6 @@ class EOSDriver(NetworkDriver):
         return parsers.parse_ntp_stats_response(ntp_assoc)
 
     def get_interfaces_ip(self):
-        interfaces_ip = {}
-
         interfaces_ipv4_out = self._run_commands(["show ip interface"])[0]["interfaces"]
         try:
             interfaces_ipv6_out = self._run_commands(["show ipv6 interface"])[0][
@@ -823,86 +750,9 @@ class EOSDriver(NetworkDriver):
             else:
                 raise
 
-        for interface_name, interface_details in interfaces_ipv4_out.items():
-            ipv4_list = []
-            if interface_name not in interfaces_ip.keys():
-                interfaces_ip[interface_name] = {}
-
-            if "ipv4" not in interfaces_ip.get(interface_name):
-                interfaces_ip[interface_name]["ipv4"] = {}
-            if "ipv6" not in interfaces_ip.get(interface_name):
-                interfaces_ip[interface_name]["ipv6"] = {}
-
-            iface_details = interface_details.get("interfaceAddress", {})
-            if iface_details.get("primaryIp", {}).get("address") != "0.0.0.0":
-                ipv4_list.append(
-                    {
-                        "address": napalm.base.helpers.ip(
-                            iface_details.get("primaryIp", {}).get("address")
-                        ),
-                        "masklen": iface_details.get("primaryIp", {}).get("maskLen"),
-                    }
-                )
-            for secondary_ip in iface_details.get("secondaryIpsOrderedList", []):
-                ipv4_list.append(
-                    {
-                        "address": napalm.base.helpers.ip(secondary_ip.get("address")),
-                        "masklen": secondary_ip.get("maskLen"),
-                    }
-                )
-
-            for ip in ipv4_list:
-                if not ip.get("address"):
-                    continue
-                if ip.get("address") not in interfaces_ip.get(interface_name).get(
-                    "ipv4"
-                ):
-                    interfaces_ip[interface_name]["ipv4"][ip.get("address")] = {
-                        "prefix_length": ip.get("masklen")
-                    }
-
-        for interface_name, interface_details in interfaces_ipv6_out.items():
-            ipv6_list = []
-            if interface_name not in interfaces_ip.keys():
-                interfaces_ip[interface_name] = {}
-
-            if "ipv4" not in interfaces_ip.get(interface_name):
-                interfaces_ip[interface_name]["ipv4"] = {}
-            if "ipv6" not in interfaces_ip.get(interface_name):
-                interfaces_ip[interface_name]["ipv6"] = {}
-
-            ipv6_list.append(
-                {
-                    "address": napalm.base.helpers.convert(
-                        napalm.base.helpers.ip,
-                        interface_details.get("linkLocal", {}).get("address"),
-                    ),
-                    "masklen": int(
-                        interface_details.get("linkLocal", {})
-                        .get("subnet", "::/0")
-                        .split("/")[-1]
-                    ),
-                    # when no link-local set, address will be None and maslken 0
-                }
-            )
-            for address in interface_details.get("addresses"):
-                ipv6_list.append(
-                    {
-                        "address": napalm.base.helpers.ip(address.get("address")),
-                        "masklen": int(address.get("subnet").split("/")[-1]),
-                    }
-                )
-            for ip in ipv6_list:
-                if not ip.get("address"):
-                    continue
-                if ip.get("address") not in interfaces_ip.get(interface_name).get(
-                    "ipv6"
-                ):
-                    interfaces_ip[interface_name]["ipv6"][ip.get("address")] = {
-                        "prefix_length": ip.get("masklen")
-                    }
-
-        return interfaces_ip
+        return parsers.parse_interfaces_ip_response(
+            interfaces_ipv4_out, interfaces_ipv6_out
+        )
 
     def get_mac_address_table(self):
         commands = ["show mac address-table"]
@@ -910,13 +760,8 @@ class EOSDriver(NetworkDriver):
         return parsers.parse_mac_address_table_response(result[0])
 
     def get_route_to(self, destination="", protocol="", longer=False):
-        routes = {}
-
-        # Placeholder for vrf arg
         vrf = ""
 
-        # Right not iterating through vrfs is necessary
-        # show ipv6 route doesn't support vrf 'all'
         if vrf == "":
             vrfs = sorted(self._get_vrfs())
         else:
@@ -953,33 +798,8 @@ class EOSDriver(NetworkDriver):
                 )
 
             for prefix, route_details in routes_out.items():
-                if prefix not in routes.keys():
-                    routes[prefix] = []
                 route_protocol = route_details.get("routeType")
-                preference = route_details.get("preference", 0)
-
-                route = {
-                    "current_active": True,
-                    "last_active": True,
-                    "age": 0,
-                    "next_hop": "",
-                    "protocol": route_protocol,
-                    "outgoing_interface": "",
-                    "preference": preference,
-                    "inactive_reason": "",
-                    "routing_table": _vrf,
-                    "selected_next_hop": True,
-                    "protocol_attributes": {},
-                }
                 if protocol == "bgp" or route_protocol.lower() in ("ebgp", "ibgp"):
-                    nexthop_interface_map = {}
-                    for next_hop in route_details.get("vias"):
-                        if "vtepAddr" in next_hop:
-                            next_hop["nexthopAddr"] = next_hop["vtepAddr"]
-                            next_hop["interface"] = "vxlan1"
-                        nexthop_ip = napalm.base.helpers.ip(next_hop.get("nexthopAddr"))
-                        nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
-                    metric = route_details.get("metric")
                     if _vrf not in vrf_cache.keys():
                         command = "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
                             ipv=ipv,
@@ -995,103 +815,9 @@ class EOSDriver(NetworkDriver):
                             }
                         )
 
-                    vrf_details = vrf_cache.get(_vrf)
-                    local_as = napalm.base.helpers.as_number(vrf_details.get("asn"))
-                    bgp_routes = (
-                        vrf_details.get("bgpRouteEntries", {})
-                        .get(prefix, {})
-                        .get("bgpRoutePaths", [])
-                    )
-                    for bgp_route_details in bgp_routes:
-                        bgp_route = route.copy()
-                        as_path = bgp_route_details.get("asPathEntry", {}).get(
-                            "asPath", ""
-                        )
-                        as_path_type = bgp_route_details.get("asPathEntry", {}).get(
-                            "asPathType", ""
-                        )
-                        if as_path_type in ["Internal", "Local"]:
-                            remote_as = local_as
-                        else:
-                            remote_as = napalm.base.helpers.as_number(
-                                as_path.strip("()").split()[-1]
-                            )
-                        try:
-                            remote_address = napalm.base.helpers.ip(
-                                bgp_route_details.get("routeDetail", {})
-                                .get("peerEntry", {})
-                                .get("peerAddr", "")
-                            )
-                        except ValueError:
-                            remote_address = napalm.base.helpers.ip(
-                                bgp_route_details.get("peerEntry", {}).get(
-                                    "peerAddr", ""
-                                )
-                            )
-                        local_preference = bgp_route_details.get("localPreference")
-                        next_hop = napalm.base.helpers.ip(
-                            bgp_route_details.get("nextHop")
-                        )
-                        active_route = bgp_route_details.get("routeType", {}).get(
-                            "active", False
-                        )
-                        last_active = active_route  # should find smth better
-                        communities = bgp_route_details.get("routeDetail", {}).get(
-                            "communityList", []
-                        )
-                        preference2 = bgp_route_details.get("weight")
-                        inactive_reason = bgp_route_details.get("reasonNotBestpath", "")
-                        bgp_route.update(
-                            {
-                                "current_active": active_route,
-                                "inactive_reason": inactive_reason,
-                                "last_active": last_active,
-                                "next_hop": next_hop,
-                                "outgoing_interface": nexthop_interface_map.get(
-                                    next_hop
-                                ),
-                                "selected_next_hop": active_route,
-                                "protocol_attributes": {
-                                    "metric": metric,
-                                    "as_path": as_path,
-                                    "local_preference": local_preference,
-                                    "local_as": local_as,
-                                    "remote_as": remote_as,
-                                    "remote_address": remote_address,
-                                    "preference2": preference2,
-                                    "communities": communities,
-                                },
-                            }
-                        )
-                        routes[prefix].append(bgp_route)
-                else:
-                    if route_details.get("routeAction") in ("drop",):
-                        route["next_hop"] = "NULL"
-                    if route_details.get("routingDisabled") is True:
-                        route["last_active"] = False
-                        route["current_active"] = False
-                    for next_hop in route_details.get("vias"):
-                        route_next_hop = route.copy()
-                        if next_hop.get("nexthopAddr") is None:
-                            route_next_hop.update(
-                                {
-                                    "next_hop": "",
-                                    "outgoing_interface": next_hop.get("interface"),
-                                }
-                            )
-                        else:
-                            route_next_hop.update(
-                                {
-                                    "next_hop": napalm.base.helpers.ip(
-                                        next_hop.get("nexthopAddr")
-                                    ),
-                                    "outgoing_interface": next_hop.get("interface"),
-                                }
-                            )
-                        routes[prefix].append(route_next_hop)
-                    if route_details.get("vias") == []:  # empty list
-                        routes[prefix].append(route)
-        return routes
+        return parsers.parse_route_to_response(
+            commands_output, vrfs, ipv, protocol, vrf_cache
+        )
 
     def get_snmp_information(self):
         """get_snmp_information() for EOS.  Re-written to not use TextFSM"""
@@ -1235,121 +961,6 @@ class EOSDriver(NetworkDriver):
 
     def get_bgp_neighbors_detail(self, neighbor_address=""):
         """Implementation of get_bgp_neighbors_detail"""
-
-        def _parse_per_peer_bgp_detail(peer_output):
-            """This function parses the raw data per peer and returns a
-            json structure per peer.
-            """
-
-            int_fields = [
-                "local_as",
-                "remote_as",
-                "local_port",
-                "remote_port",
-                "local_port",
-                "input_messages",
-                "output_messages",
-                "input_updates",
-                "output_updates",
-                "messages_queued_out",
-                "holdtime",
-                "configured_holdtime",
-                "keepalive",
-                "configured_keepalive",
-                "advertised_prefix_count",
-                "received_prefix_count",
-                "advertised_ipv6_prefix_count",
-                "received_ipv6_prefix_count",
-            ]
-
-            peer_details = []
-
-            # determine if in multi-agent mode to get correct extractor_type
-            is_multi_agent = self.device.run_commands(
-                [
-                    "show running-config | include service routing protocols model multi-agent"
-                ],
-                encoding="text",
-            )[0].get("output", "")
-            extractor_type = (
-                "bgp_detail_multi_agent" if bool(is_multi_agent) else "bgp_detail"
-            )
-
-            # Using preset template to extract peer info
-            peer_info = napalm.base.helpers.textfsm_extractor(
-                self, extractor_type, peer_output
-            )
-
-            for item in peer_info:
-                # Determining a few other fields in the final peer_info
-                item["up"] = True if item["up"] == "up" else False
-                item["local_address_configured"] = (
-                    True if item["local_address"] else False
-                )
-                item["multihop"] = (
-                    False if item["multihop"] == "0" or item["multihop"] == "" else True
-                )
-
-                # TODO: The below fields need to be retrieved
-                # Currently defaulting their values to False or 0
-                item["multipath"] = False
-                item["remove_private_as"] = False
-                item["suppress_4byte_as"] = False
-                item["local_as_prepend"] = False
-                item["flap_count"] = 0
-                item["active_prefix_count"] = 0
-                item["suppressed_prefix_count"] = 0
-
-                # Converting certain fields into int
-                for key in int_fields:
-                    item[key] = napalm.base.helpers.convert(int, item[key], 0)
-
-                # Conforming with the datatypes defined by the base class
-                item["export_policy"] = napalm.base.helpers.convert(
-                    str, item["export_policy"]
-                )
-                item["last_event"] = napalm.base.helpers.convert(
-                    str, item["last_event"]
-                )
-                item["remote_address"] = napalm.base.helpers.ip(item["remote_address"])
-                item["previous_connection_state"] = napalm.base.helpers.convert(
-                    str, item["previous_connection_state"]
-                )
-                item["import_policy"] = napalm.base.helpers.convert(
-                    str, item["import_policy"]
-                )
-                item["connection_state"] = napalm.base.helpers.convert(
-                    str, item["connection_state"]
-                )
-                item["routing_table"] = napalm.base.helpers.convert(
-                    str, item["routing_table"]
-                )
-                item["router_id"] = napalm.base.helpers.ip(item["router_id"])
-                item["local_address"] = napalm.base.helpers.convert(
-                    napalm.base.helpers.ip, item["local_address"]
-                )
-                # Get all the advertised prefixes
-                item["advertised_prefix_count"] += item["advertised_ipv6_prefix_count"]
-                item["received_prefix_count"] += item["received_ipv6_prefix_count"]
-                # Remove the ipv6_prefix for conformity with test_model
-                item.pop("advertised_ipv6_prefix_count", None)
-                item.pop("received_ipv6_prefix_count", None)
-
-                peer_details.append(item)
-
-            return peer_details
-
-        def _append(bgp_dict, peer_info):
-            remote_as = peer_info["remote_as"]
-            vrf_name = peer_info["routing_table"]
-
-            if vrf_name not in bgp_dict.keys():
-                bgp_dict[vrf_name] = {}
-            if remote_as not in bgp_dict[vrf_name].keys():
-                bgp_dict[vrf_name][remote_as] = []
-
-            bgp_dict[vrf_name][remote_as].append(peer_info)
-
         commands = []
         summary_commands = []
         if not neighbor_address:
@@ -1373,51 +984,14 @@ class EOSDriver(NetworkDriver):
         raw_output = self._run_commands(commands, encoding="text")
         bgp_summary = self._run_commands(summary_commands, encoding="json")
 
-        bgp_detail_info = {}
-
-        v4_peer_info = []
-        v6_peer_info = []
-
-        if neighbor_address:
-            peer_info = _parse_per_peer_bgp_detail(raw_output[0]["output"])
-
-            if peer_ver == 4:
-                v4_peer_info.append(peer_info[0])
-            else:
-                v6_peer_info.append(peer_info[0])
-
-        else:
-            # Using preset template to extract peer info
-            v4_peer_info = _parse_per_peer_bgp_detail(raw_output[0]["output"])
-            v6_peer_info = _parse_per_peer_bgp_detail(raw_output[1]["output"])
-
-        for peer_info in v4_peer_info:
-            vrf_name = peer_info["routing_table"]
-            peer_remote_addr = peer_info["remote_address"]
-            peer_info["accepted_prefix_count"] = (
-                bgp_summary[0]["vrfs"][vrf_name]["peers"][peer_remote_addr][
-                    "prefixAccepted"
-                ]
-                if peer_remote_addr in bgp_summary[0]["vrfs"][vrf_name]["peers"].keys()
-                else 0
-            )
-
-            _append(bgp_detail_info, peer_info)
-
-        for peer_info in v6_peer_info:
-            vrf_name = peer_info["routing_table"]
-            peer_remote_addr = peer_info["remote_address"]
-            peer_info["accepted_prefix_count"] = (
-                bgp_summary[1]["vrfs"][vrf_name]["peers"][peer_remote_addr][
-                    "prefixAccepted"
-                ]
-                if peer_remote_addr in bgp_summary[1]["vrfs"][vrf_name]["peers"].keys()
-                else 0
-            )
-
-            _append(bgp_detail_info, peer_info)
-
-        return bgp_detail_info
+        return parsers.parse_bgp_neighbors_detail_response(
+            raw_output,
+            bgp_summary,
+            neighbor_address,
+            self.device.run_commands,
+            napalm.base.helpers.textfsm_extractor,
+            self,
+        )
 
     def get_optics(self):
         command = ["show interfaces transceiver"]

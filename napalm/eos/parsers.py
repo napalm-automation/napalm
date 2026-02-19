@@ -178,6 +178,89 @@ def parse_interfaces_counters_response(
     return interface_counters
 
 
+def parse_interfaces_ip_response(
+    interfaces_ipv4_out: Dict[str, Any],
+    interfaces_ipv6_out: Dict[str, Any],
+) -> Dict[str, Dict[str, Dict[str, Dict[str, int]]]]:
+    interfaces_ip: Dict[str, Dict[str, Dict[str, Dict[str, int]]]] = {}
+
+    for interface_name, interface_details in interfaces_ipv4_out.items():
+        ipv4_list = []
+        if interface_name not in interfaces_ip.keys():
+            interfaces_ip[interface_name] = {}
+
+        if "ipv4" not in interfaces_ip.get(interface_name):
+            interfaces_ip[interface_name]["ipv4"] = {}
+        if "ipv6" not in interfaces_ip.get(interface_name):
+            interfaces_ip[interface_name]["ipv6"] = {}
+
+        iface_details = interface_details.get("interfaceAddress", {})
+        if iface_details.get("primaryIp", {}).get("address") != "0.0.0.0":
+            ipv4_list.append(
+                {
+                    "address": napalm.base.helpers.ip(
+                        iface_details.get("primaryIp", {}).get("address")
+                    ),
+                    "masklen": iface_details.get("primaryIp", {}).get("maskLen"),
+                }
+            )
+        for secondary_ip in iface_details.get("secondaryIpsOrderedList", []):
+            ipv4_list.append(
+                {
+                    "address": napalm.base.helpers.ip(secondary_ip.get("address")),
+                    "masklen": secondary_ip.get("maskLen"),
+                }
+            )
+
+        for ip in ipv4_list:
+            if not ip.get("address"):
+                continue
+            if ip.get("address") not in interfaces_ip.get(interface_name).get("ipv4"):
+                interfaces_ip[interface_name]["ipv4"][ip.get("address")] = {
+                    "prefix_length": ip.get("masklen")
+                }
+
+    for interface_name, interface_details in interfaces_ipv6_out.items():
+        ipv6_list = []
+        if interface_name not in interfaces_ip.keys():
+            interfaces_ip[interface_name] = {}
+
+        if "ipv4" not in interfaces_ip.get(interface_name):
+            interfaces_ip[interface_name]["ipv4"] = {}
+        if "ipv6" not in interfaces_ip.get(interface_name):
+            interfaces_ip[interface_name]["ipv6"] = {}
+
+        ipv6_list.append(
+            {
+                "address": napalm.base.helpers.convert(
+                    napalm.base.helpers.ip,
+                    interface_details.get("linkLocal", {}).get("address"),
+                ),
+                "masklen": int(
+                    interface_details.get("linkLocal", {})
+                    .get("subnet", "::/0")
+                    .split("/")[-1]
+                ),
+            }
+        )
+        for address in interface_details.get("addresses"):
+            ipv6_list.append(
+                {
+                    "address": napalm.base.helpers.ip(address.get("address")),
+                    "masklen": int(address.get("subnet").split("/")[-1]),
+                }
+            )
+        for ip in ipv6_list:
+            if not ip.get("address"):
+                continue
+            if ip.get("address") not in interfaces_ip.get(interface_name).get("ipv6"):
+                interfaces_ip[interface_name]["ipv6"][ip.get("address")] = {
+                    "prefix_length": ip.get("masklen")
+                }
+
+    return interfaces_ip
+
+
 def parse_users_response(show_users_accounts: Dict[str, Any]) -> Dict[str, Any]:
     def _sshkey_type(sshkey: str) -> tuple[str, str]:
         if sshkey.startswith("ssh-rsa"):
@@ -599,6 +682,84 @@ def parse_environment_response(
     return environment_counters
 
 
+def parse_bgp_neighbors_response(
+    ipv4_summary: Dict[str, Any],
+    ipv6_summary: Dict[str, Any],
+    ipv4_neighbors: Dict[str, Any],
+    ipv6_neighbors: Dict[str, Any],
+) -> Dict[str, Any]:
+    from collections import defaultdict
+    from napalm.base.base import models
+
+    bgp_counters = defaultdict(
+        lambda: models.BGPStateNeighborsPerVRFDict(
+            peers=models.BGPStateNeighborDict()  # type: ignore
+        )  # type: ignore
+    )  # type: ignore
+
+    cmd_outputs = [ipv4_summary, ipv6_summary, ipv4_neighbors, ipv6_neighbors]
+
+    for cmd in cmd_outputs[2:]:
+        for vrf_name, vrf_data in cmd["vrfs"].items():
+            vrf = bgp_counters[vrf_name]
+            for peer in vrf_data["peerList"]:
+                peer_ip = napalm.base.helpers.ip(peer["peerAddress"])
+                v4_summary = cmd_outputs[0]["vrfs"][vrf_name]["peers"].get(peer_ip, {})
+                v6_summary = cmd_outputs[1]["vrfs"][vrf_name]["peers"].get(peer_ip, {})
+                local_as = napalm.base.helpers.as_number(peer["localAsn"])
+                remote_as = napalm.base.helpers.as_number(peer["asn"])
+                remote_id = napalm.base.helpers.ip(peer["routerId"])
+                if peer["state"] == "Idle":
+                    is_enabled = (
+                        True
+                        if peer["idleReason"] != "Administratively shut down"
+                        else False
+                    )
+                else:
+                    is_enabled = True
+                is_up = peer["state"] == "Established"
+                description = peer.get("description", "")
+                uptime = int(peer.get("establishedTime", -1))
+                v4: models.BGPStateAddressFamilyDict = {
+                    "received_prefixes": peer["prefixesReceived"],
+                    "accepted_prefixes": (
+                        v4_summary["prefixAccepted"] if v4_summary else 0
+                    ),
+                    "sent_prefixes": peer["prefixesSent"],
+                }
+                v6: models.BGPStateAddressFamilyDict = {
+                    "received_prefixes": peer["v6PrefixesReceived"],
+                    "accepted_prefixes": (
+                        v6_summary["prefixAccepted"] if v6_summary else 0
+                    ),
+                    "sent_prefixes": peer["v6PrefixesSent"],
+                }
+                peer_data: models.BGPStateNeighborDict = {
+                    "local_as": local_as,
+                    "remote_as": remote_as,
+                    "remote_id": remote_id,
+                    "is_up": is_up,
+                    "is_enabled": is_enabled,
+                    "description": description,
+                    "uptime": uptime,
+                    "address_family": {
+                        "ipv4": v4,
+                        "ipv6": v6,
+                    },
+                }
+                vrf["peers"][peer_ip] = peer_data
+
+    for cmd in cmd_outputs[:2]:
+        for vrf_name, vrf_data in cmd["vrfs"].items():
+            bgp_counters[vrf_name]["router_id"] = napalm.base.helpers.ip(
+                vrf_data["routerId"]
+            )
+
+    if "default" in bgp_counters:
+        bgp_counters["global"] = bgp_counters.pop("default")
+    return dict(bgp_counters)
+
+
 def parse_bgp_config_response(
     bgp_conf_output: str,
     group: str = "",
@@ -804,3 +965,292 @@ def parse_bgp_config_response(
         return {}
 
     return bgp_config
+
+
+def parse_route_to_response(
+    commands_output: List[Dict[str, Any]],
+    vrfs: List[str],
+    ipv: str,
+    protocol: str,
+    vrf_cache: Dict[str, Any],
+) -> Dict[str, List[Dict[str, Any]]]:
+    routes: Dict[str, List[Dict[str, Any]]] = {}
+
+    for _vrf, command_output in zip(vrfs, commands_output):
+        if ipv == "v6":
+            routes_out = command_output.get("routes", {})
+        else:
+            routes_out = command_output.get("vrfs", {}).get(_vrf, {}).get("routes", {})
+
+        for prefix, route_details in routes_out.items():
+            if prefix not in routes.keys():
+                routes[prefix] = []
+            route_protocol = route_details.get("routeType")
+            preference = route_details.get("preference", 0)
+
+            route: Dict[str, Any] = {
+                "current_active": True,
+                "last_active": True,
+                "age": 0,
+                "next_hop": "",
+                "protocol": route_protocol,
+                "outgoing_interface": "",
+                "preference": preference,
+                "inactive_reason": "",
+                "routing_table": _vrf,
+                "selected_next_hop": True,
+                "protocol_attributes": {},
+            }
+            if protocol == "bgp" or route_protocol.lower() in ("ebgp", "ibgp"):
+                nexthop_interface_map: Dict[str, str] = {}
+                for next_hop in route_details.get("vias"):
+                    if "vtepAddr" in next_hop:
+                        next_hop["nexthopAddr"] = next_hop["vtepAddr"]
+                        next_hop["interface"] = "vxlan1"
+                    nexthop_ip = napalm.base.helpers.ip(next_hop.get("nexthopAddr"))
+                    nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
+                metric = route_details.get("metric")
+
+                vrf_details = vrf_cache.get(_vrf)
+                local_as = napalm.base.helpers.as_number(vrf_details.get("asn"))
+                bgp_routes = (
+                    vrf_details.get("bgpRouteEntries", {})
+                    .get(prefix, {})
+                    .get("bgpRoutePaths", [])
+                )
+                for bgp_route_details in bgp_routes:
+                    bgp_route = route.copy()
+                    as_path = bgp_route_details.get("asPathEntry", {}).get("asPath", "")
+                    as_path_type = bgp_route_details.get("asPathEntry", {}).get(
+                        "asPathType", ""
+                    )
+                    if as_path_type in ["Internal", "Local"]:
+                        remote_as = local_as
+                    else:
+                        remote_as = napalm.base.helpers.as_number(
+                            as_path.strip("()").split()[-1]
+                        )
+                    try:
+                        remote_address = napalm.base.helpers.ip(
+                            bgp_route_details.get("routeDetail", {})
+                            .get("peerEntry", {})
+                            .get("peerAddr", "")
+                        )
+                    except ValueError:
+                        remote_address = napalm.base.helpers.ip(
+                            bgp_route_details.get("peerEntry", {}).get("peerAddr", "")
+                        )
+                    local_preference = bgp_route_details.get("localPreference")
+                    next_hop = napalm.base.helpers.ip(bgp_route_details.get("nextHop"))
+                    active_route = bgp_route_details.get("routeType", {}).get(
+                        "active", False
+                    )
+                    last_active = active_route
+                    communities = bgp_route_details.get("routeDetail", {}).get(
+                        "communityList", []
+                    )
+                    preference2 = bgp_route_details.get("weight")
+                    inactive_reason = bgp_route_details.get("reasonNotBestpath", "")
+                    bgp_route.update(
+                        {
+                            "current_active": active_route,
+                            "inactive_reason": inactive_reason,
+                            "last_active": last_active,
+                            "next_hop": next_hop,
+                            "outgoing_interface": nexthop_interface_map.get(next_hop),
+                            "selected_next_hop": active_route,
+                            "protocol_attributes": {
+                                "metric": metric,
+                                "as_path": as_path,
+                                "local_preference": local_preference,
+                                "local_as": local_as,
+                                "remote_as": remote_as,
+                                "remote_address": remote_address,
+                                "preference2": preference2,
+                                "communities": communities,
+                            },
+                        }
+                    )
+                    routes[prefix].append(bgp_route)
+            else:
+                if route_details.get("routeAction") in ("drop",):
+                    route["next_hop"] = "NULL"
+                if route_details.get("routingDisabled") is True:
+                    route["last_active"] = False
+                    route["current_active"] = False
+                for next_hop in route_details.get("vias"):
+                    route_next_hop = route.copy()
+                    if next_hop.get("nexthopAddr") is None:
+                        route_next_hop.update(
+                            {
+                                "next_hop": "",
+                                "outgoing_interface": next_hop.get("interface"),
+                            }
+                        )
+                    else:
+                        route_next_hop.update(
+                            {
+                                "next_hop": napalm.base.helpers.ip(
+                                    next_hop.get("nexthopAddr")
+                                ),
+                                "outgoing_interface": next_hop.get("interface"),
+                            }
+                        )
+                    routes[prefix].append(route_next_hop)
+                if route_details.get("vias") == []:
+                    routes[prefix].append(route)
+    return routes
+
+
+def parse_bgp_neighbors_detail_response(
+    raw_output: List[Dict[str, str]],
+    bgp_summary: List[Dict[str, Any]],
+    neighbor_address: str,
+    device_run_commands: Any,
+    textfsm_extractor: Any,
+    driver_self: Any,
+) -> Dict[str, Dict[int, List[Dict[str, Any]]]]:
+    def _parse_per_peer_bgp_detail(peer_output: str) -> List[Dict[str, Any]]:
+        int_fields = [
+            "local_as",
+            "remote_as",
+            "local_port",
+            "remote_port",
+            "local_port",
+            "input_messages",
+            "output_messages",
+            "input_updates",
+            "output_updates",
+            "messages_queued_out",
+            "holdtime",
+            "configured_holdtime",
+            "keepalive",
+            "configured_keepalive",
+            "advertised_prefix_count",
+            "received_prefix_count",
+            "advertised_ipv6_prefix_count",
+            "received_ipv6_prefix_count",
+        ]
+
+        peer_details = []
+
+        is_multi_agent = device_run_commands(
+            [
+                "show running-config | include service routing protocols model multi-agent"
+            ],
+            encoding="text",
+        )[0].get("output", "")
+        extractor_type = (
+            "bgp_detail_multi_agent" if bool(is_multi_agent) else "bgp_detail"
+        )
+
+        peer_info = textfsm_extractor(driver_self, extractor_type, peer_output)
+
+        for item in peer_info:
+            item["up"] = True if item["up"] == "up" else False
+            item["local_address_configured"] = True if item["local_address"] else False
+            item["multihop"] = (
+                False if item["multihop"] == "0" or item["multihop"] == "" else True
+            )
+
+            item["multipath"] = False
+            item["remove_private_as"] = False
+            item["suppress_4byte_as"] = False
+            item["local_as_prepend"] = False
+            item["flap_count"] = 0
+            item["active_prefix_count"] = 0
+            item["suppressed_prefix_count"] = 0
+
+            for key in int_fields:
+                item[key] = napalm.base.helpers.convert(int, item[key], 0)
+
+            item["export_policy"] = napalm.base.helpers.convert(
+                str, item["export_policy"]
+            )
+            item["last_event"] = napalm.base.helpers.convert(str, item["last_event"])
+            item["remote_address"] = napalm.base.helpers.ip(item["remote_address"])
+            item["previous_connection_state"] = napalm.base.helpers.convert(
+                str, item["previous_connection_state"]
+            )
+            item["import_policy"] = napalm.base.helpers.convert(
+                str, item["import_policy"]
+            )
+            item["connection_state"] = napalm.base.helpers.convert(
+                str, item["connection_state"]
+            )
+            item["routing_table"] = napalm.base.helpers.convert(
+                str, item["routing_table"]
+            )
+            item["router_id"] = napalm.base.helpers.ip(item["router_id"])
+            item["local_address"] = napalm.base.helpers.convert(
+                napalm.base.helpers.ip, item["local_address"]
+            )
+            item["advertised_prefix_count"] += item["advertised_ipv6_prefix_count"]
+            item["received_prefix_count"] += item["received_ipv6_prefix_count"]
+            item.pop("advertised_ipv6_prefix_count", None)
+            item.pop("received_ipv6_prefix_count", None)
+
+            peer_details.append(item)
+
+        return peer_details
+
+    def _append(
+        bgp_dict: Dict[str, Dict[int, List[Dict[str, Any]]]], peer_info: Dict[str, Any]
+    ) -> None:
+        remote_as = peer_info["remote_as"]
+        vrf_name = peer_info["routing_table"]
+
+        if vrf_name not in bgp_dict.keys():
+            bgp_dict[vrf_name] = {}
+        if remote_as not in bgp_dict[vrf_name].keys():
+            bgp_dict[vrf_name][remote_as] = []
+
+        bgp_dict[vrf_name][remote_as].append(peer_info)
+
+    bgp_detail_info: Dict[str, Dict[int, List[Dict[str, Any]]]] = {}
+
+    v4_peer_info = []
+    v6_peer_info = []
+
+    if neighbor_address:
+        import ipaddress
+
+        peer_ver = ipaddress.ip_address(neighbor_address).version
+        peer_info = _parse_per_peer_bgp_detail(raw_output[0]["output"])
+
+        if peer_ver == 4:
+            v4_peer_info.append(peer_info[0])
+        else:
+            v6_peer_info.append(peer_info[0])
+
+    else:
+        v4_peer_info = _parse_per_peer_bgp_detail(raw_output[0]["output"])
+        v6_peer_info = _parse_per_peer_bgp_detail(raw_output[1]["output"])
+
+    for peer_info in v4_peer_info:
+        vrf_name = peer_info["routing_table"]
+        peer_remote_addr = peer_info["remote_address"]
+        peer_info["accepted_prefix_count"] = (
+            bgp_summary[0]["vrfs"][vrf_name]["peers"][peer_remote_addr][
+                "prefixAccepted"
+            ]
+            if peer_remote_addr in bgp_summary[0]["vrfs"][vrf_name]["peers"].keys()
+            else 0
+        )
+
+        _append(bgp_detail_info, peer_info)
+
+    for peer_info in v6_peer_info:
+        vrf_name = peer_info["routing_table"]
+        peer_remote_addr = peer_info["remote_address"]
+        peer_info["accepted_prefix_count"] = (
+            bgp_summary[1]["vrfs"][vrf_name]["peers"][peer_remote_addr][
+                "prefixAccepted"
+            ]
+            if peer_remote_addr in bgp_summary[1]["vrfs"][vrf_name]["peers"].keys()
+            else 0
+        )
+
+        _append(bgp_detail_info, peer_info)
+
+    return bgp_detail_info
