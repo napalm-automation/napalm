@@ -676,17 +676,6 @@ class EOSDriver(NetworkDriver):
         return dict(bgp_counters)
 
     def get_environment(self):
-        def extract_temperature_data(data):
-            for s in data:
-                temp = s["currentTemperature"] if "currentTemperature" in s else 0.0
-                name = s["name"]
-                values = {
-                    "temperature": temp,
-                    "is_alert": temp > s["overheatThreshold"],
-                    "is_critical": temp > s["criticalThreshold"],
-                }
-                yield name, values
-
         sh_version_out = self._run_commands(["show version"])
         is_veos = sh_version_out[0]["modelName"].lower() in ["veos", "ceoslab"]
         commands = [
@@ -698,44 +687,12 @@ class EOSDriver(NetworkDriver):
             fans_output, temp_output, power_output = self._run_commands(commands)
         else:
             fans_output, temp_output = self._run_commands(commands)
-        environment_counters = {"fans": {}, "temperature": {}, "power": {}, "cpu": {}}
+            power_output = {}
         cpu_output = self._run_commands(["show processes top once"], encoding="text")[
             0
         ]["output"]
-        for slot in fans_output["fanTraySlots"]:
-            environment_counters["fans"][slot["label"]] = {
-                "status": slot["status"] == "ok"
-            }
-        # First check FRU's
-        for fru_type in ["cardSlots", "powerSupplySlots"]:
-            for fru in temp_output[fru_type]:
-                t = {
-                    name: value
-                    for name, value in extract_temperature_data(fru["tempSensors"])
-                }
-                environment_counters["temperature"].update(t)
-        # On board sensors
-        parsed = {n: v for n, v in extract_temperature_data(temp_output["tempSensors"])}
-        environment_counters["temperature"].update(parsed)
-        if not is_veos:
-            for psu, data in power_output["powerSupplies"].items():
-                environment_counters["power"][psu] = {
-                    "status": data.get("state", "ok") == "ok",
-                    "capacity": data.get("capacity", -1.0),
-                    "output": data.get("outputPower", -1.0),
-                }
-        cpu_lines = cpu_output.splitlines()
-        # Matches either of
-        # Cpu(s):  5.2%us,  1.4%sy,  0.0%ni, 92.2%id,  0.6%wa,  0.3%hi,  0.4%si,  0.0%st ( 4.16 > )
-        # %Cpu(s):  4.2 us,  0.9 sy,  0.0 ni, 94.6 id,  0.0 wa,  0.1 hi,  0.2 si,  0.0 st ( 4.16 < )
-        m = re.match(".*ni, (?P<idle>.*).id.*", cpu_lines[2])
-        environment_counters["cpu"][0] = {
-            "%usage": round(100 - float(m.group("idle")), 1)
-        }
-        # Matches either of
-        # Mem:   3844356k total,  3763184k used,    81172k free,    16732k buffers ( 4.16 > )
-        # KiB Mem:  32472080 total,  5697604 used, 26774476 free,   372052 buffers ( 4.16 < )
-        # MiB Mem :   3889.2 total,    150.3 free,   1104.5 used,   2634.4 buff/cache (4.27 < )
+
+        cpu_idle_regex = ".*ni, (?P<idle>.*).id.*"
         mem_regex = (
             r"^(?:(?P<unit>\S+)\s+)?Mem\s*:"
             r"\s+(?P<total>[0-9.]+)[k\s]+total,"
@@ -744,24 +701,16 @@ class EOSDriver(NetworkDriver):
             r"(?:\s+(?P<used2>[0-9.]+)[k\s]+used,)?"
             r".*"
         )
-        m = re.match(mem_regex, cpu_lines[3])
 
-        def _parse_memory(unit, total, used):
-            if unit == "MiB":
-                return {
-                    "available_ram": int(float(total) * 1024),
-                    "used_ram": int(float(used) * 1024),
-                }
-            return {
-                "available_ram": int(total),
-                "used_ram": int(used),
-            }
-
-        environment_counters["memory"] = _parse_memory(
-            m.group("unit"), m.group("total"), m.group("used1") or m.group("used2")
+        return parsers.parse_environment_response(
+            fans_output,
+            temp_output,
+            power_output,
+            cpu_output,
+            is_veos,
+            cpu_idle_regex,
+            mem_regex,
         )
-
-        return environment_counters
 
     def _transform_lldp_capab(self, capabilities):
         return sorted([LLDP_CAPAB_TRANFORM_TABLE[c.lower()] for c in capabilities])
@@ -816,241 +765,11 @@ class EOSDriver(NetworkDriver):
 
     def get_bgp_config(self, group="", neighbor=""):
         """Implementation of NAPALM method get_bgp_config."""
-        _GROUP_FIELD_MAP_ = {
-            "type": "type",
-            "multipath": "multipath",
-            "apply-groups": "apply_groups",
-            "remove-private-as": "remove_private_as",
-            "ebgp-multihop": "multihop_ttl",
-            "remote-as": "remote_as",
-            "local-v4-addr": "local_address",
-            "local-v6-addr": "local_address",
-            "local-as": "local_as",
-            "next-hop-self": "nhs",
-            "description": "description",
-            "import-policy": "import_policy",
-            "export-policy": "export_policy",
-        }
-
-        _PEER_FIELD_MAP_ = {
-            "description": "description",
-            "remote-as": "remote_as",
-            "local-v4-addr": "local_address",
-            "local-v6-addr": "local_address",
-            "local-as": "local_as",
-            "next-hop-self": "nhs",
-            "route-reflector-client": "route_reflector_client",
-            "import-policy": "import_policy",
-            "export-policy": "export_policy",
-            "passwd": "authentication_key",
-        }
-
-        _PROPERTY_FIELD_MAP_ = _GROUP_FIELD_MAP_.copy()
-        _PROPERTY_FIELD_MAP_.update(_PEER_FIELD_MAP_)
-
-        _PROPERTY_TYPE_MAP_ = {
-            # used to determine the default value
-            # and cast the values
-            "remote-as": int,
-            "ebgp-multihop": int,
-            "local-v4-addr": str,
-            "local-v6-addr": str,
-            "local-as": int,
-            "remove-private-as": bool,
-            "next-hop-self": bool,
-            "description": str,
-            "route-reflector-client": bool,
-            "password": str,
-            "route-map": str,
-            "apply-groups": list,
-            "type": str,
-            "import-policy": str,
-            "export-policy": str,
-            "multipath": bool,
-        }
-
-        _DATATYPE_DEFAULT_ = {str: "", int: 0, bool: False, list: []}
-
-        def default_group_dict(local_as):
-            group_dict = {}
-            group_dict.update(
-                {
-                    key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
-                    for prop, key in _GROUP_FIELD_MAP_.items()
-                }
-            )
-            group_dict.update(
-                {"prefix_limit": {}, "neighbors": {}, "local_as": local_as}
-            )  # few more default values
-            return group_dict
-
-        def default_neighbor_dict(local_as, group_dict):
-            neighbor_dict = {}
-            neighbor_dict.update(
-                {
-                    key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
-                    for prop, key in _PEER_FIELD_MAP_.items()
-                }
-            )  # populating with default values
-            neighbor_dict.update(
-                {"prefix_limit": {}, "local_as": local_as, "authentication_key": ""}
-            )  # few more default values
-            neighbor_dict.update(
-                {
-                    key: group_dict.get(key)
-                    for key in _GROUP_FIELD_MAP_.values()
-                    if key in group_dict and key in _PEER_FIELD_MAP_.values()
-                }
-            )  # copy in values from group dict if present
-            return neighbor_dict
-
-        def parse_options(options, default_value=False):
-            if not options:
-                return {}
-
-            config_property = options[0]
-            field_name = _PROPERTY_FIELD_MAP_.get(config_property)
-            field_type = _PROPERTY_TYPE_MAP_.get(config_property)
-            field_value = _DATATYPE_DEFAULT_.get(field_type)  # to get the default value
-
-            if not field_type:
-                # no type specified at all => return empty dictionary
-                return {}
-
-            if not default_value:
-                if len(options) > 1:
-                    field_value = napalm.base.helpers.convert(
-                        field_type, options[1], _DATATYPE_DEFAULT_.get(field_type)
-                    )
-                else:
-                    if field_type is bool:
-                        field_value = True
-            if field_name is not None:
-                return {field_name: field_value}
-            elif config_property in ["route-map", "password"]:
-                # do not respect the pattern neighbor [IP_ADDRESS] [PROPERTY] [VALUE]
-                # or need special output (e.g.: maximum-routes)
-                if config_property == "password":
-                    return {"authentication_key": str(options[2])}
-                    # returns the MD5 password
-                if config_property == "route-map":
-                    direction = None
-                    if len(options) == 3:
-                        direction = options[2]
-                        field_value = field_type(options[1])  # the name of the policy
-                    elif len(options) == 2:
-                        direction = options[1]
-                    if direction == "in":
-                        field_name = "import_policy"
-                    else:
-                        field_name = "export_policy"
-                    return {field_name: field_value}
-
-            return {}
-
-        bgp_config = {}
-
         commands = ["show running-config | section router bgp"]
         bgp_conf = self._run_commands(commands, encoding="text")[0].get(
             "output", "\n\n"
         )
-        bgp_conf_lines = bgp_conf.splitlines()
-
-        bgp_neighbors = {}
-
-        if not group:
-            neighbor = ""  # noqa
-
-        local_as = 0
-        bgp_neighbors = {}
-        for bgp_conf_line in bgp_conf_lines:
-            default_value = False
-            bgp_conf_line = bgp_conf_line.strip()
-            if bgp_conf_line.startswith("router bgp"):
-                local_as = napalm.base.helpers.as_number(
-                    (bgp_conf_line.replace("router bgp", "").strip())
-                )
-                continue
-            if not (
-                bgp_conf_line.startswith("neighbor")
-                or bgp_conf_line.startswith("no neighbor")
-            ):
-                continue
-            if bgp_conf_line.startswith("no"):
-                default_value = True
-            bgp_conf_line = bgp_conf_line.replace("no neighbor ", "").replace(
-                "neighbor ", ""
-            )
-            bgp_conf_line_details = bgp_conf_line.split()
-            group_or_neighbor = str(bgp_conf_line_details[0])
-            options = bgp_conf_line_details[1:]
-            try:
-                # will try to parse the neighbor name
-                # which sometimes is the IP Address of the neigbor
-                # or the name of the BGP group
-                ipaddress.ip_address(group_or_neighbor)
-                # if passes the test => it is an IP Address, thus a Neighbor!
-                peer_address = group_or_neighbor
-                group_name = None
-                if options[0] == "peer-group":
-                    group_name = options[1]
-                # EOS > 4.23.0 only supports the new syntax
-                # https://www.arista.com/en/support/advisories-notices/fieldnotices/7097-field-notice-39
-                elif options[0] == "peer" and options[1] == "group":
-                    group_name = options[2]
-                if peer_address not in bgp_neighbors:
-                    bgp_neighbors[peer_address] = default_neighbor_dict(
-                        local_as, bgp_config.get(group_name, {})
-                    )
-
-                if group_name:
-                    bgp_neighbors[peer_address]["__group"] = group_name
-
-                # in the config, neighbor details are lister after
-                # the group is specified for the neighbor:
-                #
-                # neighbor 192.168.172.36 peer-group 4-public-anycast-peers
-                # neighbor 192.168.172.36 remote-as 12392
-                # neighbor 192.168.172.36 maximum-routes 200
-                #
-                # because the lines are parsed sequentially
-                # can use the last group detected
-                # that way we avoid one more loop to
-                # match the neighbors with the group they belong to
-                # directly will apend the neighbor in the neighbor list of the group at the end
-
-                bgp_neighbors[peer_address].update(
-                    parse_options(options, default_value)
-                )
-            except ValueError:
-                # exception trying to parse group name
-                # group_or_neighbor represents the name of the group
-                group_name = group_or_neighbor
-                if group and group_name != group:
-                    continue
-                if group_name not in bgp_config.keys():
-                    bgp_config[group_name] = default_group_dict(local_as)
-                bgp_config[group_name].update(parse_options(options, default_value))
-
-        bgp_config["_"] = default_group_dict(local_as)
-
-        for peer, peer_details in bgp_neighbors.items():
-            peer_group = peer_details.pop("__group", None)
-            if not peer_group:
-                peer_group = "_"
-            if peer_group not in bgp_config:
-                bgp_config[peer_group] = default_group_dict(local_as)
-            bgp_config[peer_group]["neighbors"][peer] = peer_details
-
-        [
-            v.pop("nhs", None) for v in bgp_config.values()
-        ]  # remove NHS from group-level dictionary
-
-        if local_as == 0:
-            # BGP not running
-            return {}
-
-        return bgp_config
+        return parsers.parse_bgp_config_response(bgp_conf, group, neighbor)
 
     def get_arp_table(self, vrf=""):
         try:
@@ -1843,53 +1562,10 @@ class EOSDriver(NetworkDriver):
 
     def get_network_instances(self, name=""):
         """get_network_instances implementation for EOS."""
-
         output = self._show_vrf()
-        vrfs = {}
-        all_vrf_interfaces = {}
-        for vrf in output:
-            if (
-                vrf.get("route_distinguisher", "") == "<not set>"
-                or vrf.get("route_distinguisher", "") == "None"
-            ):
-                vrf["route_distinguisher"] = ""
-            else:
-                vrf["route_distinguisher"] = str(vrf["route_distinguisher"])
-            interfaces = {}
-            for interface_raw in vrf.get("interfaces", []):
-                interface = interface_raw.split(",")
-                for line in interface:
-                    if line.strip() != "":
-                        interfaces[str(line.strip())] = {}
-                        all_vrf_interfaces[str(line.strip())] = {}
-
-            vrfs[vrf["name"]] = {
-                "name": vrf["name"],
-                "type": "DEFAULT_INSTANCE" if vrf["name"] == "default" else "L3VRF",
-                "state": {"route_distinguisher": vrf["route_distinguisher"]},
-                "interfaces": {"interface": interfaces},
-            }
-        if "default" not in vrfs:
-            all_interfaces = self.get_interfaces_ip().keys()
-            vrfs["default"] = {
-                "name": "default",
-                "type": "DEFAULT_INSTANCE",
-                "state": {"route_distinguisher": ""},
-                "interfaces": {
-                    "interface": {
-                        k: {}
-                        for k in all_interfaces
-                        if k not in all_vrf_interfaces.keys()
-                    }
-                },
-            }
-
-        if name:
-            if name in vrfs:
-                return {str(name): vrfs[name]}
-            return {}
-        else:
-            return vrfs
+        return parsers.parse_network_instances_response(
+            output, self.get_interfaces_ip, name
+        )
 
     def ping(
         self,

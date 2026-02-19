@@ -478,3 +478,329 @@ def parse_ntp_servers_response(
         result[server_ip] = details
 
     return result
+
+
+def parse_network_instances_response(
+    show_vrf_output: List[Dict[str, Any]],
+    get_interfaces_ip_func: Any,
+    name: str = "",
+) -> Dict[str, Dict[str, Any]]:
+    vrfs: Dict[str, Dict[str, Any]] = {}
+    all_vrf_interfaces: Dict[str, Any] = {}
+    for vrf in show_vrf_output:
+        if (
+            vrf.get("route_distinguisher", "") == "<not set>"
+            or vrf.get("route_distinguisher", "") == "None"
+        ):
+            vrf["route_distinguisher"] = ""
+        else:
+            vrf["route_distinguisher"] = str(vrf["route_distinguisher"])
+        interfaces: Dict[str, Dict[str, Any]] = {}
+        for interface_raw in vrf.get("interfaces", []):
+            interface = interface_raw.split(",")
+            for line in interface:
+                if line.strip() != "":
+                    interfaces[str(line.strip())] = {}
+                    all_vrf_interfaces[str(line.strip())] = {}
+
+        vrfs[vrf["name"]] = {
+            "name": vrf["name"],
+            "type": "DEFAULT_INSTANCE" if vrf["name"] == "default" else "L3VRF",
+            "state": {"route_distinguisher": vrf["route_distinguisher"]},
+            "interfaces": {"interface": interfaces},
+        }
+    if "default" not in vrfs:
+        all_interfaces = get_interfaces_ip_func().keys()
+        vrfs["default"] = {
+            "name": "default",
+            "type": "DEFAULT_INSTANCE",
+            "state": {"route_distinguisher": ""},
+            "interfaces": {
+                "interface": {
+                    k: {} for k in all_interfaces if k not in all_vrf_interfaces.keys()
+                }
+            },
+        }
+
+    if name:
+        if name in vrfs:
+            return {str(name): vrfs[name]}
+        return {}
+    else:
+        return vrfs
+
+
+def parse_environment_response(
+    fans_output: Dict[str, Any],
+    temp_output: Dict[str, Any],
+    power_output: Dict[str, Any],
+    cpu_output: str,
+    is_veos: bool,
+    cpu_idle_regex: str,
+    mem_regex: str,
+) -> Dict[str, Any]:
+    import re
+
+    def extract_temperature_data(data):
+        for s in data:
+            temp = s["currentTemperature"] if "currentTemperature" in s else 0.0
+            name = s["name"]
+            values = {
+                "temperature": temp,
+                "is_alert": temp > s["overheatThreshold"],
+                "is_critical": temp > s["criticalThreshold"],
+            }
+            yield name, values
+
+    def _parse_memory(unit, total, used):
+        if unit == "MiB":
+            return {
+                "available_ram": int(float(total) * 1024),
+                "used_ram": int(float(used) * 1024),
+            }
+        return {
+            "available_ram": int(total),
+            "used_ram": int(used),
+        }
+
+    environment_counters = {"fans": {}, "temperature": {}, "power": {}, "cpu": {}}
+
+    for slot in fans_output["fanTraySlots"]:
+        environment_counters["fans"][slot["label"]] = {"status": slot["status"] == "ok"}
+
+    for fru_type in ["cardSlots", "powerSupplySlots"]:
+        for fru in temp_output[fru_type]:
+            t = {
+                name: value
+                for name, value in extract_temperature_data(fru["tempSensors"])
+            }
+            environment_counters["temperature"].update(t)
+
+    parsed = {n: v for n, v in extract_temperature_data(temp_output["tempSensors"])}
+    environment_counters["temperature"].update(parsed)
+
+    if not is_veos:
+        for psu, data in power_output["powerSupplies"].items():
+            environment_counters["power"][psu] = {
+                "status": data.get("state", "ok") == "ok",
+                "capacity": data.get("capacity", -1.0),
+                "output": data.get("outputPower", -1.0),
+            }
+
+    cpu_lines = cpu_output.splitlines()
+    m = re.match(cpu_idle_regex, cpu_lines[2])
+    environment_counters["cpu"][0] = {"%usage": round(100 - float(m.group("idle")), 1)}
+
+    m = re.match(mem_regex, cpu_lines[3])
+    environment_counters["memory"] = _parse_memory(
+        m.group("unit"), m.group("total"), m.group("used1") or m.group("used2")
+    )
+
+    return environment_counters
+
+
+def parse_bgp_config_response(
+    bgp_conf_output: str,
+    group: str = "",
+    neighbor: str = "",
+) -> Dict[str, Dict[str, Any]]:
+    import ipaddress
+
+    _GROUP_FIELD_MAP_ = {
+        "type": "type",
+        "multipath": "multipath",
+        "apply-groups": "apply_groups",
+        "remove-private-as": "remove_private_as",
+        "ebgp-multihop": "multihop_ttl",
+        "remote-as": "remote_as",
+        "local-v4-addr": "local_address",
+        "local-v6-addr": "local_address",
+        "local-as": "local_as",
+        "next-hop-self": "nhs",
+        "description": "description",
+        "import-policy": "import_policy",
+        "export-policy": "export_policy",
+    }
+
+    _PEER_FIELD_MAP_ = {
+        "description": "description",
+        "remote-as": "remote_as",
+        "local-v4-addr": "local_address",
+        "local-v6-addr": "local_address",
+        "local-as": "local_as",
+        "next-hop-self": "nhs",
+        "route-reflector-client": "route_reflector_client",
+        "import-policy": "import_policy",
+        "export-policy": "export_policy",
+        "passwd": "authentication_key",
+    }
+
+    _PROPERTY_FIELD_MAP_ = _GROUP_FIELD_MAP_.copy()
+    _PROPERTY_FIELD_MAP_.update(_PEER_FIELD_MAP_)
+
+    _PROPERTY_TYPE_MAP_ = {
+        "remote-as": int,
+        "ebgp-multihop": int,
+        "local-v4-addr": str,
+        "local-v6-addr": str,
+        "local-as": int,
+        "remove-private-as": bool,
+        "next-hop-self": bool,
+        "description": str,
+        "route-reflector-client": bool,
+        "password": str,
+        "route-map": str,
+        "apply-groups": list,
+        "type": str,
+        "import-policy": str,
+        "export-policy": str,
+        "multipath": bool,
+    }
+
+    _DATATYPE_DEFAULT_ = {str: "", int: 0, bool: False, list: []}
+
+    def default_group_dict(local_as: int) -> Dict[str, Any]:
+        group_dict = {}
+        group_dict.update(
+            {
+                key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
+                for prop, key in _GROUP_FIELD_MAP_.items()
+            }
+        )
+        group_dict.update({"prefix_limit": {}, "neighbors": {}, "local_as": local_as})
+        return group_dict
+
+    def default_neighbor_dict(
+        local_as: int, group_dict: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        neighbor_dict = {}
+        neighbor_dict.update(
+            {
+                key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
+                for prop, key in _PEER_FIELD_MAP_.items()
+            }
+        )
+        neighbor_dict.update(
+            {"prefix_limit": {}, "local_as": local_as, "authentication_key": ""}
+        )
+        neighbor_dict.update(
+            {
+                key: group_dict.get(key)
+                for key in _GROUP_FIELD_MAP_.values()
+                if key in group_dict and key in _PEER_FIELD_MAP_.values()
+            }
+        )
+        return neighbor_dict
+
+    def parse_options(
+        options: List[str], default_value: bool = False
+    ) -> Dict[str, Any]:
+        if not options:
+            return {}
+
+        config_property = options[0]
+        field_name = _PROPERTY_FIELD_MAP_.get(config_property)
+        field_type = _PROPERTY_TYPE_MAP_.get(config_property)
+        field_value = _DATATYPE_DEFAULT_.get(field_type)
+
+        if not field_type:
+            return {}
+
+        if not default_value:
+            if len(options) > 1:
+                field_value = napalm.base.helpers.convert(
+                    field_type, options[1], _DATATYPE_DEFAULT_.get(field_type)
+                )
+            else:
+                if field_type is bool:
+                    field_value = True
+        if field_name is not None:
+            return {field_name: field_value}
+        elif config_property in ["route-map", "password"]:
+            if config_property == "password":
+                return {"authentication_key": str(options[2])}
+            if config_property == "route-map":
+                direction = None
+                if len(options) == 3:
+                    direction = options[2]
+                    field_value = field_type(options[1])
+                elif len(options) == 2:
+                    direction = options[1]
+                if direction == "in":
+                    field_name = "import_policy"
+                else:
+                    field_name = "export_policy"
+                return {field_name: field_value}
+
+        return {}
+
+    bgp_config = {}
+
+    bgp_conf_lines = bgp_conf_output.splitlines()
+
+    bgp_neighbors: Dict[str, Dict[str, Any]] = {}
+
+    local_as = 0
+    bgp_neighbors = {}
+    for bgp_conf_line in bgp_conf_lines:
+        default_value = False
+        bgp_conf_line = bgp_conf_line.strip()
+        if bgp_conf_line.startswith("router bgp"):
+            local_as = napalm.base.helpers.as_number(
+                (bgp_conf_line.replace("router bgp", "").strip())
+            )
+            continue
+        if not (
+            bgp_conf_line.startswith("neighbor")
+            or bgp_conf_line.startswith("no neighbor")
+        ):
+            continue
+        if bgp_conf_line.startswith("no"):
+            default_value = True
+        bgp_conf_line = bgp_conf_line.replace("no neighbor ", "").replace(
+            "neighbor ", ""
+        )
+        bgp_conf_line_details = bgp_conf_line.split()
+        group_or_neighbor = str(bgp_conf_line_details[0])
+        options = bgp_conf_line_details[1:]
+        try:
+            ipaddress.ip_address(group_or_neighbor)
+            peer_address = group_or_neighbor
+            group_name = None
+            if options[0] == "peer-group":
+                group_name = options[1]
+            elif options[0] == "peer" and options[1] == "group":
+                group_name = options[2]
+            if peer_address not in bgp_neighbors:
+                bgp_neighbors[peer_address] = default_neighbor_dict(
+                    local_as, bgp_config.get(group_name, {})
+                )
+
+            if group_name:
+                bgp_neighbors[peer_address]["__group"] = group_name
+
+            bgp_neighbors[peer_address].update(parse_options(options, default_value))
+        except ValueError:
+            group_name = group_or_neighbor
+            if group and group_name != group:
+                continue
+            if group_name not in bgp_config.keys():
+                bgp_config[group_name] = default_group_dict(local_as)
+            bgp_config[group_name].update(parse_options(options, default_value))
+
+    bgp_config["_"] = default_group_dict(local_as)
+
+    for peer, peer_details in bgp_neighbors.items():
+        peer_group = peer_details.pop("__group", None)
+        if not peer_group:
+            peer_group = "_"
+        if peer_group not in bgp_config:
+            bgp_config[peer_group] = default_group_dict(local_as)
+        bgp_config[peer_group]["neighbors"][peer] = peer_details
+
+    [v.pop("nhs", None) for v in bgp_config.values()]
+
+    if local_as == 0:
+        return {}
+
+    return bgp_config
