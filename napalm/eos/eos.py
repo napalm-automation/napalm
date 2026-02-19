@@ -581,77 +581,17 @@ class EOSDriver(NetworkDriver):
     def get_interfaces(self):
         commands = ["show interfaces"]
         output = self._run_commands(commands)[0]
-
-        interfaces = {}
-
-        for interface, values in output["interfaces"].items():
-            interfaces[interface] = {}
-
-            if values["lineProtocolStatus"] == "up":
-                interfaces[interface]["is_up"] = True
-                interfaces[interface]["is_enabled"] = True
-            else:
-                interfaces[interface]["is_up"] = False
-                if values["interfaceStatus"] == "disabled":
-                    interfaces[interface]["is_enabled"] = False
-                else:
-                    interfaces[interface]["is_enabled"] = True
-
-            interfaces[interface]["description"] = values["description"]
-
-            interfaces[interface]["last_flapped"] = values.pop(
-                "lastStatusChangeTimestamp", -1.0
-            )
-
-            interfaces[interface]["mtu"] = int(values["mtu"])
-            #            interfaces[interface]["speed"] = float(values["bandwidth"] * 1e-6)
-            interfaces[interface]["speed"] = float(values["bandwidth"] / 1000000.0)
-            interfaces[interface]["mac_address"] = napalm.base.helpers.convert(
-                napalm.base.helpers.mac, values.pop("physicalAddress", "")
-            )
-
-        return interfaces
+        return parsers.parse_interfaces_response(output)
 
     def get_lldp_neighbors(self):
         commands = ["show lldp neighbors"]
-        output = self._run_commands(commands)[0]["lldpNeighbors"]
-
-        lldp = {}
-
-        for n in output:
-            if n["port"] not in lldp.keys():
-                lldp[n["port"]] = []
-
-            lldp[n["port"]].append(
-                {"hostname": n["neighborDevice"], "port": n["neighborPort"]}
-            )
-
-        return lldp
+        output = self._run_commands(commands)[0]
+        return parsers.parse_lldp_neighbors_response(output)
 
     def get_interfaces_counters(self):
         commands = ["show interfaces"]
-        output = self._run_commands(commands)
-        interface_counters = defaultdict(dict)
-        for interface, data in output[0]["interfaces"].items():
-            if data["hardware"] == "subinterface":
-                # Subinterfaces will never have counters so no point in parsing them at all
-                continue
-            counters = data.get("interfaceCounters", {})
-            interface_counters[interface].update(
-                tx_octets=counters.get("outOctets", -1),
-                rx_octets=counters.get("inOctets", -1),
-                tx_unicast_packets=counters.get("outUcastPkts", -1),
-                rx_unicast_packets=counters.get("inUcastPkts", -1),
-                tx_multicast_packets=counters.get("outMulticastPkts", -1),
-                rx_multicast_packets=counters.get("inMulticastPkts", -1),
-                tx_broadcast_packets=counters.get("outBroadcastPkts", -1),
-                rx_broadcast_packets=counters.get("inBroadcastPkts", -1),
-                tx_discards=counters.get("outDiscards", -1),
-                rx_discards=counters.get("inDiscards", -1),
-                tx_errors=counters.get("totalOutErrors", -1),
-                rx_errors=counters.get("totalInErrors", -1),
-            )
-        return interface_counters
+        output = self._run_commands(commands)[0]
+        return parsers.parse_interfaces_counters_response(output)
 
     def get_bgp_neighbors(self) -> Dict[str, models.BGPStateNeighborsPerVRFDict]:
         cmd_outputs = self._run_commands(

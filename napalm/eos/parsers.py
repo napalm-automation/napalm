@@ -101,3 +101,78 @@ def parse_mac_address_table_response(
         )
 
     return mac_table
+
+
+def parse_interfaces_response(show_interfaces: Dict[str, Any]) -> Dict[str, Any]:
+    interfaces = {}
+
+    for interface, values in show_interfaces["interfaces"].items():
+        interfaces[interface] = {}
+
+        if values["lineProtocolStatus"] == "up":
+            interfaces[interface]["is_up"] = True
+            interfaces[interface]["is_enabled"] = True
+        else:
+            interfaces[interface]["is_up"] = False
+            if values["interfaceStatus"] == "disabled":
+                interfaces[interface]["is_enabled"] = False
+            else:
+                interfaces[interface]["is_enabled"] = True
+
+        interfaces[interface]["description"] = values["description"]
+
+        interfaces[interface]["last_flapped"] = values.pop(
+            "lastStatusChangeTimestamp", -1.0
+        )
+
+        interfaces[interface]["mtu"] = int(values["mtu"])
+        interfaces[interface]["speed"] = float(values["bandwidth"] / 1000000.0)
+        interfaces[interface]["mac_address"] = napalm.base.helpers.convert(
+            napalm.base.helpers.mac, values.pop("physicalAddress", "")
+        )
+
+    return interfaces
+
+
+def parse_lldp_neighbors_response(
+    lldp_neighbors: List[Dict[str, Any]],
+) -> Dict[str, List[Dict[str, str]]]:
+    lldp_neighbors = lldp_neighbors["lldpNeighbors"]
+    lldp = {}
+
+    for n in lldp_neighbors:
+        if n["port"] not in lldp.keys():
+            lldp[n["port"]] = []
+
+        lldp[n["port"]].append(
+            {"hostname": n["neighborDevice"], "port": n["neighborPort"]}
+        )
+
+    return lldp
+
+
+def parse_interfaces_counters_response(
+    show_interfaces: Dict[str, Any],
+) -> Dict[str, Dict[str, int]]:
+    interface_counters: Dict[str, Dict[str, int]] = {}
+
+    for interface, data in show_interfaces["interfaces"].items():
+        if data["hardware"] == "subinterface":
+            continue
+        counters = data.get("interfaceCounters", {})
+        interface_counters[interface] = {
+            "tx_octets": counters.get("outOctets", -1),
+            "rx_octets": counters.get("inOctets", -1),
+            "tx_unicast_packets": counters.get("outUcastPkts", -1),
+            "rx_unicast_packets": counters.get("inUcastPkts", -1),
+            "tx_multicast_packets": counters.get("outMulticastPkts", -1),
+            "rx_multicast_packets": counters.get("inMulticastPkts", -1),
+            "tx_broadcast_packets": counters.get("outBroadcastPkts", -1),
+            "rx_broadcast_packets": counters.get("inBroadcastPkts", -1),
+            "tx_discards": counters.get("outDiscards", -1),
+            "rx_discards": counters.get("inDiscards", -1),
+            "tx_errors": counters.get("totalOutErrors", -1),
+            "rx_errors": counters.get("totalInErrors", -1),
+        }
+
+    return interface_counters
