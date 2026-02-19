@@ -52,6 +52,7 @@ from napalm.base.exceptions import (
 )
 from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
 from napalm.eos.utils.versions import EOSVersion
+from napalm.eos import parsers
 import napalm.base.constants as c
 
 # local modules
@@ -574,28 +575,8 @@ class EOSDriver(NetworkDriver):
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
         commands = ["show version", "show hostname", "show interfaces"]
-
         result = self._run_commands(commands)
-
-        version = result[0]
-        hostname = result[1]
-        interfaces_dict = result[2]["interfaces"]
-
-        uptime = time.time() - version["bootupTimestamp"]
-
-        interfaces = [i for i in interfaces_dict.keys() if "." not in i]
-        interfaces = string_parsers.sorted_nicely(interfaces)
-
-        return {
-            "hostname": hostname["hostname"],
-            "fqdn": hostname["fqdn"],
-            "vendor": "Arista",
-            "model": version["modelName"],
-            "serial_number": version["serialNumber"],
-            "os_version": version["internalVersion"],
-            "uptime": float(uptime),
-            "interface_list": interfaces,
-        }
+        return parsers.parse_facts_response(*result)
 
     def get_interfaces(self):
         commands = ["show interfaces"]
@@ -1171,34 +1152,13 @@ class EOSDriver(NetworkDriver):
         return bgp_config
 
     def get_arp_table(self, vrf=""):
-        arp_table = []
-
         try:
             commands = ["show arp vrf all"]
-            ipv4_neighbors = [
-                neighbor
-                for k, v in self._run_commands(commands)[0].get("vrfs").items()
-                if not vrf or k == vrf
-                for neighbor in v.get("ipV4Neighbors", [])
-            ]
+            result = self._run_commands(commands)
         except pyeapi.eapilib.CommandError:
             return []
 
-        for neighbor in ipv4_neighbors:
-            interface = str(neighbor.get("interface"))
-            mac_raw = neighbor.get("hwAddress")
-            ip = str(neighbor.get("address"))
-            age = float(neighbor.get("age", -1.0))
-            arp_table.append(
-                {
-                    "interface": interface,
-                    "mac": napalm.base.helpers.mac(mac_raw),
-                    "ip": napalm.base.helpers.ip(ip),
-                    "age": age,
-                }
-            )
-
-        return arp_table
+        return parsers.parse_arp_table_response(result[0], vrf)
 
     def get_ntp_servers(self):
         result = {}
@@ -1424,36 +1384,9 @@ class EOSDriver(NetworkDriver):
         return interfaces_ip
 
     def get_mac_address_table(self):
-        mac_table = []
-
         commands = ["show mac address-table"]
-
-        mac_entries = (
-            self._run_commands(commands)[0]
-            .get("unicastTable", {})
-            .get("tableEntries", [])
-        )
-
-        for mac_entry in mac_entries:
-            vlan = mac_entry.get("vlanId")
-            interface = mac_entry.get("interface")
-            mac_raw = mac_entry.get("macAddress")
-            static = mac_entry.get("entryType") == "static"
-            last_move = mac_entry.get("lastMove", 0.0)
-            moves = mac_entry.get("moves", 0)
-            mac_table.append(
-                {
-                    "mac": napalm.base.helpers.mac(mac_raw),
-                    "interface": interface,
-                    "vlan": vlan,
-                    "active": True,
-                    "static": static,
-                    "moves": moves,
-                    "last_move": last_move,
-                }
-            )
-
-        return mac_table
+        result = self._run_commands(commands)
+        return parsers.parse_mac_address_table_response(result[0])
 
     def get_route_to(self, destination="", protocol="", longer=False):
         routes = {}
