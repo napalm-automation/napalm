@@ -767,8 +767,6 @@ class EOSDriver(NetworkDriver):
         return sorted([LLDP_CAPAB_TRANFORM_TABLE[c.lower()] for c in capabilities])
 
     def get_lldp_neighbors_detail(self, interface=""):
-        lldp_neighbors_out = {}
-
         filters = []
         if interface:
             filters.append(interface)
@@ -779,46 +777,9 @@ class EOSDriver(NetworkDriver):
 
         lldp_neighbors_in = self._run_commands(commands)[0].get("lldpNeighbors", {})
 
-        for interface in lldp_neighbors_in:
-            interface_neighbors = lldp_neighbors_in.get(interface).get(
-                "lldpNeighborInfo", {}
-            )
-            if not interface_neighbors:
-                # in case of empty infos
-                continue
-
-            # it is provided a list of neighbors per interface
-            for neighbor in interface_neighbors:
-                if interface not in lldp_neighbors_out.keys():
-                    lldp_neighbors_out[interface] = []
-                capabilities = neighbor.get("systemCapabilities", {})
-                available_capabilities = self._transform_lldp_capab(capabilities.keys())
-                enabled_capabilities = self._transform_lldp_capab(
-                    [capab for capab, enabled in capabilities.items() if enabled]
-                )
-                remote_chassis_id = neighbor.get("chassisId", "")
-                if neighbor.get("chassisIdType", "") == "macAddress":
-                    remote_chassis_id = napalm.base.helpers.mac(remote_chassis_id)
-                neighbor_interface_info = neighbor.get("neighborInterfaceInfo", {})
-                lldp_neighbors_out[interface].append(
-                    {
-                        "parent_interface": interface,  # no parent interfaces
-                        "remote_port": neighbor_interface_info.get(
-                            "interfaceId", ""
-                        ).replace('"', ""),
-                        "remote_port_description": neighbor_interface_info.get(
-                            "interfaceDescription", ""
-                        ),
-                        "remote_system_name": neighbor.get("systemName", ""),
-                        "remote_system_description": neighbor.get(
-                            "systemDescription", ""
-                        ),
-                        "remote_chassis_id": remote_chassis_id,
-                        "remote_system_capab": available_capabilities,
-                        "remote_system_enable_capab": enabled_capabilities,
-                    }
-                )
-        return lldp_neighbors_out
+        return parsers.parse_lldp_neighbors_detail_response(
+            lldp_neighbors_in, self._transform_lldp_capab
+        )
 
     def cli(self, commands, encoding="text"):
         if encoding not in ("text", "json"):
@@ -1515,69 +1476,26 @@ class EOSDriver(NetworkDriver):
     def get_snmp_information(self):
         """get_snmp_information() for EOS.  Re-written to not use TextFSM"""
 
-        # Default values
-        snmp_dict = {"chassis_id": "", "location": "", "contact": "", "community": {}}
-
         commands = [
             "show snmp v2-mib chassis",
             "show snmp v2-mib location",
             "show snmp v2-mib contact",
         ]
         snmp_config = self._run_commands(commands, encoding="json")
-        for line in snmp_config:
-            for k, v in line.items():
-                if k == "chassisId":
-                    snmp_dict["chassis_id"] = v
-                else:
-                    # Some EOS versions add extra quotes
-                    snmp_dict[k] = v.strip('"')
 
         commands = ["show running-config | section snmp-server community"]
         raw_snmp_config = self._run_commands(commands, encoding="text")[0].get(
             "output", ""
         )
-        for line in raw_snmp_config.splitlines():
-            match = self._RE_SNMP_COMM.search(line)
-            if match:
-                matches = match.groupdict("")
-                snmp_dict["community"][match.group("community")] = {
-                    "acl": str(matches["v4_acl"]),
-                    "mode": str(matches["access"]),
-                }
 
-        return snmp_dict
+        return parsers.parse_snmp_information_response(
+            snmp_config, raw_snmp_config, self._RE_SNMP_COMM
+        )
 
     def get_users(self):
-        def _sshkey_type(sshkey):
-            if sshkey.startswith("ssh-rsa"):
-                return "ssh_rsa", str(sshkey)
-            elif sshkey.startswith("ssh-dss"):
-                return "ssh_dsa", str(sshkey)
-            return "ssh_rsa", ""
-
-        users = {}
-
         commands = ["show users accounts"]
-        user_items = self._run_commands(commands)[0].get("users", {})
-
-        for user, user_details in user_items.items():
-            user_details.pop("username", "")
-            sshkey_value = user_details.pop("sshAuthorizedKey", "")
-            sshkey_type, sshkey_value = _sshkey_type(sshkey_value)
-            if sshkey_value != "":
-                sshkey_list = [sshkey_value]
-            else:
-                sshkey_list = []
-            user_details.update(
-                {
-                    "level": user_details.pop("privLevel", 0),
-                    "password": str(user_details.pop("secret", "")),
-                    "sshkeys": sshkey_list,
-                }
-            )
-            users[user] = user_details
-
-        return users
+        output = self._run_commands(commands)[0]
+        return parsers.parse_users_response(output)
 
     def traceroute(
         self,
@@ -1955,34 +1873,53 @@ class EOSDriver(NetworkDriver):
                 )
 
             output = self._run_commands(commands, encoding="text")
-            startup_cfg = str(output[0]["output"]) if get_startup else ""
-            if sanitized and startup_cfg:
-                startup_cfg = napalm.base.helpers.sanitize_config(
-                    startup_cfg, c.CISCO_SANITIZE_FILTERS
-                )
-            return {
-                "startup": startup_cfg,
-                "running": str(output[1]["output"]) if get_running else "",
-                "candidate": str(output[2]["output"]) if get_candidate else "",
-            }
+            return parsers.parse_config_response(
+                output,
+                retrieve,
+                get_startup,
+                get_running,
+                get_candidate,
+                sanitized,
+                c.CISCO_SANITIZE_FILTERS,
+            )
         elif get_startup or get_running:
             if retrieve == "running":
                 commands = ["show {}-config{}".format(retrieve, run_full)]
             elif retrieve == "startup":
                 commands = ["show {}-config".format(retrieve)]
             output = self._run_commands(commands, encoding="text")
-            return {
-                "startup": str(output[0]["output"]) if get_startup else "",
-                "running": str(output[0]["output"]) if get_running else "",
-                "candidate": "",
-            }
+            return parsers.parse_config_response(
+                output,
+                retrieve,
+                get_startup,
+                get_running,
+                get_candidate,
+                sanitized,
+                c.CISCO_SANITIZE_FILTERS,
+            )
         elif get_candidate:
             commands = ["show session-config named {}".format(self.config_session)]
             output = self._run_commands(commands, encoding="text")
-            return {"startup": "", "running": "", "candidate": str(output[0]["output"])}
+            return parsers.parse_config_response(
+                output,
+                retrieve,
+                get_startup,
+                get_running,
+                get_candidate,
+                sanitized,
+                c.CISCO_SANITIZE_FILTERS,
+            )
         elif retrieve == "candidate":
             # If we get here it means that we want the candidate but there is none.
-            return {"startup": "", "running": "", "candidate": ""}
+            return parsers.parse_config_response(
+                [],
+                retrieve,
+                get_startup,
+                get_running,
+                get_candidate,
+                sanitized,
+                c.CISCO_SANITIZE_FILTERS,
+            )
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
 

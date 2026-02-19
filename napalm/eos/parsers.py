@@ -176,3 +176,144 @@ def parse_interfaces_counters_response(
         }
 
     return interface_counters
+
+
+def parse_users_response(show_users_accounts: Dict[str, Any]) -> Dict[str, Any]:
+    def _sshkey_type(sshkey: str) -> tuple[str, str]:
+        if sshkey.startswith("ssh-rsa"):
+            return "ssh_rsa", str(sshkey)
+        elif sshkey.startswith("ssh-dss"):
+            return "ssh_dsa", str(sshkey)
+        return "ssh_rsa", ""
+
+    users: Dict[str, Any] = {}
+
+    user_items = show_users_accounts.get("users", {})
+
+    for user, user_details in user_items.items():
+        user_details.pop("username", "")
+        sshkey_value = user_details.pop("sshAuthorizedKey", "")
+        sshkey_type, sshkey_value = _sshkey_type(sshkey_value)
+        if sshkey_value != "":
+            sshkey_list = [sshkey_value]
+        else:
+            sshkey_list = []
+        user_details.update(
+            {
+                "level": user_details.pop("privLevel", 0),
+                "password": str(user_details.pop("secret", "")),
+                "sshkeys": sshkey_list,
+            }
+        )
+        users[user] = user_details
+
+    return users
+
+
+def parse_lldp_neighbors_detail_response(
+    lldp_neighbors_in: Dict[str, Any],
+    transform_lldp_capab: Any,
+) -> Dict[str, List[Dict[str, Any]]]:
+    lldp_neighbors_out: Dict[str, List[Dict[str, Any]]] = {}
+
+    for interface in lldp_neighbors_in:
+        interface_neighbors = lldp_neighbors_in.get(interface).get(
+            "lldpNeighborInfo", {}
+        )
+        if not interface_neighbors:
+            continue
+
+        for neighbor in interface_neighbors:
+            if interface not in lldp_neighbors_out.keys():
+                lldp_neighbors_out[interface] = []
+            capabilities = neighbor.get("systemCapabilities", {})
+            available_capabilities = transform_lldp_capab(capabilities.keys())
+            enabled_capabilities = transform_lldp_capab(
+                [capab for capab, enabled in capabilities.items() if enabled]
+            )
+            remote_chassis_id = neighbor.get("chassisId", "")
+            if neighbor.get("chassisIdType", "") == "macAddress":
+                remote_chassis_id = napalm.base.helpers.mac(remote_chassis_id)
+            neighbor_interface_info = neighbor.get("neighborInterfaceInfo", {})
+            lldp_neighbors_out[interface].append(
+                {
+                    "parent_interface": interface,
+                    "remote_port": neighbor_interface_info.get(
+                        "interfaceId", ""
+                    ).replace('"', ""),
+                    "remote_port_description": neighbor_interface_info.get(
+                        "interfaceDescription", ""
+                    ),
+                    "remote_system_name": neighbor.get("systemName", ""),
+                    "remote_system_description": neighbor.get("systemDescription", ""),
+                    "remote_chassis_id": remote_chassis_id,
+                    "remote_system_capab": available_capabilities,
+                    "remote_system_enable_capab": enabled_capabilities,
+                }
+            )
+    return lldp_neighbors_out
+
+
+def parse_config_response(
+    output: List[Dict[str, Any]],
+    retrieve: str,
+    get_startup: bool,
+    get_running: bool,
+    get_candidate: bool,
+    sanitized: bool,
+    cisco_sanitize_filters: List[str],
+) -> Dict[str, str]:
+    if retrieve == "all":
+        startup_cfg = str(output[0]["output"]) if get_startup else ""
+        if sanitized and startup_cfg:
+            startup_cfg = napalm.base.helpers.sanitize_config(
+                startup_cfg, cisco_sanitize_filters
+            )
+        return {
+            "startup": startup_cfg,
+            "running": str(output[1]["output"]) if get_running else "",
+            "candidate": str(output[2]["output"]) if get_candidate else "",
+        }
+    elif get_startup or get_running:
+        return {
+            "startup": str(output[0]["output"]) if get_startup else "",
+            "running": str(output[0]["output"]) if get_running else "",
+            "candidate": "",
+        }
+    elif get_candidate:
+        return {"startup": "", "running": "", "candidate": str(output[0]["output"])}
+    elif retrieve == "candidate":
+        return {"startup": "", "running": "", "candidate": ""}
+    else:
+        raise Exception("Wrong retrieve filter: {}".format(retrieve))
+
+
+def parse_snmp_information_response(
+    snmp_config: List[Dict[str, Any]],
+    raw_snmp_config: str,
+    snmp_comm_regex: Any,
+) -> Dict[str, Any]:
+    snmp_dict: Dict[str, Any] = {
+        "chassis_id": "",
+        "location": "",
+        "contact": "",
+        "community": {},
+    }
+
+    for line in snmp_config:
+        for k, v in line.items():
+            if k == "chassisId":
+                snmp_dict["chassis_id"] = v
+            else:
+                snmp_dict[k] = v.strip('"')
+
+    for line in raw_snmp_config.splitlines():
+        match = snmp_comm_regex.search(line)
+        if match:
+            matches = match.groupdict("")
+            snmp_dict["community"][match.group("community")] = {
+                "acl": str(matches["v4_acl"]),
+                "mode": str(matches["access"]),
+            }
+
+    return snmp_dict
