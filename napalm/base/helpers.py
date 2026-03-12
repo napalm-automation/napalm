@@ -83,13 +83,9 @@ def load_template(
                     and os.path.isabs(template_path)
                 ):
                     # append driver name at the end of the custom path
-                    search_path.append(
-                        os.path.join(template_path, cls.__module__.split(".")[-1])
-                    )
+                    search_path.append(os.path.join(template_path, cls.__module__.split(".")[-1]))
                 else:
-                    raise IOError(
-                        "Template path does not exist: {}".format(template_path)
-                    )
+                    raise IOError("Template path does not exist: {}".format(template_path))
             else:
                 # Search modules for template paths
                 for c in cls.__class__.mro():
@@ -142,9 +138,7 @@ def load_template(
     return cls.load_merge_candidate(config=configuration)
 
 
-def netutils_parse_parents(
-    parent: str, child: str, config: Union[str, List[str]]
-) -> List[str]:
+def netutils_parse_parents(parent: str, child: str, config: Union[str, List[str]]) -> List[str]:
     """
     Use Netutils to find parent lines that contain a specific child line.
 
@@ -183,9 +177,7 @@ def netutils_parse_parents(
     return return_config
 
 
-def netutils_parse_objects(
-    cfg_section: str, config: Union[str, List[str]]
-) -> List[str]:
+def netutils_parse_objects(cfg_section: str, config: Union[str, List[str]]) -> List[str]:
     """
     Use Netutils to find and return a section of Cisco IOS config.
     Similar to "show run | section <cfg_section>"
@@ -280,9 +272,7 @@ def textfsm_extractor(
             current_dir = os.path.dirname(os.path.abspath(module))
         else:
             continue
-        template_dir_path = "{current_dir}/utils/textfsm_templates".format(
-            current_dir=current_dir
-        )
+        template_dir_path = "{current_dir}/utils/textfsm_templates".format(current_dir=current_dir)
         template_path = "{template_dir_path}/{template_name}.tpl".format(
             template_dir_path=template_dir_path, template_name=template_name
         )
@@ -349,7 +339,7 @@ def ttp_parse(
     file within ``{NAPALM_install_dir}/utils/ttp_templates/{template}.txt`` folder.
     """
     if not TTP_INSTALLED:
-        msg = "\nTTP is not installed. Please PIP install ttp:\n" "pip install ttp\n"
+        msg = "\nTTP is not installed. Please PIP install ttp:\npip install ttp\n"
         raise napalm.base.exceptions.ModuleImportError(msg)
 
     result = None
@@ -362,9 +352,7 @@ def ttp_parse(
             current_dir = os.path.dirname(os.path.abspath(module))
         else:
             continue
-        template_dir_path = "{current_dir}/utils/ttp_templates".format(
-            current_dir=current_dir
-        )
+        template_dir_path = "{current_dir}/utils/ttp_templates".format(current_dir=current_dir)
 
         # check if inline template given, use it as is
         if "{{" in template and "}}" in template:
@@ -392,9 +380,7 @@ def ttp_parse(
             )
             break
         except Exception as e:
-            msg = "TTP template:\n'{template}'\nError: {error}".format(
-                template=template, error=e
-            )
+            msg = "TTP template:\n'{template}'\nError: {error}".format(template=template, error=e)
             logging.exception(e)
             logging.error(msg)
             raise napalm.base.exceptions.TemplateRenderException(msg)
@@ -503,15 +489,15 @@ def mac(raw: str) -> str:
     (with respect to EUI48 or EUI64 standards). Therefore we need to stuff with trailing zeros
 
     Example
-    >>> mac('a9:c5:2e:7b:6:')
+    >>> mac("a9:c5:2e:7b:6:")
     u'A9:C5:2E:7B:60:00'
 
     If Cisco or other obscure vendors use their own standards, will throw an error and we can fix
     later, however, still works with weird formats like:
 
-    >>> mac('123.4567.89ab')
+    >>> mac("123.4567.89ab")
     u'01:23:45:67:89:AB'
-    >>> mac('23.4567.89ab')
+    >>> mac("23.4567.89ab")
     u'00:23:45:67:89:AB'
     """
     if raw.endswith(":"):
@@ -578,9 +564,7 @@ def split_interface(intf_name: str) -> Tuple[str, str]:
 def transform_lldp_capab(capabilities: Union[str, Any]) -> List[str]:
     if capabilities and isinstance(capabilities, str):
         capabilities = capabilities.strip().lower().split(",")
-        return sorted(
-            [constants.LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]
-        )
+        return sorted([constants.LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities])
     else:
         return []
 

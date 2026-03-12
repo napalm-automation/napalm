@@ -5,6 +5,7 @@ NAPALM CLI Tools: test connectivity
 
 Module to test connectivity with the network device through NAPALM.
 """
+
 # import helpers
 from napalm.base import get_network_driver
 from napalm.base.clitools.helpers import build_help
@@ -34,9 +35,7 @@ def main():
         )
     )
 
-    with driver(
-        args.hostname, args.user, args.password, optional_args=optional_args
-    ) as device:
+    with driver(args.hostname, args.user, args.password, optional_args=optional_args) as device:
         logger.debug("Successfully connected to the device: {}".format(device.hostname))
         print("Successfully connected to the device")
     sys.exit(0)

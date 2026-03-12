@@ -3,6 +3,7 @@ Fork of pynxos library from network to code and mzbenami
 
 Reimplemented by ktbyers to support XML-RPC in addition to JSON-RPC
 """
+
 from builtins import super
 from typing import Optional, List, Dict, Any
 
@@ -62,9 +63,7 @@ class RPCBase(object):
     ) -> List[Any]:
         raise NotImplementedError("Method must be implemented in child class")
 
-    def _nxapi_command_conf(
-        self, commands: List[str], method: Optional[str] = None
-    ) -> List[Any]:
+    def _nxapi_command_conf(self, commands: List[str], method: Optional[str] = None) -> List[Any]:
         raise NotImplementedError("Method must be implemented in child class")
 
     def _build_payload(
@@ -76,9 +75,7 @@ class RPCBase(object):
     ) -> str:
         raise NotImplementedError("Method must be implemented in child class")
 
-    def _nxapi_command(
-        self, commands: List[str], method: Optional[str] = None
-    ) -> List[Any]:
+    def _nxapi_command(self, commands: List[str], method: Optional[str] = None) -> List[Any]:
         raise NotImplementedError("Method must be implemented in child class")
 
     def _send_request(self, commands: List[str], method: str) -> Response:
@@ -118,9 +115,7 @@ class RPCClient(RPCBase):
         self.cmd_method_conf = "cli"
         self.cmd_method_raw = "cli_ascii"
 
-    def _nxapi_command(
-        self, commands: List[str], method: Optional[str] = None
-    ) -> List[Any]:
+    def _nxapi_command(self, commands: List[str], method: Optional[str] = None) -> List[Any]:
         """Send a command down the NX-API channel."""
         if method is None:
             method = self.cmd_method
@@ -133,9 +128,7 @@ class RPCClient(RPCBase):
         api_response = self._process_api_response(response, commands, raw_text=raw_text)
         return api_response
 
-    def _nxapi_command_conf(
-        self, commands: List[str], method: Optional[str] = None
-    ) -> List[Any]:
+    def _nxapi_command_conf(self, commands: List[str], method: Optional[str] = None) -> List[Any]:
         if method is None:
             method = self.cmd_method_conf
         return self._nxapi_command(commands=commands, method=method)
@@ -221,9 +214,7 @@ class XMLClient(RPCBase):
         self.cmd_method_conf = "cli_conf"
         self.cmd_method_raw = "cli_show_ascii"
 
-    def _nxapi_command(
-        self, commands: List[str], method: Optional[str] = None
-    ) -> List[Any]:
+    def _nxapi_command(self, commands: List[str], method: Optional[str] = None) -> List[Any]:
         """Send a command down the NX-API channel."""
         if method is None:
             method = self.cmd_method
@@ -237,9 +228,7 @@ class XMLClient(RPCBase):
             self._error_check(command_response)
         return api_response
 
-    def _nxapi_command_conf(
-        self, commands: List[str], method: Optional[str] = None
-    ) -> List[Any]:
+    def _nxapi_command_conf(self, commands: List[str], method: Optional[str] = None) -> List[Any]:
         if method is None:
             method = self.cmd_method_conf
         return self._nxapi_command(commands=commands, method=method)
@@ -282,17 +271,13 @@ class XMLClient(RPCBase):
         if response.status_code not in [200]:
             msg = """Invalid status code returned on NX-API POST
 commands: {}
-status_code: {}""".format(
-                commands, response.status_code
-            )
+status_code: {}""".format(commands, response.status_code)
             raise NXAPIPostError(msg)
 
         xml_root = etree.fromstring(response.text)
         response_list = xml_root.xpath("outputs/output")
         if len(commands) != len(response_list):
-            raise NXAPIXMLError(
-                "XML response doesn't match expected number of commands."
-            )
+            raise NXAPIXMLError("XML response doesn't match expected number of commands.")
 
         return response_list
 

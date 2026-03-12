@@ -39,9 +39,7 @@ class PatchedJunOSDriver(junos.JunOSDriver):
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         optional_args["config_lock"] = False  # to not try lock on open()
-        super(self.__class__, self).__init__(
-            hostname, username, password, timeout, optional_args
-        )
+        super(self.__class__, self).__init__(hostname, username, password, timeout, optional_args)
 
         self.patched_attrs = ["device"]
         self.device = FakeJunOSDevice()

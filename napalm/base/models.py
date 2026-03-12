@@ -212,9 +212,7 @@ BGPStateNeighborsPerVRFDict = TypedDict(
     {"router_id": str, "peers": Dict[str, BGPStateNeighborDict]},
 )
 
-ARPTableDict = TypedDict(
-    "ARPTableDict", {"interface": str, "mac": str, "ip": str, "age": float}
-)
+ARPTableDict = TypedDict("ARPTableDict", {"interface": str, "mac": str, "ip": str, "age": float})
 
 IPV6NeighborDict = TypedDict(
     "IPV6NeighborDict",
@@ -260,9 +258,7 @@ NTPStats = TypedDict(
     },
 )
 
-InterfacesIPDictEntry = TypedDict(
-    "InterfacesIPDictEntry", {"prefix_length": int}, total=False
-)
+InterfacesIPDictEntry = TypedDict("InterfacesIPDictEntry", {"prefix_length": int}, total=False)
 
 InterfacesIPDict = TypedDict(
     "InterfacesIPDict",
@@ -342,9 +338,7 @@ ProbeTestResultDict = TypedDict(
     },
 )
 
-PingResultDictEntry = TypedDict(
-    "PingResultDictEntry", {"ip_address": str, "rtt": float}
-)
+PingResultDictEntry = TypedDict("PingResultDictEntry", {"ip_address": str, "rtt": float})
 
 PingDict = TypedDict(
     "PingDict",
@@ -365,9 +359,7 @@ PingResultDict = TypedDict(
     total=False,
 )
 
-TracerouteDict = TypedDict(
-    "TracerouteDict", {"rtt": float, "ip_address": str, "host_name": str}
-)
+TracerouteDict = TypedDict("TracerouteDict", {"rtt": float, "ip_address": str, "host_name": str})
 
 TracerouteResultDictEntry = TypedDict(
     "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}, total=False
@@ -410,13 +402,9 @@ NetworkInstanceDict = TypedDict(
     "NetworkInstanceDict", {"name": str, "type": str, "state": dict, "interfaces": dict}
 )
 
-NetworkInstanceStateDict = TypedDict(
-    "NetworkInstanceStateDict", {"route_distinguisher": str}
-)
+NetworkInstanceStateDict = TypedDict("NetworkInstanceStateDict", {"route_distinguisher": str})
 
-NetworkInstanceInterfacesDict = TypedDict(
-    "NetworkInstanceInterfacesDict", {"interface": dict}
-)
+NetworkInstanceInterfacesDict = TypedDict("NetworkInstanceInterfacesDict", {"interface": dict})
 
 FirewallPolicyDict = TypedDict(
     "FirewallPolicyDict",

@@ -185,9 +185,7 @@ class MockDriver(NetworkDriver):
         self.config = config
         mocked_data(self.path, "load_replace_candidate", count)
 
-    def compare_config(
-        self, filename: Optional[str] = None, config: Optional[str] = None
-    ) -> str:
+    def compare_config(self, filename: Optional[str] = None, config: Optional[str] = None) -> str:
         count = self._count_calls("compare_config")
         self._raise_if_closed()
         mocked = mocked_data(self.path, "compare_config", count)

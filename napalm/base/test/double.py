@@ -59,9 +59,7 @@ class BaseTestDouble(object):
             try:
                 return json.loads(f.read())
             except ValueError:
-                raise ValueError(
-                    "No JSON object could be decoded on filename: {}".format(filename)
-                )
+                raise ValueError("No JSON object could be decoded on filename: {}".format(filename))
 
 
 def _string_key_to_int(param):

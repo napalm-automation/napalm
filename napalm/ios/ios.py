@@ -65,9 +65,7 @@ IPV6_ADDR_REGEX_3 = (
     "[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"
 )
 # Should validate IPv6 address using an IP address library after matching with this regex
-IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(
-    IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3
-)
+IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
 
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
@@ -96,9 +94,7 @@ RE_RP_FROM = re.compile(r"Known via \"([a-z]+)[ \"]")
 RE_RP_VIA = re.compile(r"via (\S+)")
 RE_RP_METRIC = re.compile(r"[ ]+Route metric is (\d+)")
 
-IOS_COMMANDS = {
-    "show_mac_address": ["show mac-address-table", "show mac address-table"]
-}
+IOS_COMMANDS = {"show_mac_address": ["show mac-address-table", "show mac address-table"]}
 
 AFI_COMMAND_MAP = {
     "IPv4 Unicast": "ipv4 unicast",
@@ -389,9 +385,7 @@ class IOSDriver(NetworkDriver):
             if line.strip():
                 new_diff.append("+" + line)
         if new_diff:
-            new_diff.insert(
-                0, "! incremental-diff failed; falling back to echo of merge file"
-            )
+            new_diff.insert(0, "! incremental-diff failed; falling back to echo of merge file")
         else:
             new_diff.append("! No changes specified in merge file.")
         return "\n".join(new_diff)
@@ -411,12 +405,8 @@ class IOSDriver(NetworkDriver):
             new_file = self.merge_cfg
         new_file_system = self.dest_file_system
 
-        base_file_full = self._gen_full_path(
-            filename=base_file, file_system=base_file_system
-        )
-        new_file_full = self._gen_full_path(
-            filename=new_file, file_system=new_file_system
-        )
+        base_file_full = self._gen_full_path(filename=base_file, file_system=base_file_system)
+        new_file_full = self._gen_full_path(filename=new_file, file_system=new_file_system)
 
         if self.config_replace:
             cmd = f"show archive config differences {base_file_full} {new_file_full}"
@@ -513,9 +503,7 @@ class IOSDriver(NetworkDriver):
         revert_in_min = None
 
         if message:
-            raise NotImplementedError(
-                "Commit message not implemented for this platform"
-            )
+            raise NotImplementedError("Commit message not implemented for this platform")
 
         if revert_in is not None:
             if not self._check_archive_feature():
@@ -533,8 +521,7 @@ class IOSDriver(NetworkDriver):
 
         if self.has_pending_commit():
             raise CommandErrorException(
-                "Configuration session already in progress, cannot "
-                "perform configuration actions"
+                "Configuration session already in progress, cannot perform configuration actions"
             )
 
         # Always generate a rollback config on commit
@@ -553,9 +540,7 @@ class IOSDriver(NetworkDriver):
             elif self.auto_rollback_on_error:
                 cmd = "configure replace {} force revert trigger error".format(cfg_file)
             elif revert_in_min:
-                cmd = "configure replace {} force revert timer {}".format(
-                    cfg_file, revert_in_min
-                )
+                cmd = "configure replace {} force revert timer {}".format(cfg_file, revert_in_min)
             else:
                 cmd = "configure replace {} force".format(cfg_file)
             output = self._commit_handler(cmd)
@@ -583,9 +568,7 @@ class IOSDriver(NetworkDriver):
                 # Enter config mode with a revert timer and exit config mode
                 try:
                     self.device.config_mode(
-                        config_command="configure terminal revert timer {}".format(
-                            revert_in_min
-                        )
+                        config_command="configure terminal revert timer {}".format(revert_in_min)
                     )
                     self.device.exit_config_mode()
                 except ValueError:
@@ -652,8 +635,9 @@ class IOSDriver(NetworkDriver):
                 self.device.save_config()
             else:
                 raise CommitConfirmException(
-                    "Configuration session active but not owned by"
-                    " {} cannot confirm commit".format(self.username)
+                    "Configuration session active but not owned by {} cannot confirm commit".format(
+                        self.username
+                    )
                 )
         else:
             raise CommitConfirmException("No pending configuration")
@@ -665,9 +649,7 @@ class IOSDriver(NetworkDriver):
     @_file_prompt_quiet
     def _discard_config(self):
         """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
-        discard_candidate = (
-            f"copy running-config {self._gen_full_path(self.candidate_cfg)}"
-        )
+        discard_candidate = f"copy running-config {self._gen_full_path(self.candidate_cfg)}"
         discard_merge = f"copy null: {self._gen_full_path(self.merge_cfg)}"
         self.device.send_command(discard_candidate)
         self.device.send_command(discard_merge)
@@ -681,8 +663,9 @@ class IOSDriver(NetworkDriver):
                 self.device.save_config()
             else:
                 raise CommitConfirmException(
-                    "Configuration session active but not owned by {} "
-                    "cannot rollback".format(self.username)
+                    "Configuration session active but not owned by {} cannot rollback".format(
+                        self.username
+                    )
                 )
         else:
             filename = self.rollback_cfg
@@ -820,9 +803,7 @@ class IOSDriver(NetworkDriver):
             return "{}/{}".format(self.dest_file_system, filename)
         else:
             if ":" not in file_system:
-                raise ValueError(
-                    "Invalid file_system specified: {}".format(file_system)
-                )
+                raise ValueError("Invalid file_system specified: {}".format(file_system))
             return "{}/{}".format(file_system, filename)
 
     @_file_prompt_quiet
@@ -992,9 +973,7 @@ class IOSDriver(NetworkDriver):
                 # See IEEE 802.1AB-2005 and rfc2922, specifically PtopoChassisId
                 if not hostname:
                     try:
-                        hostname = napalm.base.helpers.mac(
-                            lldp_entry["remote_chassis_id"]
-                        )
+                        hostname = napalm.base.helpers.mac(lldp_entry["remote_chassis_id"])
                     except AddrFormatError:
                         hostname = lldp_entry["remote_chassis_id"]
 
@@ -1020,9 +999,7 @@ class IOSDriver(NetworkDriver):
         else:
             command = "show lldp neighbors detail"
         lldp_entries = self._send_command(command)
-        lldp_entries = textfsm_extractor(
-            self, "show_lldp_neighbors_detail", lldp_entries
-        )
+        lldp_entries = textfsm_extractor(self, "show_lldp_neighbors_detail", lldp_entries)
 
         if len(lldp_entries) == 0:
             return {}
@@ -1152,9 +1129,7 @@ class IOSDriver(NetworkDriver):
 
         # model filter
         try:
-            match_model = re.search(
-                r"Cisco (.+?) .+bytes of", show_ver, flags=re.IGNORECASE
-            )
+            match_model = re.search(r"Cisco (.+?) .+bytes of", show_ver, flags=re.IGNORECASE)
             model = match_model.group(1)
         except AttributeError:
             model = "Unknown"
@@ -1319,12 +1294,8 @@ class IOSDriver(NetworkDriver):
 
         INTERNET_ADDRESS = r"\s+(?:Internet address is|Secondary address)"
         INTERNET_ADDRESS += r" (?P<ip>{})/(?P<prefix>\d+)".format(IPV4_ADDR_REGEX)
-        LINK_LOCAL_ADDRESS = (
-            r"\s+IPv6 is enabled, link-local address is (?P<ip>[a-fA-F0-9:]+)"
-        )
-        GLOBAL_ADDRESS = (
-            r"\s+(?P<ip>[a-fA-F0-9:]+), subnet is (?:[a-fA-F0-9:]+)/(?P<prefix>\d+)"
-        )
+        LINK_LOCAL_ADDRESS = r"\s+IPv6 is enabled, link-local address is (?P<ip>[a-fA-F0-9:]+)"
+        GLOBAL_ADDRESS = r"\s+(?P<ip>[a-fA-F0-9:]+), subnet is (?:[a-fA-F0-9:]+)/(?P<prefix>\d+)"
 
         interfaces = {}
         for line in show_ip_interface.splitlines():
@@ -1413,9 +1384,7 @@ class IOSDriver(NetworkDriver):
                 years = int(match.group(1))
                 weeks = int(match.group(2))
                 return (years * YEAR_SECONDS) + (weeks * WEEK_SECONDS)
-        raise ValueError(
-            "Unexpected value for BGP uptime string: {}".format(bgp_uptime)
-        )
+        raise ValueError("Unexpected value for BGP uptime string: {}".format(bgp_uptime))
 
     def get_bgp_config(self, group="", neighbor=""):
         """
@@ -1458,9 +1427,7 @@ class IOSDriver(NetworkDriver):
 
         # Get BGP config using netutils because some old devices dont support "| sec bgp"
         cfg = self.get_config(retrieve="running")
-        bgp_config_list = napalm.base.helpers.netutils_parse_objects(
-            "router bgp", cfg["running"]
-        )
+        bgp_config_list = napalm.base.helpers.netutils_parse_objects("router bgp", cfg["running"])
 
         # No BGP configuration
         if not bgp_config_list:
@@ -1543,13 +1510,9 @@ class IOSDriver(NetworkDriver):
             password = napalm.base.helpers.regex_find_txt(
                 r"password (?:[0-9] )?([^\']+\')", neighbor_config
             )
-            nhs = bool(
-                napalm.base.helpers.regex_find_txt(r" next-hop-self", neighbor_config)
-            )
+            nhs = bool(napalm.base.helpers.regex_find_txt(r" next-hop-self", neighbor_config))
             route_reflector_client = bool(
-                napalm.base.helpers.regex_find_txt(
-                    r"route-reflector-client", neighbor_config
-                )
+                napalm.base.helpers.regex_find_txt(r"route-reflector-client", neighbor_config)
             )
 
             # Add the group name to bgp_group_neighbors if its not there already
@@ -1607,12 +1570,8 @@ class IOSDriver(NetworkDriver):
                 r"\s+address-family.*", group_name, bgp_config_list
             )
             for afi in afi_list:
-                afi_config = napalm.base.helpers.netutils_parse_objects(
-                    afi, bgp_config_list
-                )
-                multipath = bool(
-                    napalm.base.helpers.regex_find_txt(r" multipath", str(afi_config))
-                )
+                afi_config = napalm.base.helpers.netutils_parse_objects(afi, bgp_config_list)
+                multipath = bool(napalm.base.helpers.regex_find_txt(r" multipath", str(afi_config)))
                 if multipath:
                     break
             description = napalm.base.helpers.regex_find_txt(
@@ -1637,9 +1596,7 @@ class IOSDriver(NetworkDriver):
                 r" remote-as (\d+)", neighbor_config, default=0
             )
             remove_private_as = bool(
-                napalm.base.helpers.regex_find_txt(
-                    r"remove-private-as", neighbor_config
-                )
+                napalm.base.helpers.regex_find_txt(r"remove-private-as", neighbor_config)
             )
             prefix_limit = napalm.base.helpers.regex_find_txt(
                 r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, default=0
@@ -1734,9 +1691,7 @@ class IOSDriver(NetworkDriver):
                 {
                     "regexp": re.compile(
                         r"^.* router identifier (?P<router_id>{}), "
-                        r"local AS number (?P<local_as>{})".format(
-                            IPV4_ADDR_REGEX, ASN_REGEX
-                        )
+                        r"local AS number (?P<local_as>{})".format(IPV4_ADDR_REGEX, ASN_REGEX)
                     ),
                     "record": False,
                 },
@@ -1775,9 +1730,7 @@ class IOSDriver(NetworkDriver):
                 #               4    65004 9900690  612449 155362939    0    0 26w6d       36391
                 {
                     "regexp": re.compile(
-                        r"^\*?(?P<remote_addr>({})|({}))".format(
-                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX
-                        )
+                        r"^\*?(?P<remote_addr>({})|({}))".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
                     ),
                     "record": False,
                 },
@@ -1796,9 +1749,7 @@ class IOSDriver(NetworkDriver):
                 {
                     "regexp": re.compile(
                         r"^\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+"
-                        r"(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)".format(
-                            ASN_REGEX
-                        )
+                        r"(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)".format(ASN_REGEX)
                     ),
                     "record": True,
                 },
@@ -1962,10 +1913,7 @@ class IOSDriver(NetworkDriver):
                     # Neighbor IPs in VRFs can overlap, so make sure
                     # we haven't covered this VRF + IP already
                     vrf = neighbor["vrf"] or "global"
-                    if (
-                        vrf == "global"
-                        or current_neighbor not in bgp_neighbor_data[vrf]["peers"]
-                    ):
+                    if vrf == "global" or current_neighbor not in bgp_neighbor_data[vrf]["peers"]:
                         neighbor_entry = neighbor
                         break
             # check for proper session data for the afi
@@ -1973,8 +1921,7 @@ class IOSDriver(NetworkDriver):
                 continue
             elif not isinstance(neighbor_entry, dict):
                 raise ValueError(
-                    msg="Couldn't find neighbor data for %s in afi %s"
-                    % (remote_addr, afi)
+                    msg="Couldn't find neighbor data for %s in afi %s" % (remote_addr, afi)
                 )
 
             # check for admin down state
@@ -2007,9 +1954,7 @@ class IOSDriver(NetworkDriver):
                     pass
 
                 # try to get received prefix count, otherwise set to accepted_prefixes
-                received_prefixes = neighbor_entry.get(
-                    "received_prefixes", accepted_prefixes
-                )
+                received_prefixes = neighbor_entry.get("received_prefixes", accepted_prefixes)
 
                 # try to get sent prefix count and convert to int, otherwise set to -1
                 sent_prefixes = int(neighbor_entry.get("sent_prefixes", -1))
@@ -2055,12 +2000,8 @@ class IOSDriver(NetworkDriver):
                 existing = bgp_neighbor_data[vrf]["peers"][remote_addr]
                 assert afi not in existing["address_family"]
                 # compare with existing values and croak if they don't match
-                assert existing["local_as"] == napalm.base.helpers.as_number(
-                    entry["local_as"]
-                )
-                assert existing["remote_as"] == napalm.base.helpers.as_number(
-                    entry["remote_as"]
-                )
+                assert existing["local_as"] == napalm.base.helpers.as_number(entry["local_as"])
+                assert existing["remote_as"] == napalm.base.helpers.as_number(entry["remote_as"])
                 assert existing["remote_id"] == remote_id
                 assert existing["is_enabled"] == is_enabled
                 assert existing["description"] == description
@@ -2082,9 +2023,7 @@ class IOSDriver(NetworkDriver):
         if "Invalid input detected" in raw_bgp_sum:
             raise CommandErrorException("BGP is not running on this device")
 
-        bgp_sum = napalm.base.helpers.textfsm_extractor(
-            self, "ip_bgp_all_sum", raw_bgp_sum
-        )
+        bgp_sum = napalm.base.helpers.textfsm_extractor(self, "ip_bgp_all_sum", raw_bgp_sum)
         for neigh in bgp_sum:
             if neighbor_address and neighbor_address != neigh["neighbor"]:
                 continue
@@ -2093,17 +2032,15 @@ class IOSDriver(NetworkDriver):
                     AFI_COMMAND_MAP[neigh["addr_family"]], neigh["neighbor"]
                 )
             )
-            bgp_neigh = napalm.base.helpers.textfsm_extractor(
-                self, "ip_bgp_neigh", raw_bgp_neigh
-            )[0]
+            bgp_neigh = napalm.base.helpers.textfsm_extractor(self, "ip_bgp_neigh", raw_bgp_neigh)[
+                0
+            ]
             details = {
                 "up": neigh["up"] != "never",
                 "local_as": napalm.base.helpers.as_number(neigh["local_as"]),
                 "remote_as": napalm.base.helpers.as_number(neigh["remote_as"]),
                 "router_id": (
-                    napalm.base.helpers.ip(bgp_neigh["router_id"])
-                    if bgp_neigh["router_id"]
-                    else ""
+                    napalm.base.helpers.ip(bgp_neigh["router_id"]) if bgp_neigh["router_id"] else ""
                 ),
                 "local_address": (
                     napalm.base.helpers.ip(bgp_neigh["local_address"])
@@ -2185,8 +2122,7 @@ class IOSDriver(NetworkDriver):
                 bgp_neigh_afi = bgp_neigh_afi[1]
                 details.update(
                     {
-                        "local_address_configured": bgp_neigh_afi["local_addr_conf"]
-                        != "",
+                        "local_address_configured": bgp_neigh_afi["local_addr_conf"] != "",
                         "multipath": bgp_neigh_afi["multipaths"] != "0",
                         "import_policy": bgp_neigh_afi["policy_in"],
                         "export_policy": bgp_neigh_afi["policy_out"],
@@ -2201,9 +2137,7 @@ class IOSDriver(NetworkDriver):
                         "received_prefix_count": napalm.base.helpers.as_number(
                             bgp_neigh_afi["prefix_curr_in"]
                         )
-                        + napalm.base.helpers.as_number(
-                            bgp_neigh_afi["rejected_prefix_in"]
-                        ),
+                        + napalm.base.helpers.as_number(bgp_neigh_afi["rejected_prefix_in"]),
                         "accepted_prefix_count": napalm.base.helpers.as_number(
                             bgp_neigh_afi["prefix_curr_in"]
                         ),
@@ -2213,9 +2147,7 @@ class IOSDriver(NetworkDriver):
                         "advertised_prefix_count": napalm.base.helpers.as_number(
                             bgp_neigh_afi["prefix_curr_out"]
                         ),
-                        "flap_count": napalm.base.helpers.as_number(
-                            bgp_neigh_afi["flap_count"]
-                        ),
+                        "flap_count": napalm.base.helpers.as_number(bgp_neigh_afi["flap_count"]),
                     }
                 )
             else:
@@ -2292,21 +2224,13 @@ class IOSDriver(NetworkDriver):
                     # 'Received 0 broadcasts (0 multicasts)'
                     # 'Received 264071 broadcasts (39327 IP multicasts)'
                     # 'Received 338 broadcasts, 0 runts, 0 giants, 0 throttles'
-                    match = re.search(
-                        r"Received (\d+) broadcasts.*(\d+).*multicasts", line
-                    )
+                    match = re.search(r"Received (\d+) broadcasts.*(\d+).*multicasts", line)
                     alt_match = re.search(r"Received (\d+) broadcasts.*", line)
                     if match:
-                        counters[interface]["rx_broadcast_packets"] = int(
-                            match.group(1)
-                        )
-                        counters[interface]["rx_multicast_packets"] = int(
-                            match.group(2)
-                        )
+                        counters[interface]["rx_broadcast_packets"] = int(match.group(1))
+                        counters[interface]["rx_multicast_packets"] = int(match.group(2))
                     elif alt_match:
-                        counters[interface]["rx_broadcast_packets"] = int(
-                            alt_match.group(1)
-                        )
+                        counters[interface]["rx_broadcast_packets"] = int(alt_match.group(1))
                         counters[interface]["rx_multicast_packets"] = -1
                     else:
                         counters[interface]["rx_broadcast_packets"] = -1
@@ -2352,12 +2276,8 @@ class IOSDriver(NetworkDriver):
                     if match:
                         can_interface = canonical_interface_name(interface)
                         try:
-                            counters[can_interface]["rx_discards"] = int(
-                                match.group("IQD")
-                            )
-                            counters[can_interface]["tx_discards"] = int(
-                                match.group("OQD")
-                            )
+                            counters[can_interface]["rx_discards"] = int(match.group("IQD"))
+                            counters[can_interface]["tx_discards"] = int(match.group("OQD"))
                         except KeyError:
                             counters[interface]["rx_discards"] = int(match.group("IQD"))
                             counters[interface]["tx_discards"] = int(match.group("OQD"))
@@ -2464,17 +2384,17 @@ class IOSDriver(NetworkDriver):
         For example::
             [
                 {
-                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5c:5e:ab:da:3c:f0',
-                    'ip'        : '172.17.17.1',
-                    'age'       : 1454496274.84
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "5c:5e:ab:da:3c:f0",
+                    "ip": "172.17.17.1",
+                    "age": 1454496274.84,
                 },
                 {
-                    'interface': 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '66:0e:94:96:e0:ff',
-                    'ip'        : '172.17.17.2',
-                    'age'       : 1435641582.49
-                }
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "66:0e:94:96:e0:ff",
+                    "ip": "172.17.17.2",
+                    "age": 1435641582.49,
+                },
             ]
         """
         if vrf:
@@ -2568,10 +2488,10 @@ class IOSDriver(NetworkDriver):
         Inner dictionaries do not have yet any available keys.
         Example::
             {
-                '192.168.0.1': {},
-                '17.72.148.53': {},
-                '37.187.56.220': {},
-                '162.158.20.18': {}
+                "192.168.0.1": {},
+                "17.72.148.53": {},
+                "37.187.56.220": {},
+                "162.158.20.18": {},
             }
         """
         ntp_servers = {}
@@ -2679,24 +2599,16 @@ class IOSDriver(NetworkDriver):
         """
 
         RE_MACTABLE_DEFAULT = r"^" + MAC_REGEX
-        RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(
-            VLAN_REGEX, MAC_REGEX
-        )  # 7 fields
+        RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 6 fields
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"  # Fill down prior
         RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX)  # Router field
-        RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(
-            MAC_REGEX
-        )  # Router skipped
+        RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(MAC_REGEX)  # Router skipped
         RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 5 fields
         RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"  # Fill down prior
-        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(
-            INT_REGEX, MAC_REGEX
-        )  # Matches PHY int
+        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)  # Matches PHY int
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
-        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(
-            VLAN_REGEX, MAC_REGEX
-        )  # 4 fields-2960/4500
+        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 4 fields-2960/4500
 
         def process_mac_fields(vlan, mac, mac_type, interface):
             """Return proper data for mac address fields."""
@@ -2735,9 +2647,7 @@ class IOSDriver(NetworkDriver):
         fill_down_vlan = fill_down_mac = fill_down_mac_type = ""
         for line in output.splitlines():
             # Cat6500 one off and 4500 multicast format
-            if re.search(RE_MACTABLE_6500_3, line) or re.search(
-                RE_MACTABLE_4500_2, line
-            ):
+            if re.search(RE_MACTABLE_6500_3, line) or re.search(RE_MACTABLE_4500_2, line):
                 interface = line.strip()
                 if "," in interface:
                     interfaces = interface.split(",")
@@ -2764,15 +2674,12 @@ class IOSDriver(NetworkDriver):
             if re.search(RE_MACTABLE_DEFAULT, line):
                 if len(line.split()) == 4:
                     mac, mac_type, vlan, interface = line.split()
-                    mac_address_table.append(
-                        process_mac_fields(vlan, mac, mac_type, interface)
-                    )
+                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 else:
                     raise ValueError("Unexpected output from: {}".format(line.split()))
             # Cat6500 format
             elif (
-                re.search(RE_MACTABLE_6500_1, line)
-                or re.search(RE_MACTABLE_6500_2, line)
+                re.search(RE_MACTABLE_6500_1, line) or re.search(RE_MACTABLE_6500_2, line)
             ) and len(line.split()) >= 6:
                 if len(line.split()) == 7:
                     _, vlan, mac, mac_type, _, _, interface = line.split()
@@ -2788,30 +2695,23 @@ class IOSDriver(NetworkDriver):
                             process_mac_fields(vlan, mac, mac_type, single_interface)
                         )
                 else:
-                    mac_address_table.append(
-                        process_mac_fields(vlan, mac, mac_type, interface)
-                    )
+                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat4500 format
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 5:
                 vlan, mac, mac_type, _, interface = line.split()
-                mac_address_table.append(
-                    process_mac_fields(vlan, mac, mac_type, interface)
-                )
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat4500 w/PHY interface in Mac Table. Vlan will be -1.
             elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 5:
                 interface, mac, mac_type, _, _ = line.split()
                 interface = canonical_interface_name(interface)
                 vlan = "-1"
-                mac_address_table.append(
-                    process_mac_fields(vlan, mac, mac_type, interface)
-                )
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat2960 format - ignore extra header line
             elif re.search(r"^Vlan\s+Mac Address\s+", line):
                 continue
             # Cat2960 format (Cat4500 format multicast entries)
             elif (
-                re.search(RE_MACTABLE_2960_1, line)
-                or re.search(RE_MACTABLE_GEN_1, line)
+                re.search(RE_MACTABLE_2960_1, line) or re.search(RE_MACTABLE_GEN_1, line)
             ) and len(line.split()) == 4:
                 vlan, mac, mac_type, interface = line.split()
                 if "," in interface:
@@ -2824,37 +2724,27 @@ class IOSDriver(NetworkDriver):
                             process_mac_fields(vlan, mac, mac_type, single_interface)
                         )
                 else:
-                    mac_address_table.append(
-                        process_mac_fields(vlan, mac, mac_type, interface)
-                    )
+                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # 4500 in case of unused Vlan 1.
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 3:
                 vlan, mac, mac_type = line.split()
-                mac_address_table.append(
-                    process_mac_fields(vlan, mac, mac_type, interface="")
-                )
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface=""))
             # 4500 w/PHY interface in Multicast table. Vlan will be -1.
             elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 4:
                 vlan, mac, mac_type, interface = line.split()
                 vlan = "-1"
-                mac_address_table.append(
-                    process_mac_fields(vlan, mac, mac_type, interface)
-                )
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             elif re.search(RE_MACTABLE_6500_4, line) and len(line.split()) == 7:
                 line = re.sub(r"^R\s+", "", line)
                 vlan, mac, mac_type, _, _, interface = line.split()
-                mac_address_table.append(
-                    process_mac_fields(vlan, mac, mac_type, interface)
-                )
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 continue
             elif re.search(RE_MACTABLE_6500_5, line):
                 line = re.sub(r"^R\s+", "", line)
                 vlan, mac, mac_type, _, _, interface = line.split()
                 # Convert 'N/A' VLAN to to 0
                 vlan = re.sub(r"N/A", "0", vlan)
-                mac_address_table.append(
-                    process_mac_fields(vlan, mac, mac_type, interface)
-                )
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 continue
             elif re.search(r"Total Mac Addresses", line):
                 continue
@@ -2862,16 +2752,12 @@ class IOSDriver(NetworkDriver):
                 continue
             elif re.search(r"vlan.*mac.*address.*type.*", line):
                 continue
-            elif re.search(
-                r"Displaying entries from active supervisor:\s+\w+\s+\[\d\]:", line
-            ):
+            elif re.search(r"Displaying entries from active supervisor:\s+\w+\s+\[\d\]:", line):
                 continue
             elif re.search(r"EHWIC:.*", line):
                 # Skip module - process_mac_fields doesn't care.
                 continue
-            elif re.search(
-                r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line
-            ):
+            elif re.search(r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line):
                 # If there are multiple modules, this line gets repeated for each module.
                 continue
             else:
@@ -2892,9 +2778,7 @@ class IOSDriver(NetworkDriver):
             r"\s+(?P<probe_count1>\d+)\n.*\s+frequency\s+(?P<interval1>\d+)))"
         )
 
-        probe_args = {
-            "icmp-echo": r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
-        }
+        probe_args = {"icmp-echo": r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"}
         probe_type_map = {"icmp-echo": "icmp-ping"}
         command = "show run | section ip sla [0-9]"
         output = self._send_command(command)
@@ -2903,9 +2787,7 @@ class IOSDriver(NetworkDriver):
             if probe["probe_type"] not in probe_args:
                 # Probe type not supported yet
                 continue
-            probe_args_match = re.match(
-                probe_args[probe["probe_type"]], probe["probe_args"]
-            )
+            probe_args_match = re.match(probe_args[probe["probe_type"]], probe["probe_args"])
             probe_data = probe_args_match.groupdict()
             probes[probe["id"]] = {
                 probe["name"]: {
@@ -3022,9 +2904,7 @@ class IOSDriver(NetworkDriver):
                     if item == nritems - 1:
                         block = "\n".join(outbgplines[sec_bord[item] :])
                     else:
-                        block = "\n".join(
-                            outbgplines[sec_bord[item] : sec_bord[item + 1] - 1]
-                        )
+                        block = "\n".join(outbgplines[sec_bord[item] : sec_bord[item + 1] - 1])
                     # hack to have the same format of block as with 'Refresh epoch' split
                     block = "\n" + block
                     outbgpsec.append(block)
@@ -3058,11 +2938,7 @@ class IOSDriver(NetworkDriver):
                     # get remote AS nr. from as-path if it is ebgp neighbor
                     # locally sourced prefix is not in routing table as a bgp route (i hope...)
                     if search_re_dict["bgpie"]["result"] == "external":
-                        bgpras = (
-                            search_re_dict["aspath"]["result"]
-                            .split(" ")[0]
-                            .replace("(", "")
-                        )
+                        bgpras = search_re_dict["aspath"]["result"].split(" ")[0].replace("(", "")
                     else:
                         bgpras = bgpas
                 # community + extended community
@@ -3145,9 +3021,7 @@ class IOSDriver(NetworkDriver):
             for _vrf in vrfs:
                 if _vrf == "default":
                     commands.append(
-                        "show ip route {prefix} {netmask}".format(
-                            prefix=prefix, netmask=netmask
-                        )
+                        "show ip route {prefix} {netmask}".format(prefix=prefix, netmask=netmask)
                     )
                 else:
                     commands.append(
@@ -3229,14 +3103,10 @@ class IOSDriver(NetworkDriver):
                             # was not specified
                             if protocol == "" or protocol == route_entry["protocol"]:
                                 if route_proto == "bgp":
-                                    route_entry["protocol_attributes"] = (
-                                        self._get_bgp_route_attr(
-                                            destination, _vrf, nh, ip_version
-                                        )
+                                    route_entry["protocol_attributes"] = self._get_bgp_route_attr(
+                                        destination, _vrf, nh, ip_version
                                     )
-                                nh_line_found = (
-                                    False  # for next RT entry processing ...
-                                )
+                                nh_line_found = False  # for next RT entry processing ...
                                 routes[route_match].append(route_entry)
         return routes
 
@@ -3326,14 +3196,10 @@ class IOSDriver(NetworkDriver):
         for match in re.finditer(username_regex, output, re.M):
             users[match.groupdict()["username"]] = {
                 "level": (
-                    int(match.groupdict()["priv_level"])
-                    if match.groupdict()["priv_level"]
-                    else 1
+                    int(match.groupdict()["priv_level"]) if match.groupdict()["priv_level"] else 1
                 ),
                 "password": (
-                    match.groupdict()["pwd_hash"]
-                    if match.groupdict()["pwd_hash"]
-                    else ""
+                    match.groupdict()["pwd_hash"] if match.groupdict()["pwd_hash"] else ""
                 ),
                 "sshkeys": [],
             }
@@ -3555,12 +3421,8 @@ class IOSDriver(NetworkDriver):
                     ip_address = napalm.base.helpers.ip(str(ip_address))
                     host_name = str(host_name)
                     rtt = float(current_element.replace("msec", ""))
-                    results[current_hop]["probes"][current_probe][
-                        "ip_address"
-                    ] = ip_address
-                    results[current_hop]["probes"][current_probe][
-                        "host_name"
-                    ] = host_name
+                    results[current_hop]["probes"][current_probe]["ip_address"] = ip_address
+                    results[current_hop]["probes"][current_probe]["host_name"] = host_name
                     results[current_hop]["probes"][current_probe]["rtt"] = rtt
                     # After recording the entry move the index to next probe
                     current_probe += 1
@@ -3694,19 +3556,19 @@ class IOSDriver(NetworkDriver):
         For example::
             [
                 {
-                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5c:5e:ab:da:3c:f0',
-                    'ip'        : '2001:db8:1:1::1',
-                    'age'       : 1454496274.84,
-                    'state'     : 'REACH'
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "5c:5e:ab:da:3c:f0",
+                    "ip": "2001:db8:1:1::1",
+                    "age": 1454496274.84,
+                    "state": "REACH",
                 },
                 {
-                    'interface': 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '66:0e:94:96:e0:ff',
-                    'ip'        : '2001:db8:1:1::2',
-                    'age'       : 1435641582.49,
-                    'state'     : 'STALE'
-                }
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "66:0e:94:96:e0:ff",
+                    "ip": "2001:db8:1:1::2",
+                    "age": 1435641582.49,
+                    "state": "STALE",
+                },
             ]
         """
 
@@ -3808,8 +3670,9 @@ class IOSDriver(NetworkDriver):
                 vlans.update(_vlans)
             elif len(_vlans.keys()) > 1:
                 raise ValueError(
-                    "Error parsing vlan_id {}, "
-                    "found more values than can be present.".format(vlan_id)
+                    "Error parsing vlan_id {}, found more values than can be present.".format(
+                        vlan_id
+                    )
                 )
 
         return vlans

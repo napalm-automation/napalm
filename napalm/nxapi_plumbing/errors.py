@@ -19,9 +19,7 @@ class NXAPICommandError(NXAPIError):
         self.message = message
 
     def __repr__(self) -> str:
-        return 'The command "{}" gave the error "{}".'.format(
-            self.command, self.message
-        )
+        return 'The command "{}" gave the error "{}".'.format(self.command, self.message)
 
     __str__ = __repr__
 

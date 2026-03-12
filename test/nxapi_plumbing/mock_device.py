@@ -11,9 +11,7 @@ class FakeResponse(object):
         self.text = ""
 
 
-def mock_post(
-    url, timeout, data, headers, auth, verify, api_type="jsonrpc", raw_text=False
-):
+def mock_post(url, timeout, data, headers, auth, verify, api_type="jsonrpc", raw_text=False):
     """Look up the response based on the URL and payload."""
 
     # Construct the path to search for the mocked data

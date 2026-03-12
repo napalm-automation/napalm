@@ -38,7 +38,7 @@ def dict_diff(prv, nxt):
                 "If only one is a dict they are clearly different"
                 result[k] = {"result": prv.get(k), "expected": nxt.get(k)}
         else:
-            "Ellipsis is a wildcard." ""
+            "Ellipsis is a wildcard."
             if prv.get(k) != nxt.get(k) and nxt.get(k) != "...":
                 result[k] = {"result": prv.get(k), "expected": nxt.get(k)}
     return result
@@ -81,9 +81,7 @@ def wrap_test_cases(func):
             diff = dict_diff(result, expected_result)
         if diff:
             print("Resulting JSON object was: {}".format(json.dumps(result)))
-            raise AssertionError(
-                "Expected result varies on some keys {}".format(json.dumps(diff))
-            )
+            raise AssertionError("Expected result varies on some keys {}".format(json.dumps(diff)))
 
         for patched_attr in cls.device.patched_attrs:
             attr = getattr(cls.device, patched_attr)
@@ -311,9 +309,7 @@ class BaseTestGetters(object):
 
         for peer, peer_details in get_ntp_peers.items():
             assert isinstance(peer, str)
-            assert helpers.test_model(
-                models.NTPPeerDict, peer_details, allow_subset=True
-            )
+            assert helpers.test_model(models.NTPPeerDict, peer_details, allow_subset=True)
 
         return get_ntp_peers
 
@@ -325,9 +321,7 @@ class BaseTestGetters(object):
 
         for server, server_details in get_ntp_servers.items():
             assert isinstance(server, str)
-            assert helpers.test_model(
-                models.NTPServerDict, server_details, allow_subset=True
-            )
+            assert helpers.test_model(models.NTPServerDict, server_details, allow_subset=True)
 
         return get_ntp_servers
 
@@ -374,9 +368,7 @@ class BaseTestGetters(object):
         """Test get_route_to."""
         destination = "1.0.4.0/24"
         protocol = "bgp"
-        get_route_to = self.device.get_route_to(
-            destination=destination, protocol=protocol
-        )
+        get_route_to = self.device.get_route_to(destination=destination, protocol=protocol)
 
         assert len(get_route_to) > 0
 
@@ -481,9 +473,7 @@ class BaseTestGetters(object):
 
         for user, user_details in get_users.items():
             assert helpers.test_model(models.UsersDict, user_details)
-            assert (0 <= user_details.get("level") <= 15) or (
-                user_details.get("level") == 20
-            )
+            assert (0 <= user_details.get("level") <= 15) or (user_details.get("level") == 20)
 
         return get_users
 
@@ -573,9 +563,7 @@ class BaseTestGetters(object):
         assert isinstance(get_network_instances, dict)
         for network_instance_name, network_instance in get_network_instances.items():
             assert helpers.test_model(models.NetworkInstanceDict, network_instance)
-            assert helpers.test_model(
-                models.NetworkInstanceStateDict, network_instance["state"]
-            )
+            assert helpers.test_model(models.NetworkInstanceStateDict, network_instance["state"])
             assert helpers.test_model(
                 models.NetworkInstanceInterfacesDict, network_instance["interfaces"]
             )

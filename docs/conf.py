@@ -40,7 +40,7 @@ autoclass_content = "both"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", 'sphinx.ext.doctest', "sphinx.ext.napoleon"]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.doctest", "sphinx.ext.napoleon"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -213,9 +213,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    ("index", "napalm.tex", "NAPALM Documentation", "David Barroso", "manual")
-]
+latex_documents = [("index", "napalm.tex", "NAPALM Documentation", "David Barroso", "manual")]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -326,9 +324,7 @@ def build_napalm_ansible_module_docs(app):
     """Create documentation for Ansible modules."""
 
     # Add script to clone napalm-ansible repo
-    status = subprocess.call(
-        "./build-ansible-module-docs.sh", stdout=sys.stdout, stderr=sys.stderr
-    )
+    status = subprocess.call("./build-ansible-module-docs.sh", stdout=sys.stdout, stderr=sys.stderr)
 
     if status != 0:
         print("Something bad happened when processing the Ansible modules.")

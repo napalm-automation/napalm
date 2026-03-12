@@ -97,9 +97,7 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
             raise e
     else:
         raise ModuleImportError(
-            'Cannot import "{install_name}". Is the library installed?'.format(
-                install_name=name
-            )
+            'Cannot import "{install_name}". Is the library installed?'.format(install_name=name)
         )
 
     for name, obj in inspect.getmembers(module):
