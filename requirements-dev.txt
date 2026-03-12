@@ -10,7 +10,7 @@ pyflakes==3.4.0
 # Required for pylama
 setuptools==81.0.0
 pylama==8.4.1
-mypy==1.15.0
+mypy==1.19.1
 types-PyYAML==6.0.12.20250915
 types-requests==2.32.4.20250611
 types-six==1.17.0.20250515
