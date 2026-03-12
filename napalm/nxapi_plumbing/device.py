@@ -69,9 +69,7 @@ class Device(object):
         commands = [command]
         result = self.show_list(commands, raw_text)
         if len(result) > 1:
-            raise NXAPIError(
-                "Length of response inconsistent with number of commands executed."
-            )
+            raise NXAPIError("Length of response inconsistent with number of commands executed.")
 
         # Return the only entry or the empty response
         if result:
@@ -110,9 +108,7 @@ class Device(object):
         result = self.config_list(commands)
 
         if len(result) > 1:
-            raise NXAPIError(
-                "Length of response inconsistent with number of commands executed."
-            )
+            raise NXAPIError("Length of response inconsistent with number of commands executed.")
 
         # Return the only entry or the empty response
         if result:
@@ -167,6 +163,4 @@ class Device(object):
         Args:
             filename (str): The filename to save the checkpoint as on the remote device.
         """
-        self.show_list(
-            ["terminal dont-ask", "checkpoint file {}".format(filename)], raw_text=True
-        )
+        self.show_list(["terminal dont-ask", "checkpoint file {}".format(filename)], raw_text=True)

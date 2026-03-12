@@ -54,9 +54,7 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         cls.vendor = "ios"
         optional_args = {"port": 12204, "dest_file_system": "bootflash:"}
 
-        cls.device = ios.IOSDriver(
-            ip_addr, username, password, optional_args=optional_args
-        )
+        cls.device = ios.IOSDriver(ip_addr, username, password, optional_args=optional_args)
         cls.device.open()
 
         # Setup initial state
@@ -101,9 +99,7 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         output = self.device._gen_full_path(self.device.merge_cfg)
         self.assertEqual(output, self.device.dest_file_system + "/merge_config.txt")
 
-        output = self.device._gen_full_path(
-            filename="running-config", file_system="system:"
-        )
+        output = self.device._gen_full_path(filename="running-config", file_system="system:")
         self.assertEqual(output, "system:/running-config")
 
     def test_ios_only_check_file_exists(self):
@@ -142,9 +138,7 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         optional_args = {}
         optional_args["dest_file_system"] = "flash:"
 
-        cls.device = ios.IOSDriver(
-            ip_addr, username, password, optional_args=optional_args
-        )
+        cls.device = ios.IOSDriver(ip_addr, username, password, optional_args=optional_args)
 
         if cls.mock:
             cls.device.device = FakeIOSDevice()

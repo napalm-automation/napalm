@@ -83,7 +83,7 @@ class IOSXR(object):
         timeout=60,
         logfile=None,
         lock=True,
-        **netmiko_kwargs
+        **netmiko_kwargs,
     ):
         """
         IOS-XR device constructor.
@@ -141,9 +141,7 @@ class IOSXR(object):
             else:
                 response = self._execute_show(cmd)
 
-            match = re.search(
-                ".*(!! IOS XR Configuration.*)</Exec>", response, re.DOTALL
-            )
+            match = re.search(".*(!! IOS XR Configuration.*)</Exec>", response, re.DOTALL)
 
             if match is not None:
                 response = match.group(1)
@@ -153,8 +151,7 @@ class IOSXR(object):
             return _getattr
         else:
             raise AttributeError(
-                "type object '%s' has no attribute '%s'"
-                % (self.__class__.__name__, item)
+                "type object '%s' has no attribute '%s'" % (self.__class__.__name__, item)
             )
 
     def make_rpc_call(self, rpc_command):
@@ -189,7 +186,7 @@ class IOSXR(object):
                 username=self.username,
                 password=self.password,
                 global_cmd_verify=False,
-                **self.netmiko_kwargs
+                **self.netmiko_kwargs,
             )
             self.device.timeout = self.timeout
             self._xml_agent_alive = True  # successfully open thus alive
@@ -208,9 +205,7 @@ class IOSXR(object):
         Returns the XML agent connection state (and SSH connection state).
         """
         if hasattr(self.device, "remote_conn"):
-            return (
-                self.device.remote_conn.transport.is_active() and self._xml_agent_alive
-            )
+            return self.device.remote_conn.transport.is_active() and self._xml_agent_alive
         return False  # remote_conn not there => connection not init => not alive
 
     def _timeout_exceeded(self, start=None, msg="Timeout exceeded!"):
@@ -363,10 +358,7 @@ class IOSXR(object):
             if "0x44318c06" in output or (
                 self._cli_prompt
                 and expect_string != self._cli_prompt
-                and (
-                    output.startswith(self._cli_prompt)
-                    or output.endswith(self._cli_prompt)
-                )
+                and (output.startswith(self._cli_prompt) or output.endswith(self._cli_prompt))
             ):
                 # sometimes the device throws a stupid error like:
                 # ERROR: 0x44318c06 'XML-TTY' detected the 'warning' condition
@@ -415,9 +407,7 @@ class IOSXR(object):
             if 'IteratorID="' in response:
                 logger.error(self._ITERATOR_ID_ERROR_MSG)
                 raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
-            raise InvalidXMLResponse(
-                "Unable to process the XML Response from the device!", self
-            )
+            raise InvalidXMLResponse("Unable to process the XML Response from the device!", self)
 
         if "IteratorID" in root.attrib:
             logger.error(self._ITERATOR_ID_ERROR_MSG)
@@ -561,12 +551,10 @@ class IOSXR(object):
             with open(filename) as f:
                 configuration = f.read()
 
-        rpc_command = (
-            "<CLI><Configuration>{configuration}</Configuration></CLI>".format(
-                configuration=escape_xml(
-                    configuration
-                )  # need to escape, otherwise will try to load invalid XML
-            )
+        rpc_command = "<CLI><Configuration>{configuration}</Configuration></CLI>".format(
+            configuration=escape_xml(
+                configuration
+            )  # need to escape, otherwise will try to load invalid XML
         )
 
         try:
@@ -651,9 +639,7 @@ class IOSXR(object):
             if 30 <= int(confirmed) <= 300:
                 rpc_command += ' Confirmed="%d"' % int(confirmed)
             else:
-                raise InvalidInputError(
-                    "confirmed needs to be between 30 and 300 seconds", self
-                )
+                raise InvalidInputError("confirmed needs to be between 30 and 300 seconds", self)
         rpc_command += "/>"
 
         self._execute_rpc(rpc_command)
@@ -675,9 +661,7 @@ class IOSXR(object):
             if 30 <= int(confirmed) <= 300:
                 rpc_command += ' Confirmed="%d"' % int(confirmed)
             else:
-                raise InvalidInputError(
-                    "confirmed needs to be between 30 and 300 seconds", self
-                )
+                raise InvalidInputError("confirmed needs to be between 30 and 300 seconds", self)
         rpc_command += "/>"
         self._execute_rpc(rpc_command)
 
@@ -696,9 +680,7 @@ class IOSXR(object):
 
         :param rb_id: Rollback a specific number of steps. Default: 1
         """
-        rpc_command = (
-            "<Unlock/><Rollback><Previous>{rb_id}</Previous></Rollback><Lock/>".format(
-                rb_id=rb_id
-            )
+        rpc_command = "<Unlock/><Rollback><Previous>{rb_id}</Previous></Rollback><Lock/>".format(
+            rb_id=rb_id
         )
         self._execute_rpc(rpc_command)

@@ -44,9 +44,7 @@ IPV6_ADDR_REGEX_3 = (
     r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
 )
 # Should validate IPv6 address using an IP address library after matching with this regex
-IPV6_ADDR_REGEX = r"(?:{}|{}|{})".format(
-    IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3
-)
+IPV6_ADDR_REGEX = r"(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
 IPV4_OR_IPV6_REGEX = r"(?:{}|{})".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
 
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
@@ -133,9 +131,7 @@ def parse_intf_section(interface):
                     is_enabled = True if re.search("up", is_enabled) else False
                     break
             else:
-                msg = "Error parsing intf, 'admin state' never detected:\n\n{}".format(
-                    interface
-                )
+                msg = "Error parsing intf, 'admin state' never detected:\n\n{}".format(interface)
                 raise ValueError(msg)
         else:
             # No 'admin state' should be 'is up' or 'is down' strings
@@ -169,9 +165,7 @@ def parse_intf_section(interface):
         speed_unit = speed_data["speed_unit"]
         speed_unit = speed_unit.rstrip(",")
         if speed_unit not in ["Kbit", "Kbit/sec"]:
-            msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(
-                interface
-            )
+            msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
             raise ValueError(msg)
         speed = float(speed / 1000.0)
     else:
@@ -274,9 +268,7 @@ def bgp_normalize_table_data(bgp_table):
     bgp_ipv6_multiline_pattern = r"({})\s*\n".format(IPV4_OR_IPV6_REGEX)
     bgp_table = re.sub(bgp_ipv6_multiline_pattern, r"\1", bgp_table)
     # Remove newline after a long AS number
-    bgp_long_as_multiline_pattern = r"((?:{})\s*\d*\s*\d*)\s*\n".format(
-        IPV4_OR_IPV6_REGEX
-    )
+    bgp_long_as_multiline_pattern = r"((?:{})\s*\d*\s*\d*)\s*\n".format(IPV4_OR_IPV6_REGEX)
     bgp_table = re.sub(bgp_long_as_multiline_pattern, r"\1", bgp_table)
     return bgp_table
 
@@ -321,9 +313,7 @@ def bgp_table_parser(bgp_table):
                     state_pfxrcd,
                 ) = bgp_table_fields
         except ValueError:
-            raise ValueError(
-                "Unexpected entry ({}) in BGP summary table".format(bgp_table_fields)
-            )
+            raise ValueError("Unexpected entry ({}) in BGP summary table".format(bgp_table_fields))
 
         is_enabled = True
         try:
@@ -362,9 +352,7 @@ def bgp_summary_parser(bgp_summary):
 
     allowed_afi = ["ipv4", "ipv6", "l2vpn"]
     vrf_regex = r"^BGP summary information for VRF\s+(?P<vrf>\S+),"
-    afi_regex = (
-        r"^BGP summary information.*address family (?P<afi>\S+ (?:Unicast|EVPN))"
-    )
+    afi_regex = r"^BGP summary information.*address family (?P<afi>\S+ (?:Unicast|EVPN))"
     local_router_regex = (
         r"^BGP router identifier\s+(?P<router_id>\S+)"
         r",\s+local AS number\s+(?P<local_as>\S+)"
@@ -391,9 +379,7 @@ def bgp_summary_parser(bgp_summary):
 
     match = re.search(IPV4_ADDR_REGEX, bgp_summary_dict["router_id"])
     if not match:
-        raise ValueError(
-            "BGP router_id ({}) is not valid".format(bgp_summary_dict["router_id"])
-        )
+        raise ValueError("BGP router_id ({}) is not valid".format(bgp_summary_dict["router_id"]))
 
     vrf = bgp_summary_dict["vrf"]
     bgp_return_dict = {vrf: {"router_id": bgp_summary_dict["router_id"], "peers": {}}}
@@ -402,9 +388,7 @@ def bgp_summary_parser(bgp_summary):
     tabular_divider = r"^Neighbor\s+.*PfxRcd$"
     tabular_data = re.split(tabular_divider, bgp_summary, flags=re.M)
     if len(tabular_data) != 2:
-        msg = "Unexpected data processing BGP summary information:\n\n{}".format(
-            bgp_summary
-        )
+        msg = "Unexpected data processing BGP summary information:\n\n{}".format(bgp_summary)
         raise ValueError(msg)
     tabular_data = tabular_data[1]
     bgp_table = bgp_normalize_table_data(tabular_data)
@@ -433,9 +417,7 @@ def bgp_summary_parser(bgp_summary):
 
 class NXOSSSHDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        super().__init__(
-            hostname, username, password, timeout=timeout, optional_args=optional_args
-        )
+        super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
         self.platform = "nxos_ssh"
         self.connector_type_map = {
             "1000base-LH": "LC_CONNECTOR",
@@ -467,9 +449,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def _send_command_list(self, commands, expect_string=None, **kwargs):
         """Send a list of commands using Netmiko"""
-        return self.device.send_multiline(
-            commands, expect_string=expect_string, **kwargs
-        )
+        return self.device.send_multiline(commands, expect_string=expect_string, **kwargs)
 
     def _send_config(self, commands):
         if isinstance(commands, str):
@@ -541,9 +521,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             "no terminal dont-ask",
         ]
 
-        rollback_result = self._send_command_list(
-            commands, expect_string=r"[#>]", read_timeout=90
-        )
+        rollback_result = self._send_command_list(commands, expect_string=r"[#>]", read_timeout=90)
         msg = rollback_result
         if "Rollback failed." in msg:
             raise ReplaceConfigException(msg)
@@ -558,9 +536,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             "rollback running-config file {}".format(self.rollback_cfg),
             "no terminal dont-ask",
         ]
-        result = self._send_command_list(
-            commands, expect_string=r"[#>]", read_timeout=90
-        )
+        result = self._send_command_list(commands, expect_string=r"[#>]", read_timeout=90)
         if "completed" not in result.lower():
             raise ReplaceConfigException(result)
         # If hostname changes ensure Netmiko state is updated properly
@@ -717,9 +693,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         interface_lines = re.split(separators, output, flags=re.M)
 
         if len(interface_lines) == 1:
-            msg = "Unexpected output data in '{}':\n\n{}".format(
-                command, interface_lines
-            )
+            msg = "Unexpected output data in '{}':\n\n{}".format(command, interface_lines)
             raise ValueError(msg)
 
         # Get rid of the blank data at the beginning
@@ -727,9 +701,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         # Must be pairs of data (the separator and section corresponding to it)
         if len(interface_lines) % 2 != 0:
-            msg = "Unexpected output data in '{}':\n\n{}".format(
-                command, interface_lines
-            )
+            msg = "Unexpected output data in '{}':\n\n{}".format(command, interface_lines)
             raise ValueError(msg)
 
         # Combine the separator and section into one string
@@ -810,15 +782,11 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         # command 'show vrf detail | json' returns all VRFs with detailed information in JSON format
         # format: list of dictionaries with keys such as 'vrf_name' and 'rd'
-        vrf_table_raw = self._get_command_table(
-            "show vrf detail | json", "TABLE_vrf", "ROW_vrf"
-        )
+        vrf_table_raw = self._get_command_table("show vrf detail | json", "TABLE_vrf", "ROW_vrf")
 
         # command 'show vrf interface' returns all interfaces including their assigned VRF
         # format: list of dictionaries with keys 'if_name', 'vrf_name', 'vrf_id' and 'soo'
-        intf_table_raw = self._get_command_table(
-            "show vrf interface | json", "TABLE_if", "ROW_if"
-        )
+        intf_table_raw = self._get_command_table("show vrf interface | json", "TABLE_if", "ROW_if")
 
         # create a dictionary with key = 'vrf_name' and value = list of interfaces
         vrf_intfs = defaultdict(list)
@@ -842,9 +810,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             # convert list of interfaces (vrf_intfs[vrf_name]) to expected format
             # format = dict with key = interface name and empty values
             vrfs[vrf_name]["interfaces"] = {}
-            vrfs[vrf_name]["interfaces"]["interface"] = dict.fromkeys(
-                vrf_intfs[vrf_name], {}
-            )
+            vrfs[vrf_name]["interfaces"]["interface"] = dict.fromkeys(vrf_intfs[vrf_name], {})
 
         # if name of a specific VRF was passed as an argument
         # only return results for this particular VRF
@@ -875,15 +841,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         environment.setdefault("cpu", {})
         environment["cpu"]["0"] = {}
         environment["cpu"]["0"]["%usage"] = -1.0
-        system_resources_cpu = helpers.textfsm_extractor(
-            self, "system_resources", sys_resources
-        )
+        system_resources_cpu = helpers.textfsm_extractor(self, "system_resources", sys_resources)
         for cpu in system_resources_cpu:
-            cpu_dict = {
-                cpu.get("cpu_id"): {
-                    "%usage": round(100 - float(cpu.get("cpu_idle")), 2)
-                }
-            }
+            cpu_dict = {cpu.get("cpu_id"): {"%usage": round(100 - float(cpu.get("cpu_idle")), 2)}}
             environment["cpu"].update(cpu_dict)
 
         # memory
@@ -944,17 +904,17 @@ class NXOSSSHDriver(NXOSDriverBase):
         For example::
             [
                 {
-                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5c:5e:ab:da:3c:f0',
-                    'ip'        : '172.17.17.1',
-                    'age'       : 12.0
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "5c:5e:ab:da:3c:f0",
+                    "ip": "172.17.17.1",
+                    "age": 12.0,
                 },
                 {
-                    'interface': 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '66:0e:94:96:e0:ff',
-                    'ip'        : '172.17.17.2',
-                    'age'       : 14.0
-                }
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "66:0e:94:96:e0:ff",
+                    "ip": "172.17.17.2",
+                    "age": 14.0,
+                },
             ]
         """
         arp_table = []
@@ -1163,9 +1123,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         RE_MACTABLE_FORMAT1 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format(
             VLAN_REGEX, MAC_REGEX
         )
-        RE_MACTABLE_FORMAT2 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format(
-            "-", MAC_REGEX
-        )
+        RE_MACTABLE_FORMAT2 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format("-", MAC_REGEX)
         # REGEX dedicated for lines with only interfaces (suite of the previous MAC address)
         RE_MACTABLE_FORMAT3 = r"^\s+\S+"
 
@@ -1240,9 +1198,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                     fields = line.split()
                     if len(fields) >= 7:
                         vlan, mac, mac_type, _, _, _, interface = fields[:7]
-                        mac_address_table.append(
-                            process_mac_fields(vlan, mac, mac_type, interface)
-                        )
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
 
                         # there can be multiples interfaces for the same MAC on the same line
                         for interface in fields[7:]:
@@ -1310,9 +1266,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             return bgp_attr
         bgpas = matchbgpattr.group(1)
         if ip_version == 4:
-            bgpcmd = "show ip bgp vrf {vrf} {destination}".format(
-                vrf=vrf, destination=destination
-            )
+            bgpcmd = "show ip bgp vrf {vrf} {destination}".format(vrf=vrf, destination=destination)
             outbgp = self._send_command(bgpcmd)
             outbgpsec = outbgp.split("Path type")
 
@@ -1336,7 +1290,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                 bgpnh = search_re_dict["bgpnh"]["result"]
 
                 # if route is not leaked next hops have to match
-                if (search_re_dict["bgpie"]["result"] not in ["redist", "local"]) and (bgpnh != next_hop):
+                if (search_re_dict["bgpie"]["result"] not in ["redist", "local"]) and (
+                    bgpnh != next_hop
+                ):
                     # this is not the right route
                     continue
                 # find remote AS nr. of this neighbor
@@ -1481,8 +1437,8 @@ class NXOSSSHDriver(NXOSDriverBase):
                                 "preference": int(nh_metric),
                             }
                             if nh_source == "bgp":
-                                route_entry["protocol_attributes"] = (
-                                    self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
+                                route_entry["protocol_attributes"] = self._get_bgp_route_attr(
+                                    cur_prefix, curvrf, nh_ip
                                 )
                             else:
                                 route_entry["protocol_attributes"] = {}
@@ -1545,9 +1501,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         users = {}
         command = "show running-config"
         output = self._send_command(command)
-        section_username_tabled_output = helpers.textfsm_extractor(
-            self, "users", output
-        )
+        section_username_tabled_output = helpers.textfsm_extractor(self, "users", output)
 
         for user in section_username_tabled_output:
             username = user.get("username", "")
@@ -1673,17 +1627,13 @@ class NXOSSSHDriver(NXOSDriverBase):
                     "index": 0,
                     "state": {
                         "input_power": {
-                            "instant": (
-                                float(input_power) if "input_power" else -100.0
-                            ),
+                            "instant": (float(input_power) if "input_power" else -100.0),
                             "avg": -100.0,
                             "min": -100.0,
                             "max": -100.0,
                         },
                         "output_power": {
-                            "instant": (
-                                float(output_power) if "output_power" else -100.0
-                            ),
+                            "instant": (float(output_power) if "output_power" else -100.0),
                             "avg": -100.0,
                             "min": -100.0,
                             "max": -100.0,
@@ -1759,9 +1709,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         command = "show interface counters detailed | json"
         # To retrieve discards
         command_interface = "show interface | json"
-        counters_table_raw = self._get_command_table(
-            command, "TABLE_interface", "ROW_interface"
-        )
+        counters_table_raw = self._get_command_table(command, "TABLE_interface", "ROW_interface")
         counters_interface_table_raw = self._get_command_table(
             command_interface, "TABLE_interface", "ROW_interface"
         )

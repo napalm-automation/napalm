@@ -171,9 +171,7 @@ def compare(
     elif isinstance(src, list) and isinstance(dst, list):
         pairs = zip(src, dst)
         diff_lists = [
-            [(k, x[k], y[k]) for k in x if not re.search(x[k], y[k])]
-            for x, y in pairs
-            if x != y
+            [(k, x[k], y[k]) for k in x if not re.search(x[k], y[k])] for x, y in pairs if x != y
         ]
         return empty_tree(diff_lists)
 
@@ -187,9 +185,7 @@ def _compare_numeric(src_num: str, dst_num: str) -> bool:
 
     match = numeric_compare_regex.match(src_num)
     if not match:
-        error = "Failed numeric comparison. Collected: {}. Expected: {}".format(
-            dst_num, src_num
-        )
+        error = "Failed numeric comparison. Collected: {}. Expected: {}".format(dst_num, src_num)
         raise ValueError(error)
 
     operand = {
@@ -209,9 +205,7 @@ def _compare_range(src_num: str, dst_num: str) -> bool:
 
     match = src_num.split("<->")
     if len(match) != 2:
-        error = "Failed range comparison. Collected: {}. Expected: {}".format(
-            dst_num, src_num
-        )
+        error = "Failed range comparison. Collected: {}. Expected: {}".format(dst_num, src_num)
         raise ValueError(error)
 
     if float(match[0]) <= dst_num <= float(match[1]):
@@ -226,9 +220,7 @@ def _compare_tolerance(src_num: str, dst_num: str) -> bool:
 
     match = numeric_tolerance_regex.match(src_num)
     if not match:
-        error = "Failed tolerance comparison. Collected: {}. Expected: {}".format(
-            dst_num, src_num
-        )
+        error = "Failed tolerance comparison. Collected: {}. Expected: {}".format(dst_num, src_num)
         raise ValueError(error)
 
     src_num = float(match.group(2))

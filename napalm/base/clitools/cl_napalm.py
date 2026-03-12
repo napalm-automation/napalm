@@ -18,12 +18,9 @@ def debugging(name):
         def wrapper(*args, **kwargs):
             censor_parameters = ["password"]
             censored_kwargs = {
-                k: v if k not in censor_parameters else "*******"
-                for k, v in kwargs.items()
+                k: v if k not in censor_parameters else "*******" for k, v in kwargs.items()
             }
-            logger.debug(
-                "{} - Calling with args: {}, {}".format(name, args, censored_kwargs)
-            )
+            logger.debug("{} - Calling with args: {}, {}".format(name, args, censored_kwargs))
             try:
                 r = func(*args, **kwargs)
                 logger.debug("{} - Successful".format(name))
@@ -250,9 +247,7 @@ def configuration_change(device, config_file, strategy, dry_run):
 def call_getter(device, method, **kwargs):
     logger.debug("{} - Attempting to resolve method".format(method))
     func = getattr(device, method)
-    logger.debug(
-        "{} - Attempting to call method with kwargs: {}".format(method, kwargs)
-    )
+    logger.debug("{} - Attempting to call method with kwargs: {}".format(method, kwargs))
     r = func(**kwargs)
     logger.debug("{} - Response".format(method))
     print(json.dumps(r, indent=4))

@@ -96,7 +96,7 @@ class TestBaseHelpers(unittest.TestCase):
             napalm.base.helpers.load_template,
             self.network_driver,
             "__this_template_does_not_exist__",
-            **_TEMPLATE_VARS
+            **_TEMPLATE_VARS,
         )
 
         self.assertTrue(
@@ -110,7 +110,7 @@ class TestBaseHelpers(unittest.TestCase):
             napalm.base.helpers.load_template,
             self.network_driver,
             "__completely_wrong_template__",
-            **_TEMPLATE_VARS
+            **_TEMPLATE_VARS,
         )
 
         self.assertTrue(
@@ -125,7 +125,7 @@ class TestBaseHelpers(unittest.TestCase):
             self.network_driver,
             "__a_very_nice_template__",
             template_path="/this/path/does/not/exist",
-            **_TEMPLATE_VARS
+            **_TEMPLATE_VARS,
         )
 
         install_dir = os.path.dirname(
@@ -139,7 +139,7 @@ class TestBaseHelpers(unittest.TestCase):
             self.network_driver,
             "__this_template_does_not_exist__",
             template_path=custom_path,
-            **_TEMPLATE_VARS
+            **_TEMPLATE_VARS,
         )
 
         self.assertTrue(
@@ -147,7 +147,7 @@ class TestBaseHelpers(unittest.TestCase):
                 self.network_driver,
                 "__a_very_nice_template__",
                 template_path=custom_path,
-                **_TEMPLATE_VARS
+                **_TEMPLATE_VARS,
             )
         )
 
@@ -158,7 +158,7 @@ class TestBaseHelpers(unittest.TestCase):
                 self.network_driver,
                 "_this_still_needs_a_name",
                 template_source=template_source,
-                **_TEMPLATE_VARS
+                **_TEMPLATE_VARS,
             )
         )
 
@@ -174,7 +174,7 @@ class TestBaseHelpers(unittest.TestCase):
                 self.network_driver,
                 "__custom_jinja_filter_template__",
                 jinja_filters=jinja_filters,
-                **_TEMPLATE_VARS
+                **_TEMPLATE_VARS,
             )
         )
         # MIGRATION mircea
@@ -196,9 +196,7 @@ class TestBaseHelpers(unittest.TestCase):
             * check if returns a non-empty list as output
         """
 
-        self.assertTrue(
-            HAS_TEXTFSM
-        )  # before anything else, let's see if TextFSM is available
+        self.assertTrue(HAS_TEXTFSM)  # before anything else, let's see if TextFSM is available
         _TEXTFSM_TEST_STRING = """
         Groups: 3 Peers: 3 Down peers: 0
         Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
@@ -253,9 +251,7 @@ class TestBaseHelpers(unittest.TestCase):
             * cast of str to float returns desired float-type value
             * cast of None obj to string does not cast, but returns default
         """
-        self.assertTrue(
-            napalm.base.helpers.convert(int, "non-int-value", default=-100) == -100
-        )
+        self.assertTrue(napalm.base.helpers.convert(int, "non-int-value", default=-100) == -100)
         # default value returned
         self.assertIsInstance(napalm.base.helpers.convert(float, "1e-17", 1.0), float)
         # converts indeed to float
@@ -307,29 +303,19 @@ class TestBaseHelpers(unittest.TestCase):
 
         _XML_TREE = ET.fromstring(_XML_STRING)
 
-        self.assertFalse(
-            napalm.base.helpers.find_txt(_XML_TREE, "parent100/child200", False)
-        )
+        self.assertFalse(napalm.base.helpers.find_txt(_XML_TREE, "parent100/child200", False))
         # returns default value (in this case boolean value False)
 
         # check if content inside the tag /parent1/child1
-        self.assertTrue(
-            len(napalm.base.helpers.find_txt(_XML_TREE, "parent1/child1")) > 0
-        )
+        self.assertTrue(len(napalm.base.helpers.find_txt(_XML_TREE, "parent1/child1")) > 0)
 
         # check if able to eval boolean returned as text inside the XML tree
         self.assertTrue(
-            eval(
-                napalm.base.helpers.find_txt(
-                    _XML_TREE, "parent3/@lonely", "false"
-                ).title()
-            )
+            eval(napalm.base.helpers.find_txt(_XML_TREE, "parent3/@lonely", "false").title())
         )
 
         # int values
-        self.assertIsInstance(
-            int(napalm.base.helpers.find_txt(_XML_TREE, "stats/parents")), int
-        )
+        self.assertIsInstance(int(napalm.base.helpers.find_txt(_XML_TREE, "stats/parents")), int)
 
         # get first match of the tag child3, wherever would be
         _CHILD3_TAG = _XML_TREE.find(".//child3")
@@ -389,9 +375,7 @@ class TestBaseHelpers(unittest.TestCase):
             napalm.base.helpers.ip("2001:0dB8:85a3:0000:0000:8A2e:0370:7334"),
             "2001:db8:85a3::8a2e:370:7334",
         )
-        self.assertEqual(
-            napalm.base.helpers.ip("2001:0DB8::0003", version=6), "2001:db8::3"
-        )
+        self.assertEqual(napalm.base.helpers.ip("2001:0DB8::0003", version=6), "2001:db8::3")
 
     def test_as_number(self):
         """Test the as_number helper function."""
@@ -410,13 +394,9 @@ class TestBaseHelpers(unittest.TestCase):
         """
 
         # Regex 1
-        self.assertEqual(
-            convert_uptime_string_seconds("24 days,  11 hours,  25 minutes"), 2114700
-        )
+        self.assertEqual(convert_uptime_string_seconds("24 days,  11 hours,  25 minutes"), 2114700)
         self.assertEqual(convert_uptime_string_seconds("1 hour,  5 minutes"), 3900)
-        self.assertEqual(
-            convert_uptime_string_seconds("1 year,  2 weeks, 5 minutes"), 32745900
-        )
+        self.assertEqual(convert_uptime_string_seconds("1 year,  2 weeks, 5 minutes"), 32745900)
         self.assertEqual(
             convert_uptime_string_seconds("95 weeks, 2 days, 10 hours, 58 minutes"),
             57668280,
@@ -433,40 +413,24 @@ class TestBaseHelpers(unittest.TestCase):
             convert_uptime_string_seconds("15 weeks, 3 days, 5 hours, 57 minutes"),
             9352620,
         )
+        self.assertEqual(convert_uptime_string_seconds("1 year, 8 weeks, 15 minutes"), 36375300)
+        self.assertEqual(convert_uptime_string_seconds("8 weeks, 2 hours, 5 minutes"), 4845900)
+        self.assertEqual(convert_uptime_string_seconds("8 weeks, 2 hours, 1 minute"), 4845660)
         self.assertEqual(
-            convert_uptime_string_seconds("1 year, 8 weeks, 15 minutes"), 36375300
-        )
-        self.assertEqual(
-            convert_uptime_string_seconds("8 weeks, 2 hours, 5 minutes"), 4845900
-        )
-        self.assertEqual(
-            convert_uptime_string_seconds("8 weeks, 2 hours, 1 minute"), 4845660
-        )
-        self.assertEqual(
-            convert_uptime_string_seconds(
-                "2 years, 40 weeks, 1 day, 22 hours, 3 minutes"
-            ),
+            convert_uptime_string_seconds("2 years, 40 weeks, 1 day, 22 hours, 3 minutes"),
             87429780,
         )
         self.assertEqual(
-            convert_uptime_string_seconds(
-                "2 years, 40 weeks, 1 day, 19 hours, 46 minutes"
-            ),
+            convert_uptime_string_seconds("2 years, 40 weeks, 1 day, 19 hours, 46 minutes"),
             87421560,
         )
         self.assertEqual(
             convert_uptime_string_seconds("1 year, 39 weeks, 15 hours, 23 minutes"),
             55178580,
         )
-        self.assertEqual(
-            convert_uptime_string_seconds("33 weeks, 19 hours, 12 minutes"), 20027520
-        )
-        self.assertEqual(
-            convert_uptime_string_seconds("33 weeks, 19 hours, 8 minutes"), 20027280
-        )
-        self.assertEqual(
-            convert_uptime_string_seconds("33 weeks, 19 hours, 10 minutes"), 20027400
-        )
+        self.assertEqual(convert_uptime_string_seconds("33 weeks, 19 hours, 12 minutes"), 20027520)
+        self.assertEqual(convert_uptime_string_seconds("33 weeks, 19 hours, 8 minutes"), 20027280)
+        self.assertEqual(convert_uptime_string_seconds("33 weeks, 19 hours, 10 minutes"), 20027400)
         self.assertEqual(
             convert_uptime_string_seconds("51 weeks, 5 days, 13 hours, 0 minutes"),
             31323600,
