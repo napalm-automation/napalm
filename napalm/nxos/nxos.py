@@ -926,17 +926,14 @@ class NXOSDriver(NXOSDriverBase):
         # 'rollback' command.
         rollback_result = rollback_result[1]
         assert isinstance(rollback_result, dict)
-        msg = (
-            rollback_result.get("msg")
-            if rollback_result.get("msg")
-            else rollback_result
-        )
+        msg = rollback_result.get("msg", "")
         error_msg = True if rollback_result.get("error") else False
 
         if "Rollback failed." in msg or error_msg:
+            if error_msg:
+                rollback_error = rollback_result.get("error", "")
+                msg += f"\nCLI Error: {rollback_error}"
             raise ReplaceConfigException(msg)
-        elif rollback_result == []:
-            raise ReplaceConfigException
 
     def rollback(self) -> None:
         assert isinstance(self.device, NXOSDevice)
@@ -1039,9 +1036,11 @@ class NXOSDriver(NXOSDriverBase):
             else:
                 mac_address = None
 
-            desc = interface_details.get(
-                "desc", interface_details.get("svi_desc", "")
-            ).strip('"')
+            svi_desc = interface_details.get("svi_desc", "")
+            assert isinstance(svi_desc, str)
+            desc = interface_details.get("desc", svi_desc)
+            assert isinstance(desc, str)
+            desc = desc.strip('"')
             interfaces[interface_name] = {
                 "is_up": is_up,
                 "is_enabled": (
