@@ -8,7 +8,7 @@ pytest-cov==7.0.0
 pytest-json-report==1.5.0
 pyflakes==3.4.0
 # Required for pylama
-setuptools==81.0.0
+setuptools==82.0.1
 pylama==8.4.1
 mypy==1.15.0
 types-PyYAML==6.0.12.20250915
