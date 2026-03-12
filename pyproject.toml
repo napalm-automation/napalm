@@ -140,6 +140,3 @@ indent-style = "space"
 # Optional: Formats code snippets inside docstrings!
 docstring-code-format = true
 docstring-code-line-length = 80
-
-# FIX(temporary): Ignore everything in the current directory and subdirectories
-exclude = ["."]
