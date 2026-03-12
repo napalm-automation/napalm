@@ -3,9 +3,6 @@ Fork of pynxos library from network to code and mzbenami
 
 Reimplemented by ktbyers to support XML-RPC in addition to JSON-RPC
 """
-
-from __future__ import print_function, unicode_literals
-
 from builtins import super
 from typing import Optional, List, Dict, Any
 
@@ -17,8 +14,6 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning  # type:
 import json
 
 from lxml import etree
-
-from six import string_types
 
 from napalm.nxapi_plumbing.errors import (
     NXAPIError,
@@ -129,7 +124,7 @@ class RPCClient(RPCBase):
         """Send a command down the NX-API channel."""
         if method is None:
             method = self.cmd_method
-        if isinstance(commands, string_types):
+        if isinstance(commands, str):
             commands = [commands]
 
         raw_text = True if method == "cli_ascii" else False
@@ -232,7 +227,7 @@ class XMLClient(RPCBase):
         """Send a command down the NX-API channel."""
         if method is None:
             method = self.cmd_method
-        if isinstance(commands, string_types):
+        if isinstance(commands, str):
             commands = [commands]
 
         response = self._send_request(commands, method=method)

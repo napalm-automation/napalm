@@ -7,7 +7,6 @@ import sys
 import time
 import unittest
 from lxml import etree as ET
-from six import binary_type
 
 # ~~~ import pyIOSXR modules ~~~
 from napalm.pyIOSXR import IOSXR
@@ -268,7 +267,7 @@ class TestIOSXRDevice(unittest.TestCase):
             self.device.make_rpc_call(
                 "<Get><Configuration><NTP></NTP></Configuration></Get>"
             ),
-            binary_type,
+            bytes,
         )
 
     def test_acquired_xml_agent(self):
