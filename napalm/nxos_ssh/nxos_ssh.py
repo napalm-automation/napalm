@@ -1336,9 +1336,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 bgpnh = search_re_dict["bgpnh"]["result"]
 
                 # if route is not leaked next hops have to match
-                if (
-                    not (search_re_dict["bgpie"]["result"] in ["redist", "local"])
-                ) and (bgpnh != next_hop):
+                if (search_re_dict["bgpie"]["result"] not in ["redist", "local"]) and (bgpnh != next_hop):
                     # this is not the right route
                     continue
                 # find remote AS nr. of this neighbor

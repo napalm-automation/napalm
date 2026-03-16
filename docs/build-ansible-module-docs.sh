@@ -15,6 +15,9 @@ cd napalm_ansible_repo
 git checkout develop
 
 uv pip install .
+# Needed until this is fixed: 
+#   https://github.com/napalm-automation/napalm-ansible/issues/216
+uv pip install setuptools packaging
 uv run pytest -c /dev/null
 cp module_docs/* $MODULES_OUTPUT/
 

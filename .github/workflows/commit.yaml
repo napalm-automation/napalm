@@ -22,8 +22,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
-      - name: Run pylama
-        run: uv run --no-project pylama .
+      - name: Run ruff check
+        run: uv run --no-project ruff check .
 
       - name: Run black
         run: uv run --no-project black --check .
@@ -55,7 +55,7 @@ jobs:
         run: uv sync
 
       - name: Run Tests
-        run: uv run pytest --cov=napalm --cov-report term-missing -vs --pylama
+        run: uv run pytest --cov=napalm --cov-report term-missing -vs
 
   std_tests_macos:
     name: std_tests_macos
@@ -77,7 +77,7 @@ jobs:
         run: uv sync
 
       - name: Run Tests
-        run: uv run pytest --cov=napalm --cov-report term-missing -vs --pylama
+        run: uv run pytest --cov=napalm --cov-report term-missing -vs
 
   build_docs:
     name: build_docs

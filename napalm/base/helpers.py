@@ -464,9 +464,9 @@ def convert(to: Callable[[T], R], who: Optional[T], default: Optional[R] = None)
             default = ""  # type: ignore
         elif to in [float, int]:
             default = 0  # type: ignore
-        elif to == bool:
+        elif to is bool:
             default = False  # type: ignore
-        elif to == list:
+        elif to is list:
             default = []  # type: ignore
         else:
             raise ValueError(

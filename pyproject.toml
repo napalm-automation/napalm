@@ -57,20 +57,16 @@ napalm = "napalm.base.clitools.cl_napalm:main"
 
 [dependency-groups]
 dev = [
+    "ruff==0.15.5",
     "black==24.4.2",
     "coveralls==4.1.0",
-    "flake8-import-order==0.19.2",
-    "pytest==8.4.2",
+    "pytest==9.0.2",
     "pytest-cov==7.0.0",
     "pytest-json-report==1.5.0",
-    "pyflakes==3.4.0",
-    "setuptools==81.0.0",
-    "pylama[toml]==8.4.1",
     "mypy==1.15.0",
     "ddt==1.7.2",
     "types-PyYAML==6.0.12.20250915",
     "types-requests==2.32.4.20250611",
-    "types-six==1.17.0.20250515",
     "types-setuptools==80.9.0.20250822",
 ]
 docs = [
@@ -80,7 +76,7 @@ docs = [
     "invoke==2.2.0",
     "jinja2==3.1.6",
     "MarkupSafe==3.0.3",
-    "pytest==8.4.2",
+    "pytest==9.0.2",
     "ansible==11.3.0; python_version >= '3.11'",
 ]
 
@@ -93,14 +89,6 @@ line-length = 100
 target-version = ['py310']
 # FIX: black wants to autoformat a large number of files under 'uv' (defer this until later)
 force-exclude = '.*'
-
-[tool.pylama]
-linters = "pycodestyle,pyflakes"
-ignore = "D203,C901,E203"
-skip = ".tox/*,.env/*,.venv/*,docs/napalm_ansible_repo/*"
-
-[tool.pylama.linter.pycodestyle]
-max_line_length = 100
 
 [tool.pytest.ini_options]
 norecursedirs = [
@@ -128,3 +116,36 @@ omit = [
     "napalm/base/test/*",
     "napalm/base/clitools/*",
 ]
+
+[tool.ruff]
+line-length = 100 
+
+# Specify your floor Python version (i.e. minimum version Netmiko supports) 
+target-version = "py310"
+
+# Files or directories to exclude from linting and formatting
+exclude = [ 
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "netmiko/_telnetlib",
+]
+
+[tool.ruff.lint]
+# Enable these rule sets for a modern, clean codebase
+# E/W = pycodestyle, F = Pyflakes, I = isort, UP = pyupgrade, B = bugbear
+# select = ["E", "F", "W", "I", "UP", "B"]
+
+# If you want to be extra strict about line length in the linter:
+# extend-select = ["E501"] 
+
+[tool.ruff.format]
+# Matches Black's style but honors the 100 char limit
+quote-style = "double"
+indent-style = "space"
+
+# Optional: Formats code snippets inside docstrings!
+docstring-code-format = true
+docstring-code-line-length = 80
