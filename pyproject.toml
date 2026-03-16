@@ -58,37 +58,29 @@ napalm = "napalm.base.clitools.cl_napalm:main"
 [dependency-groups]
 dev = [
     "ruff==0.15.5",
-    "black==24.4.2",
     "coveralls==4.1.0",
     "pytest==9.0.2",
     "pytest-cov==7.0.0",
     "pytest-json-report==1.5.0",
-    "mypy==1.15.0",
+    "mypy==1.19.1",
     "ddt==1.7.2",
     "types-PyYAML==6.0.12.20250915",
-    "types-requests==2.32.4.20250611",
-    "types-setuptools==80.9.0.20250822",
+    "types-requests== 2.32.4.20260107",
 ]
 docs = [
-    "urllib3==2.3.0",
+    "urllib3==2.6.3",
     "sphinx==7.4.7",
     "sphinx-rtd-theme==2.0.0",
-    "invoke==2.2.0",
+    "invoke==2.2.1",
     "jinja2==3.1.6",
     "MarkupSafe==3.0.3",
     "pytest==9.0.2",
-    "ansible==11.3.0; python_version >= '3.11'",
+    "ansible==11.13.0; python_version >= '3.11'",
 ]
 
 [tool.uv]
 managed = true
 package = true
-
-[tool.black]
-line-length = 100
-target-version = ['py310']
-# FIX: black wants to autoformat a large number of files under 'uv' (defer this until later)
-force-exclude = '.*'
 
 [tool.pytest.ini_options]
 norecursedirs = [
@@ -130,7 +122,6 @@ exclude = [
     "__pycache__",
     "build",
     "dist",
-    "netmiko/_telnetlib",
 ]
 
 [tool.ruff.lint]
@@ -149,3 +140,6 @@ indent-style = "space"
 # Optional: Formats code snippets inside docstrings!
 docstring-code-format = true
 docstring-code-line-length = 80
+
+# FIX(temporary): Ignore everything in the current directory and subdirectories
+exclude = ["."]

@@ -25,8 +25,8 @@ jobs:
       - name: Run ruff check
         run: uv run --no-project ruff check .
 
-      - name: Run black
-        run: uv run --no-project black --check .
+      - name: Run ruff format
+        run: uv run --no-project ruff format .
 
       - name: Run type checker
         env:
