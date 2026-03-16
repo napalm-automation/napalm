@@ -58,7 +58,6 @@ napalm = "napalm.base.clitools.cl_napalm:main"
 [dependency-groups]
 dev = [
     "ruff==0.15.5",
-    "black==24.4.2",
     "coveralls==4.1.0",
     "pytest==9.0.2",
     "pytest-cov==7.0.0",
