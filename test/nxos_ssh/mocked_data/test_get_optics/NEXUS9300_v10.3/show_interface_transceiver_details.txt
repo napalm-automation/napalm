@@ -1,0 +1,375 @@
+Ethernet1/1
+    transceiver is not applicable
+
+Ethernet1/2
+    transceiver is not applicable
+
+Ethernet1/3
+    transceiver is not applicable
+
+Ethernet1/4
+    transceiver is not applicable
+
+Ethernet1/5
+    transceiver is not applicable
+
+Ethernet1/6
+    transceiver is not applicable
+
+Ethernet1/7
+    transceiver is not applicable
+
+Ethernet1/8
+    transceiver is not applicable
+
+Ethernet1/9
+    transceiver is not applicable
+
+Ethernet1/10
+    transceiver is not applicable
+
+Ethernet1/11
+    transceiver is not applicable
+
+Ethernet1/12
+    transceiver is not applicable
+
+Ethernet1/13
+    transceiver is not applicable
+
+Ethernet1/14
+    transceiver is not applicable
+
+Ethernet1/15
+    transceiver is not applicable
+
+Ethernet1/16
+    transceiver is not applicable
+
+Ethernet1/17
+    transceiver is not applicable
+
+Ethernet1/18
+    transceiver is not applicable
+
+Ethernet1/19
+    transceiver is not applicable
+
+Ethernet1/20
+    transceiver is not applicable
+
+Ethernet1/21
+    transceiver is not applicable
+
+Ethernet1/22
+    transceiver is not applicable
+
+Ethernet1/23
+    transceiver is not applicable
+
+Ethernet1/24
+    transceiver is not applicable
+
+Ethernet1/25
+    transceiver is not applicable
+
+Ethernet1/26
+    transceiver is not applicable
+
+Ethernet1/27
+    transceiver is not applicable
+
+Ethernet1/28
+    transceiver is not applicable
+
+Ethernet1/29
+    transceiver is not applicable
+
+Ethernet1/30
+    transceiver is not applicable
+
+Ethernet1/31
+    transceiver is not applicable
+
+Ethernet1/32
+    transceiver is not applicable
+
+Ethernet1/33
+    transceiver is not applicable
+
+Ethernet1/34
+    transceiver is not applicable
+
+Ethernet1/35
+    transceiver is not applicable
+
+Ethernet1/36
+    transceiver is not applicable
+
+Ethernet1/37
+    transceiver is not applicable
+
+Ethernet1/38
+    transceiver is not applicable
+
+Ethernet1/39
+    transceiver is not applicable
+
+Ethernet1/40
+    transceiver is not applicable
+
+Ethernet1/41
+    transceiver is not applicable
+
+Ethernet1/42
+    transceiver is not applicable
+
+Ethernet1/43
+    transceiver is not applicable
+
+Ethernet1/44
+    transceiver is not applicable
+
+Ethernet1/45
+    transceiver is not applicable
+
+Ethernet1/46
+    transceiver is not applicable
+
+Ethernet1/47
+    transceiver is not applicable
+
+Ethernet1/48
+    transceiver is not applicable
+
+Ethernet1/49
+    transceiver is present
+    type is QSFP-100G-CWDM4-MSA-FEC
+    name is CISCOSOLIDOPTICS
+    part number is QSFP-100G-CWDM4
+    revision is 01
+    serial number is SOZ131I%1878
+    nominal bitrate is 25500 MBit/sec per channel
+    Link length supported for 9/125um fiber is 2 km
+    cisco id is 17
+    cisco extended id number is 204
+    cisco part number is 10-3146-02
+    cisco product id is QSFP-100G-CWDM4-S
+
+Lane Number:1 Network Lane
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   50.43 C        75.00 C     -5.00 C     70.00 C        0.00 C
+  Voltage        3.24 V         3.59 V      3.07 V      3.47 V        3.09 V
+  Current       45.31 mA       90.00 mA     5.00 mA    80.00 mA      10.00 mA
+  Tx Power      -1.71 dBm       2.49 dBm   -4.50 dBm    1.99 dBm     -4.00 dBm
+  Rx Power      -6.07 dBm       2.49 dBm  -11.61 dBm    1.99 dBm    -10.60 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Lane Number:2 Network Lane
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   50.43 C        75.00 C     -5.00 C     70.00 C        0.00 C
+  Voltage        3.24 V         3.59 V      3.07 V      3.47 V        3.09 V
+  Current       47.60 mA       90.00 mA     5.00 mA    80.00 mA      10.00 mA
+  Tx Power      -1.00 dBm       2.49 dBm   -4.50 dBm    1.99 dBm     -4.00 dBm
+  Rx Power      -6.55 dBm       2.49 dBm  -11.61 dBm    1.99 dBm    -10.60 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Lane Number:3 Network Lane
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   50.43 C        75.00 C     -5.00 C     70.00 C        0.00 C
+  Voltage        3.24 V         3.59 V      3.07 V      3.47 V        3.09 V
+  Current       43.52 mA       90.00 mA     5.00 mA    80.00 mA      10.00 mA
+  Tx Power      -1.21 dBm       2.49 dBm   -4.50 dBm    1.99 dBm     -4.00 dBm
+  Rx Power      -6.40 dBm       2.49 dBm  -11.61 dBm    1.99 dBm    -10.60 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Lane Number:4 Network Lane
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   50.43 C        75.00 C     -5.00 C     70.00 C        0.00 C
+  Voltage        3.24 V         3.59 V      3.07 V      3.47 V        3.09 V
+  Current       41.61 mA       90.00 mA     5.00 mA    80.00 mA      10.00 mA
+  Tx Power      -1.45 dBm       2.49 dBm   -4.50 dBm    1.99 dBm     -4.00 dBm
+  Rx Power      -5.96 dBm       2.49 dBm  -11.61 dBm    1.99 dBm    -10.60 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Ethernet1/50
+    transceiver is present
+    type is QSFP40G-4SFP10G-CU5M
+    name is Pureoptics
+    part number is QSFP-H40G-CU3M-P
+    revision is A
+    serial number is E1801220009
+    nominal bitrate is 10300 MBit/sec per channel
+    Link length supported for copper is 3 m
+    cisco id is 13
+    cisco extended id number is 0
+
+DOM is not supported
+
+Ethernet1/51
+    transceiver is present
+    type is QSFP40G-4SFP10G-CU5M
+    name is Pureoptics
+    part number is QSFP-H40G-CU1M-P
+    revision is A
+    serial number is E1801170082
+    nominal bitrate is 10300 MBit/sec per channel
+    Link length supported for copper is 1 m
+    cisco id is 13
+    cisco extended id number is 0
+
+DOM is not supported
+
+Ethernet1/52
+    transceiver is present
+    type is QSFP-100G-CWDM4-MSA-FEC
+    name is CISCOSOLIDOPTICS
+    part number is QSFP-100G-CWDM4
+    revision is 01
+    serial number is SOZ131I%1885
+    nominal bitrate is 25500 MBit/sec per channel
+    Link length supported for 9/125um fiber is 2 km
+    cisco id is 17
+    cisco extended id number is 204
+    cisco part number is 10-3146-02
+    cisco product id is QSFP-100G-CWDM4-S
+
+Lane Number:1 Network Lane
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   53.03 C        75.00 C     -5.00 C     70.00 C        0.00 C
+  Voltage        3.24 V         3.59 V      3.07 V      3.47 V        3.09 V
+  Current       46.72 mA       90.00 mA     5.00 mA    80.00 mA      10.00 mA
+  Tx Power      -1.36 dBm       2.49 dBm   -4.50 dBm    1.99 dBm     -4.00 dBm
+  Rx Power      -3.41 dBm       2.49 dBm  -11.61 dBm    1.99 dBm    -10.60 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Lane Number:2 Network Lane
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   53.03 C        75.00 C     -5.00 C     70.00 C        0.00 C
+  Voltage        3.24 V         3.59 V      3.07 V      3.47 V        3.09 V
+  Current       48.92 mA       90.00 mA     5.00 mA    80.00 mA      10.00 mA
+  Tx Power      -1.59 dBm       2.49 dBm   -4.50 dBm    1.99 dBm     -4.00 dBm
+  Rx Power      -3.28 dBm       2.49 dBm  -11.61 dBm    1.99 dBm    -10.60 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Lane Number:3 Network Lane
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   53.03 C        75.00 C     -5.00 C     70.00 C        0.00 C
+  Voltage        3.24 V         3.59 V      3.07 V      3.47 V        3.09 V
+  Current       44.93 mA       90.00 mA     5.00 mA    80.00 mA      10.00 mA
+  Tx Power      -1.25 dBm       2.49 dBm   -4.50 dBm    1.99 dBm     -4.00 dBm
+  Rx Power      -2.97 dBm       2.49 dBm  -11.61 dBm    1.99 dBm    -10.60 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Lane Number:4 Network Lane
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   53.03 C        75.00 C     -5.00 C     70.00 C        0.00 C
+  Voltage        3.24 V         3.59 V      3.07 V      3.47 V        3.09 V
+  Current       42.02 mA       90.00 mA     5.00 mA    80.00 mA      10.00 mA
+  Tx Power      -1.00 dBm       2.49 dBm   -4.50 dBm    1.99 dBm     -4.00 dBm
+  Rx Power      -1.23 dBm       2.49 dBm  -11.61 dBm    1.99 dBm    -10.60 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Ethernet1/53
+    transceiver is present
+    type is 10Gbase-LR
+    name is CISCO-PUREOPTICS
+    part number is SFP-10G-LR-PO
+    revision is B4
+    serial number is M5392213
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for 9/125um fiber is 10 km
+    cisco id is 3
+    cisco extended id number is 4
+    cisco part number is 10-2457-01
+    cisco product id is SFP-10G-LR
+
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   50.53 C        90.00 C    -10.00 C     85.00 C       -5.00 C
+  Voltage        3.23 V         3.63 V      2.97 V      3.46 V        3.13 V
+  Current       38.83 mA      100.00 mA     2.00 mA    80.00 mA       4.00 mA
+  Tx Power      -2.19 dBm       1.29 dBm   -9.17 dBm    0.49 dBm     -8.21 dBm
+  Rx Power      -5.51 dBm       3.01 dBm  -18.23 dBm    0.00 dBm    -15.08 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Ethernet1/54
+    transceiver is present
+    type is 10Gbase-LR
+    name is PUREOPTICS
+    part number is SFP-10G-LR-PO
+    revision is V02
+    serial number is A31161030326
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for 9/125um fiber is 10 km
+    cisco id is 3
+    cisco extended id number is 4
+    cisco part number is 10-2415-01
+    cisco product id is SFP-10G-LR
+
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   63.82 C       100.00 C    -40.00 C     95.00 C      -35.00 C
+  Voltage        3.23 V         3.59 V      2.79 V      3.50 V        2.90 V
+  Current       33.79 mA      110.00 mA     1.00 mA   100.00 mA       2.00 mA
+  Tx Power      -2.51 dBm       1.99 dBm   -8.01 dBm    0.99 dBm     -7.01 dBm
+  Rx Power      -3.74 dBm       2.99 dBm  -19.58 dBm    0.00 dBm    -16.57 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
