@@ -57,7 +57,7 @@ class TestConfigMangling(object):
             "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(expected_result)
+        self.device.device.run_commands.assert_called_with(expected_result, send_enable=True)
 
     def test_mode_comment(self):
         raw_config = dedent(
@@ -109,7 +109,7 @@ class TestConfigMangling(object):
             "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(expected_result)
+        self.device.device.run_commands.assert_called_with(expected_result, send_enable=True)
 
     def test_heredoc_with_bangs(self):
         raw_config = dedent(
@@ -146,7 +146,7 @@ class TestConfigMangling(object):
             "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(expected_result)
+        self.device.device.run_commands.assert_called_with(expected_result, send_enable=True)
 
     def test_heredoc_with_blank_lines(self):
         raw_config = dedent(
@@ -202,4 +202,4 @@ class TestConfigMangling(object):
             "end",
         ]
 
-        self.device.device.run_commands.assert_called_with(expected_result)
+        self.device.device.run_commands.assert_called_with(expected_result, send_enable=True)
