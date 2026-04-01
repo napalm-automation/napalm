@@ -47,7 +47,7 @@ class FakeEOSDevice(BaseTestDouble):
         super(FakeEOSDevice, self).__init__()
         self.connection = object()
 
-    def run_commands(self, command_list, encoding="json"):
+    def run_commands(self, command_list, encoding="json", send_enable=True):
         """Fake run_commands."""
         result = list()
 
