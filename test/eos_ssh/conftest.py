@@ -38,9 +38,7 @@ class PatchedEOSDriver(eos.EOSDriver):
 
         optional_args = {"transport": "ssh"}
 
-        super().__init__(
-            hostname, username, password, timeout, optional_args=optional_args
-        )
+        super().__init__(hostname, username, password, timeout, optional_args=optional_args)
 
         self.patched_attrs = ["device"]
         self.device = FakeEOSDevice()

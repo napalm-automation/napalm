@@ -14,9 +14,7 @@ def test_model(model, data, allow_subset=False):
 
     if not same_keys:
         print(
-            "model_keys: {}\ndata_keys: {}".format(
-                sorted(annotations.keys()), sorted(data.keys())
-            )
+            "model_keys: {}\ndata_keys: {}".format(sorted(annotations.keys()), sorted(data.keys()))
         )
 
     correct_class = True

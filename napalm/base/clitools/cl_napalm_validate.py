@@ -36,9 +36,7 @@ def main():
         )
     )
 
-    with driver(
-        args.hostname, args.user, args.password, optional_args=optional_args
-    ) as device:
+    with driver(args.hostname, args.user, args.password, optional_args=optional_args) as device:
         logger.debug("Generating compliance report")
         print(json.dumps(device.compliance_report(args.validation_file), indent=4))
         logger.debug("Closing session")

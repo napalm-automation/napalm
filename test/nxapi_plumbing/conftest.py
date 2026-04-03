@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """py.test fixtures to be used in netmiko test suite."""
+
 from os import path
 import sys
 import pytest

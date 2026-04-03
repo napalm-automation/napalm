@@ -201,12 +201,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
             )
         elif self.config_encoding == "xml":
             parser = ETREE.XMLParser(remove_blank_text=True)
-            unexpected_modules = self._unexpected_modules(
-                ETREE.XML(configuration, parser=parser)
-            )
+            unexpected_modules = self._unexpected_modules(ETREE.XML(configuration, parser=parser))
             if unexpected_modules:
                 raise ReplaceConfigException(
-                    f'{C.INVALID_MODEL_REFERENCE} ({", ".join(unexpected_modules)})'
+                    f"{C.INVALID_MODEL_REFERENCE} ({', '.join(unexpected_modules)})"
                 )
 
         configuration = "<source>" + configuration + "</source>"
@@ -230,18 +228,14 @@ class IOSXRNETCONFDriver(NetworkDriver):
             )
         elif self.config_encoding == "xml":
             parser = ETREE.XMLParser(remove_blank_text=True)
-            unexpected_modules = self._unexpected_modules(
-                ETREE.XML(configuration, parser=parser)
-            )
+            unexpected_modules = self._unexpected_modules(ETREE.XML(configuration, parser=parser))
             if unexpected_modules:
                 raise MergeConfigException(
-                    f'{C.INVALID_MODEL_REFERENCE} ({", ".join(unexpected_modules)})'
+                    f"{C.INVALID_MODEL_REFERENCE} ({', '.join(unexpected_modules)})"
                 )
 
         try:
-            self.device.edit_config(
-                config=configuration, error_option="rollback-on-error"
-            )
+            self.device.edit_config(config=configuration, error_option="rollback-on-error")
         except (RPCError, XMLSyntaxError) as e:
             self.pending_changes = False
             logger.error(e.args[0])
@@ -253,9 +247,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         diff = ""
         encoding = self.config_encoding
         if encoding not in C.CLI_DIFF_RPC_REQ:
-            raise NotImplementedError(
-                f"config encoding must be one of {C.CONFIG_ENCODINGS}"
-            )
+            raise NotImplementedError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
         if self.pending_changes:
             parser = ETREE.XMLParser(remove_blank_text=True)
@@ -274,9 +266,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     self._filter_config_tree(ETREE.XML(can_conf, parser=parser)[0]),
                     pretty_print=True,
                 ).decode()
-                for line in difflib.unified_diff(
-                    run_conf.splitlines(1), can_conf.splitlines(1)
-                ):
+                for line in difflib.unified_diff(run_conf.splitlines(1), can_conf.splitlines(1)):
                     diff += line
 
         return diff
@@ -284,13 +274,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
     def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
         if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
+            raise NotImplementedError("Commit confirm has not been implemented on this platform.")
         if message:
-            raise NotImplementedError(
-                "Commit message not implemented for this platform"
-            )
+            raise NotImplementedError("Commit message not implemented for this platform")
         self.device.commit()
         self.pending_changes = False
         self._unlock()
@@ -379,9 +365,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             ".//int:interfaces/int:interfaces/int:interface", namespaces=C.NS
         )
         for interface in interface_tree:
-            name = self._find_txt(
-                interface, "./int:interface-name", default="", namespaces=C.NS
-            )
+            name = self._find_txt(interface, "./int:interface-name", default="", namespaces=C.NS)
             interface_list.append(name)
         # Retrieves os version, model, serial number
         basic_info_tree = facts_rpc_reply_etree.xpath(
@@ -401,9 +385,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             )
             model = napalm.base.helpers.convert(
                 str,
-                self._find_txt(
-                    basic_info_tree[0], "./imo:model-name", default="", namespaces=C.NS
-                ),
+                self._find_txt(basic_info_tree[0], "./imo:model-name", default="", namespaces=C.NS),
             )
             serial = napalm.base.helpers.convert(
                 str,
@@ -446,9 +428,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "last_flapped": -1.0,
         }
 
-        interfaces_rpc_reply = self.device.get(
-            filter=("subtree", C.INT_RPC_REQ_FILTER)
-        ).xml
+        interfaces_rpc_reply = self.device.get(filter=("subtree", C.INT_RPC_REQ_FILTER)).xml
         # Converts string to etree
         interfaces_rpc_reply_etree = ETREE.fromstring(interfaces_rpc_reply)
 
@@ -467,15 +447,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
             if not interface_name:
                 continue
             is_up = (
-                self._find_txt(
-                    interface_tree, "./int:line-state", default="", namespaces=C.NS
-                )
+                self._find_txt(interface_tree, "./int:line-state", default="", namespaces=C.NS)
                 == "im-state-up"
             )
             enabled = (
-                self._find_txt(
-                    interface_tree, "./int:state", default="", namespaces=C.NS
-                )
+                self._find_txt(interface_tree, "./int:state", default="", namespaces=C.NS)
                 != "im-state-admin-down"
             )
             raw_mac = self._find_txt(
@@ -484,9 +460,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 default="",
                 namespaces=C.NS,
             )
-            mac_address = napalm.base.helpers.convert(
-                napalm.base.helpers.mac, raw_mac, raw_mac
-            )
+            mac_address = napalm.base.helpers.convert(napalm.base.helpers.mac, raw_mac, raw_mac)
             speed = napalm.base.helpers.convert(
                 float,
                 napalm.base.helpers.convert(
@@ -496,9 +470,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 )
                 * 1e-3,
             )
-            mtu = int(
-                self._find_txt(interface_tree, "./int:mtu", default="", namespaces=C.NS)
-            )
+            mtu = int(self._find_txt(interface_tree, "./int:mtu", default="", namespaces=C.NS))
             description = self._find_txt(
                 description_tree, "./int:description", default="", namespaces=C.NS
             )
@@ -518,9 +490,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_interfaces_counters(self):
         """Return interfaces counters."""
-        rpc_reply = self.device.get(
-            filter=("subtree", C.INT_COUNTERS_RPC_REQ_FILTER)
-        ).xml
+        rpc_reply = self.device.get(filter=("subtree", C.INT_COUNTERS_RPC_REQ_FILTER)).xml
         # Converts string to tree
         rpc_reply_etree = ETREE.fromstring(rpc_reply)
 
@@ -684,33 +654,24 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 this_neighbor = {}
                 this_neighbor["local_as"] = napalm.base.helpers.convert(
                     int,
-                    self._find_txt(
-                        neighbor, "./bgp:local-as", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(neighbor, "./bgp:local-as", default="", namespaces=C.NS),
                 )
                 this_neighbor["remote_as"] = napalm.base.helpers.convert(
                     int,
-                    self._find_txt(
-                        neighbor, "./bgp:remote-as", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(neighbor, "./bgp:remote-as", default="", namespaces=C.NS),
                 )
                 this_neighbor["remote_id"] = napalm.base.helpers.convert(
                     str,
-                    self._find_txt(
-                        neighbor, "./bgp:router-id", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(neighbor, "./bgp:router-id", default="", namespaces=C.NS),
                 )
                 try:
                     this_neighbor["description"] = napalm.base.helpers.convert(
                         str,
-                        self._find_txt(
-                            neighbor, "./bgp:description", default="", namespaces=C.NS
-                        ),
+                        self._find_txt(neighbor, "./bgp:description", default="", namespaces=C.NS),
                     )
                 except AttributeError:
                     logger.debug(
-                        "No attribute 'description' for neighbor %s"
-                        % (this_neighbor["remote_as"])
+                        "No attribute 'description' for neighbor %s" % (this_neighbor["remote_as"])
                     )
                     this_neighbor["description"] = ""
 
@@ -782,26 +743,27 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 this_neighbor["address_family"][this_afi] = {}
 
                 try:
-                    this_neighbor["address_family"][this_afi][
-                        "received_prefixes"
-                    ] = napalm.base.helpers.convert(
-                        int,
-                        self._find_txt(
-                            neighbor,
-                            "./bgp:af-data/bgp:prefixes-accepted",
-                            default="",
-                            namespaces=C.NS,
-                        ),
-                        0,
-                    ) + napalm.base.helpers.convert(
-                        int,
-                        self._find_txt(
-                            neighbor,
-                            "./bgp:af-data/bgp:prefixes-denied",
-                            default="",
-                            namespaces=C.NS,
-                        ),
-                        0,
+                    this_neighbor["address_family"][this_afi]["received_prefixes"] = (
+                        napalm.base.helpers.convert(
+                            int,
+                            self._find_txt(
+                                neighbor,
+                                "./bgp:af-data/bgp:prefixes-accepted",
+                                default="",
+                                namespaces=C.NS,
+                            ),
+                            0,
+                        )
+                        + napalm.base.helpers.convert(
+                            int,
+                            self._find_txt(
+                                neighbor,
+                                "./bgp:af-data/bgp:prefixes-denied",
+                                default="",
+                                namespaces=C.NS,
+                            ),
+                            0,
+                        )
                     )
                     this_neighbor["address_family"][this_afi]["accepted_prefixes"] = (
                         napalm.base.helpers.convert(
@@ -834,9 +796,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     this_neighbor["address_family"][this_afi]["sent_prefixes"] = -1
 
                 neighbor_ip = napalm.base.helpers.ip(
-                    self._find_txt(
-                        neighbor, "./bgp:neighbor-address", default="", namespaces=C.NS
-                    )
+                    self._find_txt(neighbor, "./bgp:neighbor-address", default="", namespaces=C.NS)
                 )
 
                 neighbors[neighbor_ip] = this_neighbor
@@ -885,9 +845,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     namespaces=C.NS,
                 ),
             )
-            vrf_name = self._find_txt(
-                vrf, "./bgp:vrf-name", default="", namespaces=C.NS
-            )
+            vrf_name = self._find_txt(vrf, "./bgp:vrf-name", default="", namespaces=C.NS)
             this_vrf["peers"] = get_vrf_neighbors(
                 rpc_reply_etree,
                 vrf_xpath
@@ -921,9 +879,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         router_model = self.get_facts().get("model")
         if router_model not in C.PLAT_NO_ENVMON:
             nsp = env_ns_prefix()
-            rpc_reply = self.device.get(
-                filter=("subtree", C.ENVMON_RPC_REQ_FILTER[nsp])
-            ).xml
+            rpc_reply = self.device.get(filter=("subtree", C.ENVMON_RPC_REQ_FILTER[nsp])).xml
 
             # Converts string to etree
             result_tree = ETREE.fromstring(rpc_reply)
@@ -933,9 +889,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             #
             fans = {}
             fan_location_xpath = ".//{}:environment/{}:oper/{}:fan/\
-                {}:location".format(
-                nsp, nsp, nsp, nsp
-            )
+                {}:location".format(nsp, nsp, nsp, nsp)
             for fan_location in result_tree.xpath(
                 fan_location_xpath, namespaces=C.ENVMON_NAMESPACES
             ):
@@ -955,9 +909,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             #
             power = {}
             power_location_xpath = ".//{}:environment/{}:oper/{}:power/\
-                {}:location".format(
-                nsp, nsp, nsp, nsp
-            )
+                {}:location".format(nsp, nsp, nsp, nsp)
             capacity = 0.0
             for power_location in result_tree.xpath(
                 power_location_xpath, namespaces=C.ENVMON_NAMESPACES
@@ -973,9 +925,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         self._find_txt(
                             power_location,
                             "./{}:pem_attributes/\
-                                                    {}:usable_power_capacity".format(
-                                nsp, nsp
-                            ),
+                                                    {}:usable_power_capacity".format(nsp, nsp),
                             default="",
                             namespaces=C.ENVMON_NAMESPACES,
                         )
@@ -1031,9 +981,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             #
             temperature = {}
             temp_location_xpath = ".//{}:environment/{}:oper/{}:temperatures/\
-                {}:location".format(
-                nsp, nsp, nsp, nsp
-            )
+                {}:location".format(nsp, nsp, nsp, nsp)
             for temp_location in result_tree.xpath(
                 temp_location_xpath, namespaces=C.ENVMON_NAMESPACES
             ):
@@ -1094,9 +1042,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                             )
                         )
                         is_alert = (temp_value <= major_lo) or (temp_value >= major_hi)
-                        is_critical = (temp_value <= critical_lo) or (
-                            temp_value >= critical_hi
-                        )
+                        is_critical = (temp_value <= critical_lo) or (temp_value >= critical_hi)
                         temperature[temp_location_name] = {
                             "is_alert": is_alert,
                             "temperature": temp_value,
@@ -1109,9 +1055,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # CPU
         #
         cpu = {}
-        rpc_reply = self.device.get(
-            filter=("subtree", C.ENV_SYS_MON_RPC_REQ_FILTER)
-        ).xml
+        rpc_reply = self.device.get(filter=("subtree", C.ENV_SYS_MON_RPC_REQ_FILTER)).xml
 
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
@@ -1122,13 +1066,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
             this_cpu = {}
             this_cpu["%usage"] = napalm.base.helpers.convert(
                 float,
-                self._find_txt(
-                    module, "./sys:total-cpu-five-minute", default="", namespaces=C.NS
-                ),
+                self._find_txt(module, "./sys:total-cpu-five-minute", default="", namespaces=C.NS),
             )
-            node_name = self._find_txt(
-                module, "./sys:node-name", default="", namespaces=C.NS
-            )
+            node_name = self._find_txt(module, "./sys:node-name", default="", namespaces=C.NS)
             cpu[node_name] = this_cpu
 
         environment_status["cpu"] = cpu
@@ -1140,12 +1080,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
 
-        for node in result_tree.xpath(
-            ".//mem:memory-summary/mem:nodes/mem:node", namespaces=C.NS
-        ):
-            node_name = self._find_txt(
-                node, "./mem:node-name", default="", namespaces=C.NS
-            )
+        for node in result_tree.xpath(".//mem:memory-summary/mem:nodes/mem:node", namespaces=C.NS):
+            node_name = self._find_txt(node, "./mem:node-name", default="", namespaces=C.NS)
             slot = node_name.split("/")[1]
             if slot in ["RP0", "RSP0"]:
                 available_ram = napalm.base.helpers.convert(
@@ -1188,9 +1124,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         lldp_xpath = ".//lldp:lldp/lldp:nodes/lldp:node/lldp:neighbors\
                         /lldp:details/lldp:detail"
-        for neighbor in result_tree.xpath(
-            lldp_xpath + "/lldp:lldp-neighbor", namespaces=C.NS
-        ):
+        for neighbor in result_tree.xpath(lldp_xpath + "/lldp:lldp-neighbor", namespaces=C.NS):
             interface_name = self._find_txt(
                 neighbor, "./lldp:receiving-interface-name", default="", namespaces=C.NS
             )
@@ -1205,15 +1139,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
             )
             port_id = napalm.base.helpers.convert(
                 str,
-                self._find_txt(
-                    neighbor, "./lldp:port-id-detail", default="", namespaces=C.NS
-                ),
+                self._find_txt(neighbor, "./lldp:port-id-detail", default="", namespaces=C.NS),
             )
             if interface_name not in lldp_neighbors.keys():
                 lldp_neighbors[interface_name] = []
-            lldp_neighbors[interface_name].append(
-                {"hostname": system_name, "port": port_id}
-            )
+            lldp_neighbors[interface_name].append({"hostname": system_name, "port": port_id})
 
         return lldp_neighbors
 
@@ -1254,9 +1184,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             )
             port_id = napalm.base.helpers.convert(
                 str,
-                self._find_txt(
-                    neighbor, "./lldp:port-id-detail", default="", namespaces=C.NS
-                ),
+                self._find_txt(neighbor, "./lldp:port-id-detail", default="", namespaces=C.NS),
             )
             port_descr = napalm.base.helpers.convert(
                 str,
@@ -1396,9 +1324,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 namespaces=C.NS,
             )
             peer = napalm.base.helpers.ip(
-                self._find_txt(
-                    bgp_neighbor, "./bgpc:neighbor-address", default="", namespaces=C.NS
-                )
+                self._find_txt(bgp_neighbor, "./bgpc:neighbor-address", default="", namespaces=C.NS)
             )
             if neighbor and peer != neighbor:
                 continue
@@ -1717,42 +1643,30 @@ class IOSXRNETCONFDriver(NetworkDriver):
     def get_bgp_neighbors_detail(self, neighbor_address=""):
         """Detailed view of the BGP neighbors operational data."""
 
-        def get_vrf_neighbors_detail(
-            rpc_reply_etree, xpath, vrf_name, vrf_keepalive, vrf_holdtime
-        ):
+        def get_vrf_neighbors_detail(rpc_reply_etree, xpath, vrf_name, vrf_keepalive, vrf_holdtime):
             """Detailed view of the BGP neighbors operational data for a given VRF."""
             bgp_vrf_neighbors_detail = {}
             bgp_vrf_neighbors_detail[vrf_name] = {}
             for neighbor in rpc_reply_etree.xpath(xpath, namespaces=C.NS):
                 up = (
-                    self._find_txt(
-                        neighbor, "./bgp:connection-state", default="", namespaces=C.NS
-                    )
+                    self._find_txt(neighbor, "./bgp:connection-state", default="", namespaces=C.NS)
                     == "bgp-st-estab"
                 )
                 local_as = napalm.base.helpers.convert(
                     int,
-                    self._find_txt(
-                        neighbor, "./bgp:local-as", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(neighbor, "./bgp:local-as", default="", namespaces=C.NS),
                     0,
                 )
                 remote_as = napalm.base.helpers.convert(
                     int,
-                    self._find_txt(
-                        neighbor, "./bgp:remote-as", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(neighbor, "./bgp:remote-as", default="", namespaces=C.NS),
                     0,
                 )
                 router_id = napalm.base.helpers.ip(
-                    self._find_txt(
-                        neighbor, "./bgp:router-id", default="", namespaces=C.NS
-                    )
+                    self._find_txt(neighbor, "./bgp:router-id", default="", namespaces=C.NS)
                 )
                 remote_address = napalm.base.helpers.ip(
-                    self._find_txt(
-                        neighbor, "./bgp:neighbor-address", default="", namespaces=C.NS
-                    )
+                    self._find_txt(neighbor, "./bgp:neighbor-address", default="", namespaces=C.NS)
                 )
                 local_address_configured = (
                     self._find_txt(
@@ -1857,16 +1771,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 )
                 input_messages = napalm.base.helpers.convert(
                     int,
-                    self._find_txt(
-                        neighbor, "./bgp:messges-received", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(neighbor, "./bgp:messges-received", default="", namespaces=C.NS),
                     0,
                 )
                 output_messages = napalm.base.helpers.convert(
                     int,
-                    self._find_txt(
-                        neighbor, "./bgp:messages-sent", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(neighbor, "./bgp:messages-sent", default="", namespaces=C.NS),
                     0,
                 )
                 flap_count = napalm.base.helpers.convert(
@@ -1890,9 +1800,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     0,
                 )
                 connection_state = (
-                    self._find_txt(
-                        neighbor, "./bgp:connection-state", default="", namespaces=C.NS
-                    )
+                    self._find_txt(neighbor, "./bgp:connection-state", default="", namespaces=C.NS)
                     .replace("bgp-st-", "")
                     .title()
                 )
@@ -1952,9 +1860,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     0,
                 )
                 suppress_4byte_as = (
-                    self._find_txt(
-                        neighbor, "./bgp:suppress4-byte-as", default="", namespaces=C.NS
-                    )
+                    self._find_txt(neighbor, "./bgp:suppress4-byte-as", default="", namespaces=C.NS)
                     == "true"
                 )
                 local_as_prepend = (
@@ -1969,9 +1875,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 holdtime = (
                     napalm.base.helpers.convert(
                         int,
-                        self._find_txt(
-                            neighbor, "./bgp:hold-time", default="", namespaces=C.NS
-                        ),
+                        self._find_txt(neighbor, "./bgp:hold-time", default="", namespaces=C.NS),
                         0,
                     )
                     or vrf_holdtime
@@ -2104,9 +2008,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         vrf_xpath = """.//bgp:bgp/bgp:instances/
                     bgp:instance/bgp:instance-active/bgp:vrfs"""
         for vrf in rpc_reply_etree.xpath(vrf_xpath + "/bgp:vrf", namespaces=C.NS):
-            vrf_name = self._find_txt(
-                vrf, "./bgp:vrf-name", default="", namespaces=C.NS
-            )
+            vrf_name = self._find_txt(vrf, "./bgp:vrf-name", default="", namespaces=C.NS)
             vrf_keepalive = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
@@ -2159,9 +2061,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         for arp_entry in result_tree.xpath(arp_entry_xpath, namespaces=C.NS):
             interface = napalm.base.helpers.convert(
                 str,
-                self._find_txt(
-                    arp_entry, "./arp:interface-name", default="", namespaces=C.NS
-                ),
+                self._find_txt(arp_entry, "./arp:interface-name", default="", namespaces=C.NS),
             )
             ip = napalm.base.helpers.convert(
                 str,
@@ -2198,9 +2098,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         for version in ["ipv4", "ipv6"]:
             ntp_xpath = ".//ntpc:ntp/ntpc:peer-vrfs/ntpc:peer-vrf/\
-                        ntpc:peer-{version}s".format(
-                version=version
-            )
+                        ntpc:peer-{version}s".format(version=version)
             for peer in result_tree.xpath(
                 ntp_xpath + "/ntpc:peer-{version}".format(version=version),
                 namespaces=C.NS,
@@ -2208,9 +2106,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 peer_type = self._find_txt(
                     peer,
                     "./ntpc:peer-type-{version}/\
-                    ntpc:peer-type".format(
-                        version=version
-                    ),
+                    ntpc:peer-type".format(version=version),
                     default="",
                     namespaces=C.NS,
                 )
@@ -2240,9 +2136,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         for version in ["ipv4", "ipv6"]:
             ntp_xpath = ".//ntpc:ntp/ntpc:peer-vrfs/ntpc:peer-vrf/\
-                        ntpc:peer-{version}s".format(
-                version=version
-            )
+                        ntpc:peer-{version}s".format(version=version)
             for peer in result_tree.xpath(
                 ntp_xpath + "/ntpc:peer-{version}".format(version=version),
                 namespaces=C.NS,
@@ -2250,9 +2144,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 peer_type = self._find_txt(
                     peer,
                     "./ntpc:peer-type-{version}/\
-                    ntpc:peer-type".format(
-                        version=version
-                    ),
+                    ntpc:peer-type".format(version=version),
                     default="",
                     namespaces=C.NS,
                 )
@@ -2282,15 +2174,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ntp:peer-summary-info/ntp:peer-info-common"
         for node in result_tree.xpath(xpath, namespaces=C.NS):
             synchronized = (
-                self._find_txt(node, "./ntp:is-sys-peer", default="", namespaces=C.NS)
-                == "true"
+                self._find_txt(node, "./ntp:is-sys-peer", default="", namespaces=C.NS) == "true"
             )
             address = self._find_txt(node, "./ntp:address", default="", namespaces=C.NS)
             if address == "DLRSC node":
                 continue
-            referenceid = self._find_txt(
-                node, "./ntp:reference-id", default="", namespaces=C.NS
-            )
+            referenceid = self._find_txt(node, "./ntp:reference-id", default="", namespaces=C.NS)
             hostpoll = napalm.base.helpers.convert(
                 int, self._find_txt(node, "./ntp:host-poll", "0", namespaces=C.NS)
             )
@@ -2339,25 +2228,17 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # parsing IPv4
         int4_xpath = ".//int4:ipv4-network/int4:nodes/int4:node/\
             int4:interface-data/int4:vrfs/int4:vrf/int4:details"
-        for interface in ipv4_ipv6_tree.xpath(
-            int4_xpath + "/int4:detail", namespaces=C.NS
-        ):
+        for interface in ipv4_ipv6_tree.xpath(int4_xpath + "/int4:detail", namespaces=C.NS):
             interface_name = napalm.base.helpers.convert(
                 str,
-                self._find_txt(
-                    interface, "./int4:interface-name", default="", namespaces=C.NS
-                ),
+                self._find_txt(interface, "./int4:interface-name", default="", namespaces=C.NS),
             )
             primary_ip = napalm.base.helpers.ip(
-                self._find_txt(
-                    interface, "./int4:primary-address", default="", namespaces=C.NS
-                )
+                self._find_txt(interface, "./int4:primary-address", default="", namespaces=C.NS)
             )
             primary_prefix = napalm.base.helpers.convert(
                 int,
-                self._find_txt(
-                    interface, "./int4:prefix-length", default="", namespaces=C.NS
-                ),
+                self._find_txt(interface, "./int4:prefix-length", default="", namespaces=C.NS),
             )
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
@@ -2367,13 +2248,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 interfaces_ip[interface_name]["ipv4"][primary_ip] = {
                     "prefix_length": primary_prefix
                 }
-            for secondary_address in interface.xpath(
-                "./int4:secondary-address", namespaces=C.NS
-            ):
+            for secondary_address in interface.xpath("./int4:secondary-address", namespaces=C.NS):
                 secondary_ip = napalm.base.helpers.ip(
-                    self._find_txt(
-                        secondary_address, "./int4:address", default="", namespaces=C.NS
-                    )
+                    self._find_txt(secondary_address, "./int4:address", default="", namespaces=C.NS)
                 )
                 secondary_prefix = napalm.base.helpers.convert(
                     int,
@@ -2400,9 +2277,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         ):
             interface_name = napalm.base.helpers.convert(
                 str,
-                self._find_txt(
-                    interface, "./int6:interface-name", default="", namespaces=C.NS
-                ),
+                self._find_txt(interface, "./int6:interface-name", default="", namespaces=C.NS),
             )
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
@@ -2410,20 +2285,13 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 interfaces_ip[interface_name]["ipv6"] = {}
             for address in interface.xpath("./int6:address", namespaces=C.NS):
                 address_ip = napalm.base.helpers.ip(
-                    self._find_txt(
-                        address, "./int6:address", default="", namespaces=C.NS
-                    )
+                    self._find_txt(address, "./int6:address", default="", namespaces=C.NS)
                 )
                 address_prefix = napalm.base.helpers.convert(
                     int,
-                    self._find_txt(
-                        address, "./int6:prefix-length", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(address, "./int6:prefix-length", default="", namespaces=C.NS),
                 )
-                if (
-                    address_ip
-                    not in interfaces_ip[interface_name].get("ipv6", {}).keys()
-                ):
+                if address_ip not in interfaces_ip[interface_name].get("ipv6", {}).keys():
                     interfaces_ip[interface_name]["ipv6"][address_ip] = {
                         "prefix_length": address_prefix
                     }
@@ -2439,17 +2307,13 @@ class IOSXRNETCONFDriver(NetworkDriver):
         result_tree = ETREE.fromstring(rpc_reply)
 
         mac_xpath = ".//mac:l2vpn-forwarding/mac:nodes/mac:node/mac:l2fibmac-details"
-        for mac_entry in result_tree.xpath(
-            mac_xpath + "/mac:l2fibmac-detail", namespaces=C.NS
-        ):
-            mac_raw = self._find_txt(
-                mac_entry, "./mac:address", default="", namespaces=C.NS
-            )
+        for mac_entry in result_tree.xpath(mac_xpath + "/mac:l2fibmac-detail", namespaces=C.NS):
+            mac_raw = self._find_txt(mac_entry, "./mac:address", default="", namespaces=C.NS)
             vlan = napalm.base.helpers.convert(
                 int,
-                self._find_txt(
-                    mac_entry, "./mac:name", default="", namespaces=C.NS
-                ).replace("vlan", ""),
+                self._find_txt(mac_entry, "./mac:name", default="", namespaces=C.NS).replace(
+                    "vlan", ""
+                ),
                 0,
             )
             interface = self._find_txt(
@@ -2521,9 +2385,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             route_xpath
             + "/rib{ip}:vrfs/rib{ip}:vrf/rib{ip}:afs/\
         rib{ip}:af/rib{ip}:safs/rib{ip}:saf/rib{ip}:ip-rib-route-table-names/\
-        rib{ip}:ip-rib-route-table-name/rib{ip}:routes/rib{ip}:route".format(
-                ip=ipv
-            )
+        rib{ip}:ip-rib-route-table-name/rib{ip}:routes/rib{ip}:route".format(ip=ipv)
         )
         for route in routes_tree.xpath(route_xpath, namespaces=C.NS):
             route_protocol = napalm.base.helpers.convert(
@@ -2550,15 +2412,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
             )
             priority = napalm.base.helpers.convert(
                 int,
-                self._find_txt(
-                    route, "./rib{}:priority".format(ipv), default="", namespaces=C.NS
-                ),
+                self._find_txt(route, "./rib{}:priority".format(ipv), default="", namespaces=C.NS),
             )
             age = napalm.base.helpers.convert(
                 int,
-                self._find_txt(
-                    route, "./rib{}:route-age".format(ipv), default="", namespaces=C.NS
-                ),
+                self._find_txt(route, "./rib{}:route-age".format(ipv), default="", namespaces=C.NS),
             )
             destination = napalm.base.helpers.convert(
                 str, "{prefix}/{length}".format(prefix=address, length=length)
@@ -2594,9 +2452,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 )
                 single_route_details = {}
                 single_route_details.update(route_details)
-                single_route_details.update(
-                    {"current_active": first_route, "next_hop": next_hop}
-                )
+                single_route_details.update({"current_active": first_route, "next_hop": next_hop})
                 routes[destination].append(single_route_details)
                 first_route = False
 
@@ -2641,17 +2497,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
              snmp:default-communities/snmp:default-community",
             namespaces=C.NS,
         ):
-            name = self._find_txt(
-                community, "./snmp:community-name", default="", namespaces=C.NS
-            )
-            privilege = self._find_txt(
-                community, "./snmp:priviledge", default="", namespaces=C.NS
-            )
+            name = self._find_txt(community, "./snmp:community-name", default="", namespaces=C.NS)
+            privilege = self._find_txt(community, "./snmp:priviledge", default="", namespaces=C.NS)
             acl = self._find_txt(
                 community, "./snmp:v6-access-list", default="", namespaces=C.NS
-            ) or self._find_txt(
-                community, "./snmp:v4-access-list", default="", namespaces=C.NS
-            )
+            ) or self._find_txt(community, "./snmp:v4-access-list", default="", namespaces=C.NS)
             snmp_information["community"][name] = {
                 "mode": _PRIVILEGE_MODE_MAP_.get(privilege, ""),
                 "acl": acl,
@@ -2679,9 +2529,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         probes_config_xpath = ".//prbc:ipsla/prbc:operation/prbc:definitions/\
             prbc:definition"
         for probe in sla_config_result_tree.xpath(probes_config_xpath, namespaces=C.NS):
-            probe_name = self._find_txt(
-                probe, "./prbc:operation-id", default="", namespaces=C.NS
-            )
+            probe_name = self._find_txt(probe, "./prbc:operation-id", default="", namespaces=C.NS)
             operation_type_etree = probe.xpath("./prbc:operation-type", namespaces=C.NS)
             if len(operation_type_etree):
                 operation_type = (
@@ -2694,9 +2542,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     op_type=operation_type
                 )
                 operation = probe.xpath(operation_xpath, namespaces=C.NS)[0]
-                test_name = self._find_txt(
-                    operation, "./prbc:tag", default="", namespaces=C.NS
-                )
+                test_name = self._find_txt(operation, "./prbc:tag", default="", namespaces=C.NS)
                 source = self._find_txt(
                     operation, "./prbc:source-address", default="", namespaces=C.NS
                 )
@@ -2705,9 +2551,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 )
                 test_interval = napalm.base.helpers.convert(
                     int,
-                    self._find_txt(
-                        operation, "./prbc:frequency", default="0", namespaces=C.NS
-                    ),
+                    self._find_txt(operation, "./prbc:frequency", default="0", namespaces=C.NS),
                 )
                 probe_count = napalm.base.helpers.convert(
                     int,
@@ -2747,16 +2591,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # Converts string to etree
         sla_results_tree = ETREE.fromstring(rpc_reply)
 
-        probes_config = (
-            self.get_probes_config()
-        )  # need to retrieve also the configuration
+        probes_config = self.get_probes_config()  # need to retrieve also the configuration
         # source and tag/test_name not provided
         probe_result_xpath = ".//prb:ipsla/prb:operation-data/\
             prb:operations/prb:operation"
         for probe in sla_results_tree.xpath(probe_result_xpath, namespaces=C.NS):
-            probe_name = self._find_txt(
-                probe, "./prb:operation-id", default="", namespaces=C.NS
-            )
+            probe_name = self._find_txt(probe, "./prb:operation-id", default="", namespaces=C.NS)
             test_name = list(probes_config.get(probe_name).keys())[0]
             target = self._find_txt(
                 probe,
@@ -2777,9 +2617,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 "",
             )
-            probe_count = (
-                probes_config.get(probe_name).get(test_name, {}).get("probe_count", 0)
-            )
+            probe_count = probes_config.get(probe_name).get(test_name, {}).get("probe_count", 0)
             response_times = probe.xpath(
                 "./prb:history/prb:target/prb:lifes/prb:life[last()]/\
                     prb:buckets/prb:bucket/prb:response-time",
@@ -3010,9 +2848,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         # Converts string to etree
         traceroute_tree = ETREE.fromstring(rpc_reply)
-        hops = traceroute_tree.xpath(
-            ".//tr:ipv{}/tr:hops/tr:hop".format(ipv), namespaces=C.NS
-        )
+        hops = traceroute_tree.xpath(".//tr:ipv{}/tr:hops/tr:hop".format(ipv), namespaces=C.NS)
 
         traceroute_result["success"] = {}
 
@@ -3021,9 +2857,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 int,
                 self._find_txt(hop, "./tr:hop-index", default="-1", namespaces=C.NS),
             )
-            hop_address = self._find_txt(
-                hop, "./tr:hop-address", default="", namespaces=C.NS
-            )
+            hop_address = self._find_txt(hop, "./tr:hop-address", default="", namespaces=C.NS)
 
             if hop_address == "":
                 continue
@@ -3036,28 +2870,20 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 probe_index = (
                     napalm.base.helpers.convert(
                         int,
-                        self._find_txt(
-                            probe, "./tr:probe-index", default="", namespaces=C.NS
-                        ),
+                        self._find_txt(probe, "./tr:probe-index", default="", namespaces=C.NS),
                         0,
                     )
                     + 1
                 )
                 probe_hop_address = str(
-                    self._find_txt(
-                        probe, "./tr:hop-address", default=hop_address, namespaces=C.NS
-                    )
+                    self._find_txt(probe, "./tr:hop-address", default=hop_address, namespaces=C.NS)
                 )
                 probe_hop_name = str(
-                    self._find_txt(
-                        probe, "./tr:hop-hostname", default=hop_name, namespaces=C.NS
-                    )
+                    self._find_txt(probe, "./tr:hop-hostname", default=hop_name, namespaces=C.NS)
                 )
                 rtt = napalm.base.helpers.convert(
                     float,
-                    self._find_txt(
-                        probe, "./tr:delta-time", default="", namespaces=C.NS
-                    ),
+                    self._find_txt(probe, "./tr:delta-time", default="", namespaces=C.NS),
                     timeout * 1000.0,
                 )  # ms
                 traceroute_result["success"][hop_index]["probes"][probe_index] = {
@@ -3093,9 +2919,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                                             usr:username",
             namespaces=C.NS,
         ):
-            username = self._find_txt(
-                user_entry, "./usr:name", default="", namespaces=C.NS
-            )
+            username = self._find_txt(user_entry, "./usr:name", default="", namespaces=C.NS)
             group = self._find_txt(
                 user_entry,
                 "./usr:usergroup-under-usernames/\
@@ -3104,9 +2928,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 namespaces=C.NS,
             )
             level = _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP.get(group, 0)
-            password = self._find_txt(
-                user_entry, "./usr:password", default="", namespaces=C.NS
-            )
+            password = self._find_txt(user_entry, "./usr:password", default="", namespaces=C.NS)
             user_details = _DEFAULT_USER_DETAILS.copy()
             user_details.update({"level": level, "password": password})
             users[username] = user_details
@@ -3135,9 +2957,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         elif encoding == "xml":
             subtree_filter = None
         else:
-            raise NotImplementedError(
-                f"config encoding must be one of {C.CONFIG_ENCODINGS}"
-            )
+            raise NotImplementedError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
         if retrieve.lower() in ["running", "all"]:
             config["running"] = str(
@@ -3160,14 +2980,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         config[datastore] = ""
                 else:
                     config[datastore] = ETREE.tostring(
-                        self._filter_config_tree(
-                            ETREE.XML(config[datastore], parser=parser)[0]
-                        ),
+                        self._filter_config_tree(ETREE.XML(config[datastore], parser=parser)[0]),
                         pretty_print=True,
                         encoding="unicode",
                     )
         if sanitized and encoding == "cli":
-            return napalm.base.helpers.sanitize_configs(
-                config, C.CISCO_SANITIZE_FILTERS
-            )
+            return napalm.base.helpers.sanitize_configs(config, C.CISCO_SANITIZE_FILTERS)
         return config

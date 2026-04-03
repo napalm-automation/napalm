@@ -46,9 +46,7 @@ class TestConfigNetworkDriver(object):
 
     def test_replacing_and_committing_config(self):
         try:
-            self.device.load_replace_candidate(
-                filename="%s/new_good.conf" % self.vendor
-            )
+            self.device.load_replace_candidate(filename="%s/new_good.conf" % self.vendor)
             self.device.commit_config()
         except NotImplementedError:
             raise SkipTest()
@@ -65,9 +63,7 @@ class TestConfigNetworkDriver(object):
     def test_replacing_config_with_typo(self):
         result = False
         try:
-            self.device.load_replace_candidate(
-                filename="%s/new_typo.conf" % self.vendor
-            )
+            self.device.load_replace_candidate(filename="%s/new_typo.conf" % self.vendor)
             self.device.commit_config()
         except NotImplementedError:
             raise SkipTest()
@@ -131,9 +127,7 @@ class TestConfigNetworkDriver(object):
     def test_merge_configuration_typo_and_rollback(self):
         result = False
         try:
-            self.device.load_merge_candidate(
-                filename="%s/merge_typo.conf" % self.vendor
-            )
+            self.device.load_merge_candidate(filename="%s/merge_typo.conf" % self.vendor)
             self.device.compare_config()
             self.device.commit_config()
             raise Exception("We shouldn't be here")
@@ -162,11 +156,7 @@ class TestGettersNetworkDriver(object):
         same_keys = set(model.keys()) == set(data.keys())
 
         if not same_keys:
-            print(
-                "model_keys: {}\ndata_keys: {}".format(
-                    sorted(model.keys()), sorted(data.keys())
-                )
-            )
+            print("model_keys: {}\ndata_keys: {}".format(sorted(model.keys()), sorted(data.keys())))
 
         correct_class = True
         for key, instance_class in model.items():
@@ -191,9 +181,7 @@ class TestGettersNetworkDriver(object):
 
         for policy_name, policy_details in policies.items():
             for policy_term in policy_details:
-                result = result and self._test_model(
-                    models.FirewallPolicyDict, policy_term
-                )
+                result = result and self._test_model(models.FirewallPolicyDict, policy_term)
 
         self.assertTrue(result)
 
@@ -246,9 +234,7 @@ class TestGettersNetworkDriver(object):
         result = len(self.device.get_interfaces_counters()) > 0
 
         for interface, interface_data in get_interfaces_counters.items():
-            result = result and self._test_model(
-                models.InterfaceCounterDict, interface_data
-            )
+            result = result and self._test_model(models.InterfaceCounterDict, interface_data)
 
         self.assertTrue(result)
 
@@ -266,9 +252,7 @@ class TestGettersNetworkDriver(object):
             result = result and self._test_model(models.PowerDict, power_data)
 
         for temperature, temperature_data in environment["temperature"].items():
-            result = result and self._test_model(
-                models.TemperatureDict, temperature_data
-            )
+            result = result and self._test_model(models.TemperatureDict, temperature_data)
 
         for cpu, cpu_data in environment["cpu"].items():
             result = result and self._test_model(models.CPUDict, cpu_data)
@@ -309,9 +293,7 @@ class TestGettersNetworkDriver(object):
 
         for interface, neighbor_list in get_lldp_neighbors_detail.items():
             for neighbor in neighbor_list:
-                result = result and self._test_model(
-                    models.LLDPNeighborsDetailDict, neighbor
-                )
+                result = result and self._test_model(models.LLDPNeighborsDetailDict, neighbor)
 
         self.assertTrue(result)
 
@@ -325,9 +307,7 @@ class TestGettersNetworkDriver(object):
         for bgp_group in get_bgp_config.values():
             result = result and self._test_model(models.BGPConfigGroupDict, bgp_group)
             for bgp_neighbor in bgp_group.get("neighbors", {}).values():
-                result = result and self._test_model(
-                    models.BGPConfigNeighborDict, bgp_neighbor
-                )
+                result = result and self._test_model(models.BGPConfigNeighborDict, bgp_neighbor)
 
         self.assertTrue(result)
 
@@ -344,9 +324,7 @@ class TestGettersNetworkDriver(object):
             for remote_as, neighbor_list in vrf_ases.items():
                 result = result and isinstance(remote_as, int)
                 for neighbor in neighbor_list:
-                    result = result and self._test_model(
-                        models.PeerDetailsDict, neighbor
-                    )
+                    result = result and self._test_model(models.PeerDetailsDict, neighbor)
 
         self.assertTrue(result)
 
@@ -424,13 +402,9 @@ class TestGettersNetworkDriver(object):
             ipv4 = interface_details.get("ipv4", {})
             ipv6 = interface_details.get("ipv6", {})
             for ip, ip_details in ipv4.items():
-                result = result and self._test_model(
-                    models.InterfacesIPDictEntry, ip_details
-                )
+                result = result and self._test_model(models.InterfacesIPDictEntry, ip_details)
             for ip, ip_details in ipv6.items():
-                result = result and self._test_model(
-                    models.InterfacesIPDictEntry, ip_details
-                )
+                result = result and self._test_model(models.InterfacesIPDictEntry, ip_details)
 
         self.assertTrue(result)
 
@@ -450,9 +424,7 @@ class TestGettersNetworkDriver(object):
         destination = "1.0.4.0/24"
         protocol = "bgp"
         try:
-            get_route_to = self.device.get_route_to(
-                destination=destination, protocol=protocol
-            )
+            get_route_to = self.device.get_route_to(destination=destination, protocol=protocol)
         except NotImplementedError:
             raise SkipTest()
 
@@ -475,9 +447,7 @@ class TestGettersNetworkDriver(object):
             result = result and self._test_model(models.SNMPDict, get_snmp_information)
 
         for community, community_data in get_snmp_information["community"].items():
-            result = result and self._test_model(
-                models.SNMPCommunityDict, community_data
-            )
+            result = result and self._test_model(models.SNMPCommunityDict, community_data)
 
         self.assertTrue(result)
 
@@ -504,9 +474,7 @@ class TestGettersNetworkDriver(object):
 
         for probe_name, probe_tests in get_probes_results.items():
             for test_name, test_results in probe_tests.items():
-                result = result and self._test_model(
-                    models.ProbeTestResultDict, test_results
-                )
+                result = result and self._test_model(models.ProbeTestResultDict, test_results)
 
         self.assertTrue(result)
 
@@ -522,9 +490,7 @@ class TestGettersNetworkDriver(object):
         result = result and self._test_model(models.PingDict, ping_results)
 
         for ping_result in ping_results.get("results", []):
-            result = result and self._test_model(
-                models.PingResultDictEntry, ping_result
-            )
+            result = result and self._test_model(models.PingResultDictEntry, ping_result)
 
         self.assertTrue(result)
 
@@ -539,9 +505,7 @@ class TestGettersNetworkDriver(object):
 
         for hope_id, hop_result in traceroute_results.items():
             for probe_id, probe_result in hop_result.get("probes", {}).items():
-                result = result and self._test_model(
-                    models.TracerouteDict, probe_result
-                )
+                result = result and self._test_model(models.TracerouteDict, probe_result)
 
         self.assertTrue(result)
 
@@ -609,9 +573,7 @@ class TestGettersNetworkDriver(object):
 
         result = isinstance(get_network_instances, dict)
         for network_instance_name, network_instance in get_network_instances.items():
-            result = result and self._test_model(
-                models.NetworkInstanceDict, network_instance
-            )
+            result = result and self._test_model(models.NetworkInstanceDict, network_instance)
             result = result and self._test_model(
                 models.NetworkInstanceStateDict, network_instance["state"]
             )
