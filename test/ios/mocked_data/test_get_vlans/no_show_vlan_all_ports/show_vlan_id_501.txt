@@ -1,0 +1,15 @@
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+501  VLAN0501                         active
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+501  enet  100501     1500  -      -      -        -    -        0      0
+
+Remote SPAN VLAN
+----------------
+Disabled
+
+Primary Secondary Type              Ports
+------- --------- ----------------- ------------------------------------------
+500     501       community         Gi1/1, Gi1/2

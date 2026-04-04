@@ -8,6 +8,28 @@
       "GigabitEthernet0/20"
     ]
   },
+  "500": {
+    "name": "VLAN500",
+    "interfaces": [
+      "GigabitEthernet1/1",
+      "GigabitEthernet1/2",
+      "GigabitEthernet1/3"
+    ]
+  },
+  "501": {
+    "name": "Vlan501",
+    "interfaces": [
+      "GigabitEthernet1/1",
+      "GigabitEthernet1/2"
+    ]
+  },
+  "502": {
+    "name": "VLAN502",
+    "interfaces": [
+      "GigabitEthernet1/1",
+      "GigabitEthernet1/3"
+    ]
+  },
   "710": {
     "name": "Vlan710",
     "interfaces": [

@@ -3610,15 +3610,18 @@ class IOSDriver(NetworkDriver):
         if output.find("Invalid input detected") >= 0:
             return self._get_vlan_from_id()
         else:
-            return self._get_vlan_all_ports(output)
+            return self._get_vlan_all_ports(output, _vlan_id=None, _vlan_name=None)
 
-    def _get_vlan_all_ports(self, output):
+    def _get_vlan_all_ports(self, output, _vlan_id, _vlan_name):
         find_regexp = re.compile(
             r"^(\d+)\s+"  # vlan id
             r"(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"  # vlan name
             r"\w+(?:\/\w+)?\S+(\s+[A-Z][a-z].*)?$"  # ports
         )
         continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
+        match_pvlan_regexp = re.compile(
+            r"^(\d+)\s+(\S+)\s+(community|isolated)?\s+(\s+[A-Z][a-z].*)?$"
+        )
         output = output.splitlines()
         vlans = {}
 
@@ -3628,12 +3631,23 @@ class IOSDriver(NetworkDriver):
         interfaces = ""
         for line in output:
             vlan_m = find_regexp.match(line)
+            p_vlan_m = match_pvlan_regexp.match(line)
             if vlan_m:
                 was_vlan_or_cont = True
                 vlan_id = vlan_m.group(1)
                 vlan_name = vlan_m.group(2).strip()
                 interfaces = vlan_m.group(3) or ""
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+            if p_vlan_m:
+                was_vlan_or_cont = True
+                p_vlan_id = p_vlan_m.group(2)
+                vlan_name = (
+                    vlans.get(vlan_id)["name"]
+                    if vlans.get(vlan_id)
+                    else p_vlan_m.group(2)
+                )
+                interfaces = p_vlan_m.group(4) or ""
+                vlans[p_vlan_id] = {"name": vlan_name, "interfaces": []}
 
             cont_m = None
             if was_vlan_or_cont:
@@ -3641,7 +3655,7 @@ class IOSDriver(NetworkDriver):
                 if cont_m:
                     interfaces = cont_m.group(1)
 
-            if not cont_m and not vlan_m:
+            if not cont_m and not (vlan_m or p_vlan_m):
                 was_vlan_or_cont = False
                 continue
 
@@ -3653,17 +3667,20 @@ class IOSDriver(NetworkDriver):
                 ]
             )
 
+        if vlans and len(vlans) > 1:
+            del vlans[vlan_id]
+
         return vlans
 
     def _get_vlan_from_id(self):
-        command = "show vlan brief"
+        command = "show vlan"
         output = self._send_command(command)
         vlan_regexp = r"^(\d+)\W+(.*?(?=active|act\/[isl]{1}shut|act\/unsup))"
         find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
         vlans = {}
         for vlan_id, vlan_name in find_vlan:
             output = self._send_command("show vlan id {}".format(vlan_id))
-            _vlans = self._get_vlan_all_ports(output)
+            _vlans = self._get_vlan_all_ports(output, vlan_id, vlan_name)
             if len(_vlans) == 0:
                 vlans[vlan_id] = {"name": vlan_name.strip(), "interfaces": []}
             elif len(_vlans) == 1:
