@@ -548,7 +548,7 @@ def ip(addr: str, version: Optional[int] = None) -> str:
 
 def as_number(as_number_val: str) -> int:
     """Convert AS Number to standardized asplain notation as an integer."""
-    as_number_str = str(as_number_val)
+    as_number_str = str(as_number_val).rstrip("ei?")
     if "." in as_number_str:
         big, little = as_number_str.split(".")
         return (int(big) << 16) + int(little)
