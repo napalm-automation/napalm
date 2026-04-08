@@ -1486,7 +1486,7 @@ class EOSDriver(NetworkDriver):
                             remote_as = local_as
                         else:
                             remote_as = napalm.base.helpers.as_number(
-                                as_path.strip("()").split()[-1]
+                                as_path.strip("()").rstrip("ie?").split()[-1]
                             )
                         try:
                             remote_address = napalm.base.helpers.ip(
