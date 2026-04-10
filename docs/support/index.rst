@@ -124,9 +124,9 @@ ____________________________________
 * :code:`config_private` (junos) - Configure private, no DB locking (default: ``False``).
 * :code:`canonical_int` (ios) - Convert operational interface's returned name to canonical name (fully expanded name) (default: ``False``).
 * :code:`candidate_cfg` (ios) - Filename for candidate configuration when using config replace (default: ``candidate_config.txt``).
-* :code:`dest_file_system` (ios, nxos) - Destination file system for SCP transfers (default: ``flash:`` for ios, ``bootflash:`` for nxos).
+* :code:`dest_file_system` (ios, nxos) - Destination file system for SCP transfers (default: auto-detected for ios, ``bootflash:`` for nxos).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
-* :code:`force_no_enable` (ios, nxos, nxos_ssh) - Do not automatically enter enable-mode on connect (default: ``False``).
+* :code:`force_no_enable` (eos, ios, nxos, nxos_ssh) - Do not automatically enter enable-mode on connect (default: ``False``).
 * :code:`global_delay_factor` (ios, nxos_ssh) - Allow for additional delay in command execution (default: ``1``).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
 * :code:`inline_transfer` (ios) - Enable inline transfers for file operations; automatically set to ``True`` when using telnet transport (default: ``False``).
