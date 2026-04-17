@@ -1,0 +1,53 @@
+{
+    "vrfs": {
+        "default": {
+            "routerId": "10.0.0.1",
+            "vrf": "default",
+            "bgpRouteEntries": {
+                "1.0.4.0/25": {
+                    "totalPaths": 1,
+                    "bgpAdvertisedPeerGroups": {},
+                    "totalAdvertisedPeers": 0,
+                    "maskLength": 25,
+                    "bgpRoutePaths": [
+                        {
+                            "asPathEntry": {
+                                "asPathType": "External",
+                                "asPath": "65001 65239 e"
+                            },
+                            "med": 197,
+                            "localPreference": 100,
+                            "weight": 0,
+                            "nextHop": "10.253.18.200",
+                            "reasonNotBestpath": "",
+                            "routeType": {
+                                "active": true,
+                                "valid": true,
+                                "ecmp": false,
+                                "ecmpHead": false,
+                                "ecmpContributor": false,
+                                "backup": false,
+                                "suppressed": false,
+                                "queued": false,
+                                "stale": false,
+                                "atomicAggregator": false
+                            },
+                            "routeDetail": {
+                                "origin": "Egp",
+                                "peerEntry": {
+                                    "peerRouterId": "10.253.18.200",
+                                    "peerAddr": "10.253.18.200"
+                                },
+                                "extCommunityList": [],
+                                "communityList": [],
+                                "recvdFromRRClient": false
+                            }
+                        }
+                    ],
+                    "address": "1.0.4.0"
+                }
+            },
+            "asn": "202751"
+        }
+    }
+}

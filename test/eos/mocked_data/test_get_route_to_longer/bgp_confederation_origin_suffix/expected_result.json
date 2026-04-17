@@ -1,0 +1,26 @@
+{
+    "1.0.4.0/25": [
+        {
+            "current_active": true,
+            "last_active": true,
+            "age": 0,
+            "next_hop": "10.253.18.200",
+            "protocol": "eBGP",
+            "outgoing_interface": "Ethernet49/1",
+            "preference": 200,
+            "inactive_reason": "",
+            "routing_table": "default",
+            "selected_next_hop": true,
+            "protocol_attributes": {
+                "metric": 197,
+                "as_path": "65001 65239 e",
+                "local_preference": 100,
+                "local_as": 202751,
+                "remote_as": 65239,
+                "remote_address": "10.253.18.200",
+                "preference2": 0,
+                "communities": []
+            }
+        }
+    ]
+}
