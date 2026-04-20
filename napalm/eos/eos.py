@@ -1731,6 +1731,14 @@ class EOSDriver(NetworkDriver):
     def get_bgp_neighbors_detail(self, neighbor_address=""):
         """Implementation of get_bgp_neighbors_detail"""
 
+        # determine if in multi-agent mode to get correct extractor_type
+        is_multi_agent = self.device.run_commands(
+            ["show running-config | include service routing protocols model multi-agent"],
+            encoding="text",
+        )[0].get("output", "")
+
+        extractor_type = "bgp_detail_multi_agent" if bool(is_multi_agent) else "bgp_detail"
+
         def _parse_per_peer_bgp_detail(peer_output):
             """This function parses the raw data per peer and returns a
             json structure per peer.
@@ -1758,13 +1766,6 @@ class EOSDriver(NetworkDriver):
             ]
 
             peer_details = []
-
-            # determine if in multi-agent mode to get correct extractor_type
-            is_multi_agent = self.device.run_commands(
-                ["show running-config | include service routing protocols model multi-agent"],
-                encoding="text",
-            )[0].get("output", "")
-            extractor_type = "bgp_detail_multi_agent" if bool(is_multi_agent) else "bgp_detail"
 
             # Using preset template to extract peer info
             peer_info = napalm.base.helpers.textfsm_extractor(self, extractor_type, peer_output)
