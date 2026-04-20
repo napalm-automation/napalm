@@ -127,6 +127,8 @@ class EOSDriver(NetworkDriver):
         self.optional_args = optional_args or {}
 
         self.enablepwd = self.optional_args.pop("enable_password", "")
+        force_no_enable = self.optional_args.pop("force_no_enable", False)
+        self.send_enable = not force_no_enable
         self.eos_autoComplete = self.optional_args.pop("eos_autoComplete", None)
 
         # Define locking method
@@ -267,6 +269,7 @@ class EOSDriver(NetworkDriver):
                 ret.append(cmd_json)
             return ret
         else:
+            kwargs.setdefault("send_enable", self.send_enable)
             return self.device.run_commands(commands, **kwargs)
 
     def _obtain_lock(self, wait_time=None):
@@ -1483,7 +1486,7 @@ class EOSDriver(NetworkDriver):
                             remote_as = local_as
                         else:
                             remote_as = napalm.base.helpers.as_number(
-                                as_path.strip("()").split()[-1]
+                                as_path.strip("()").rstrip("ie?").split()[-1]
                             )
                         try:
                             remote_address = napalm.base.helpers.ip(
