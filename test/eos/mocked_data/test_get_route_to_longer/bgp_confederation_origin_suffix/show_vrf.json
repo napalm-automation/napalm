@@ -1,0 +1,21 @@
+{
+  "vrfs": {
+    "default": {
+      "routeDistinguisher": "",
+      "protocols": {
+        "ipv4": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "up"
+        },
+        "ipv6": {
+          "supported": true,
+          "protocolState": "up",
+          "routingState": "down"
+        }
+      },
+      "vrfState": "up",
+      "interfaces": ["Ethernet49/1", "Ethernet50/1", "Loopback0"]
+    }
+  }
+}
