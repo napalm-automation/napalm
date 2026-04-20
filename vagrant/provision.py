@@ -15,16 +15,12 @@ import httplib
 
 
 def print_info_message():
-    print(
-        "BOX is no longer reachable with vagrant up. Use ssh (check the IP in the initial conf)"
-    )
+    print("BOX is no longer reachable with vagrant up. Use ssh (check the IP in the initial conf)")
     print("Don't forget to change the network type of the first NIC of the box.")
 
 
 def provision_iosxr(port, username, password):
-    device = IOSXR(
-        hostname="127.0.0.1", username=username, password=password, port=port
-    )
+    device = IOSXR(hostname="127.0.0.1", username=username, password=password, port=port)
     device.open()
     device.load_candidate_config(filename="../iosxr/initial.conf")
 
