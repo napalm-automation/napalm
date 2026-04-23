@@ -1,6 +1,7 @@
 {
     "vendor": "Cisco",
     "os_version": "6.5.3",
+    "os_arch": "",
     "hostname": "iosxr3",
     "uptime": 29215136.0,
     "serial_number": "D841B64BBE1",

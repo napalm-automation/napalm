@@ -402,6 +402,7 @@ class JunOSDriver(NetworkDriver):
             "model": str(output["model"]),
             "serial_number": str(output["serialnumber"]),
             "os_version": str(output["version"]),
+            "os_arch": "",
             "hostname": str(output["hostname"]),
             "fqdn": str(output["fqdn"]),
             "uptime": float(uptime),
