@@ -1,0 +1,42 @@
+{
+  "TABLE_interface": {
+    "ROW_interface": [
+      {
+        "interface": "Ethernet1/1",
+        "state": "down",
+        "admin_state": "up",
+        "share_state": "Dedicated",
+        "eth_hw_desc": "Ethernet",
+        "eth_hw_addr": "2cc2.604f.feb2",
+        "eth_bia_addr": "2cc2.604f.feb2",
+        "eth_mtu": "1500",
+        "eth_bw": 1000000,
+        "eth_dly": 10,
+        "medium": "broadcast",
+        "eth_mode": "routed",
+        "eth_duplex": "auto",
+        "eth_speed": "auto-speed",
+        "eth_autoneg": "on",
+        "eth_link_flapped": "never"
+      },
+      {
+        "interface": "Ethernet1/2",
+        "state": "down",
+        "admin_state": "down",
+        "share_state": "Dedicated",
+        "eth_hw_desc": "Ethernet",
+        "eth_hw_addr": "2cc2.604f.feb3",
+        "eth_bia_addr": "2cc2.604f.feb3",
+        "eth_mtu": "1500",
+        "eth_bw": 1000000,
+        "eth_dly": 10,
+        "medium": "broadcast",
+        "eth_mode": "routed",
+        "eth_duplex": "auto",
+        "eth_speed": "auto-speed",
+        "eth_autoneg": "on",
+        "eth_link_flapped": "never"
+      }
+    ]
+  }
+}
