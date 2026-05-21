@@ -1,0 +1,20 @@
+{
+    "Ethernet1/1": {
+        "is_enabled": true,
+        "description": "",
+        "last_flapped": -1.0,
+        "is_up": false,
+        "mac_address": "2C:C2:60:4F:FE:B2",
+        "mtu": 1500,
+        "speed": 1000.0
+    },
+    "Ethernet1/2": {
+        "is_enabled": false,
+        "description": "",
+        "last_flapped": -1.0,
+        "is_up": false,
+        "mac_address": "2C:C2:60:4F:FE:B3",
+        "mtu": 1500,
+        "speed": 1000.0
+    }
+}
