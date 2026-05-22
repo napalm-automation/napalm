@@ -72,8 +72,7 @@ def _validate_driver_name(module_install_name: str, original_name: str) -> None:
 
 def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     """
-    Searches for a class derived form the base NAPALM class NetworkDriver in a specific library.
-    The library name must repect the following pattern: napalm_[DEVICE_OS].
+    Searches for a class derived from the base NAPALM class NetworkDriver in a specific library.
     NAPALM community supports a list of devices and provides the corresponding libraries; for
     full reference please refer to the `Supported Network Operation Systems`_ paragraph on
     `Read the Docs`_.
@@ -83,10 +82,31 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     .. _`Read the Docs`: \
     http://napalm.readthedocs.io/
 
-    :param name:         the name of the device operating system or the name of the library.
-    :return:                    the first class derived from NetworkDriver, found in the library.
-    :raise ModuleImportError:   when the library is not installed or a derived class from \
-    NetworkDriver was not found.
+    The *name* argument must be one of three forms (case-insensitive; hyphens are ignored):
+
+    1. **Plain driver name** — a simple identifier with no dots, e.g. ``"eos"``, ``"junos"``,
+       ``"IOS-XR"``.  The function will search for the driver in the following order:
+       ``custom_napalm.<name>`` (site-local), ``napalm.<name>`` (core), ``napalm_<name>``
+       (community).
+    2. **Explicit core/custom path** — a single-dot name beginning with ``napalm.`` or
+       ``custom_napalm.``, e.g. ``"napalm.eos"`` or ``"custom_napalm.mydriver"``.  Only that
+       exact module is tried; no additional candidates are constructed.  Requires
+       ``prepend=True`` (the default).
+    3. **Already-qualified name** — any name that already contains ``"napalm"`` (e.g.
+       ``"napalm_eos"``), passed with ``prepend=False`` to suppress the automatic
+       ``napalm.`` prefix.  The name must still satisfy rule 1 or 2 above.
+
+    Names with more than one dot, dots outside the ``napalm.`` / ``custom_napalm.``
+    prefixes, or bare names passed with ``prepend=False`` are rejected with
+    ``ModuleImportError``.
+
+    :param name:         the driver name in one of the three forms described above.
+    :param prepend:      when ``True`` (default) the ``napalm.`` prefix is added automatically
+                         for plain names.  Set to ``False`` only when *name* already contains
+                         ``"napalm"``.
+    :return:             the first class derived from NetworkDriver found in the resolved module.
+    :raise ModuleImportError:   when the name is invalid, the library is not installed, or no
+                                class derived from NetworkDriver was found.
 
     Example::
 
