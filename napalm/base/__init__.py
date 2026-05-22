@@ -31,6 +31,45 @@ __all__ = [
 ]
 
 
+def _validate_driver_name(module_install_name: str, original_name: str) -> None:
+    """
+    Validate that *module_install_name* (the normalised form of the caller-supplied
+    driver name, after lower-casing and hyphen removal) does not contain unsafe
+    path components that could reach unintended modules via
+    ``importlib.import_module``.
+
+    Rules
+    -----
+    * A dot is only permitted when the name begins with exactly ``napalm.`` or
+      ``custom_napalm.`` — the two documented namespaces for explicit driver
+      references.
+    * The portion *after* the allowed prefix must itself be dot-free, preventing
+      traversal into arbitrary sub-packages (e.g. ``napalm.eos.eos`` is rejected).
+    * All other names with dots are rejected unconditionally.
+
+    :param module_install_name: normalised driver name (lowercase, hyphens removed).
+    :param original_name:       the raw value supplied by the caller, used in the
+                                error message.
+    :raise ModuleImportError:   when the name violates the rules above.
+    """
+    if "." not in module_install_name:
+        return  # simple identifier — nothing more to check
+
+    for prefix in ("napalm.", "custom_napalm."):
+        if module_install_name.startswith(prefix):
+            suffix = module_install_name[len(prefix) :]
+            if "." not in suffix:
+                # exactly one dot, in an allowed namespace
+                return
+            # starts with a known prefix but has extra dots — fall through to error
+            break
+
+    raise ModuleImportError(
+        f'Invalid driver name "{original_name}": dots are only permitted in the '
+        '"napalm.<driver>" or "custom_napalm.<driver>" forms.'
+    )
+
+
 def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     """
     Searches for a class derived form the base NAPALM class NetworkDriver in a specific library.
@@ -73,17 +112,26 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     name = name.lower()
     # Try to not raise error when users requests IOS-XR for e.g.
     module_install_name = name.replace("-", "")
-    community_install_name = "napalm_{name}".format(name=module_install_name)
-    custom_install_name = "custom_napalm.{name}".format(name=module_install_name)
-    # Can also request using napalm_[SOMETHING]
-    if "napalm" not in module_install_name and prepend is True:
-        module_install_name = "napalm.{name}".format(name=module_install_name)
-    # Order is custom_napalm_os (local only) ->  napalm.os (core) ->  napalm_os (community)
-    for module_name in [
-        custom_install_name,
-        module_install_name,
-        community_install_name,
-    ]:
+    _validate_driver_name(module_install_name, name)
+
+    if "." in module_install_name:
+        # Caller supplied an explicit dotted module path (e.g. "napalm.eos" or
+        # "custom_napalm.mydriver").
+        candidates = [module_install_name]
+    else:
+        community_install_name = f"napalm_{module_install_name}"
+        custom_install_name = f"custom_napalm.{module_install_name}"
+        # Can also request using napalm_[SOMETHING]
+        if "napalm" not in module_install_name and prepend is True:
+            module_install_name = f"napalm.{module_install_name}"
+        # Order is custom_napalm_os (local only) ->  napalm.os (core) ->  napalm_os (community)
+        candidates = [
+            custom_install_name,
+            module_install_name,
+            community_install_name,
+        ]
+
+    for module_name in candidates:
         try:
             module = importlib.import_module(module_name)
             break
@@ -96,9 +144,7 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
                     continue
             raise e
     else:
-        raise ModuleImportError(
-            'Cannot import "{install_name}". Is the library installed?'.format(install_name=name)
-        )
+        raise ModuleImportError(f'Cannot import "{name}". Is the library installed?')
 
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj) and issubclass(obj, NetworkDriver):
@@ -106,7 +152,5 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
 
     # looks like you don't have any Driver class in your module...
     raise ModuleImportError(
-        'No class inheriting "napalm.base.base.NetworkDriver" found in "{install_name}".'.format(
-            install_name=module_install_name
-        )
+        f'No class inheriting "napalm.base.base.NetworkDriver" found in "{module_install_name}".'
     )
