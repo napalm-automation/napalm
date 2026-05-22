@@ -85,18 +85,20 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     The *name* argument must be one of three forms (case-insensitive; hyphens are ignored):
 
     1. **Plain driver name** — a simple identifier with no dots, e.g. ``"eos"``, ``"junos"``,
-       ``"iosxr"``.  The function will search for the driver in the following order:
+       ``"IOS-XR"``.  The function will search for the driver in the following order:
        ``custom_napalm.<name>`` (site-local), ``napalm.<name>`` (core), ``napalm_<name>``
        (community).
     2. **Explicit core/custom path** — a single-dot name beginning with ``napalm.`` or
        ``custom_napalm.``, e.g. ``"napalm.eos"`` or ``"custom_napalm.mydriver"``.  Only that
-       exact module is loaded.
+       exact module is tried; no additional candidates are constructed.  Requires
+       ``prepend=True`` (the default).
     3. **Already-qualified name** — any name that already contains ``"napalm"`` (e.g.
-       ``"napalm_eos"``), passed with ``prepend=False``.
+       ``"napalm_eos"``), passed with ``prepend=False`` to suppress the automatic
+       ``napalm.`` prefix.  The name must still satisfy rule 1 or 2 above.
 
     Names with more than one dot, dots outside the ``napalm.`` / ``custom_napalm.``
-    prefixes, or names not starting with "napalm" and passed with ``prepend=False`` are
-    rejected with ``ModuleImportError``.
+    prefixes, or bare names passed with ``prepend=False`` are rejected with
+    ``ModuleImportError``.
 
     :param name:         the driver name in one of the three forms described above.
     :param prepend:      when ``True`` (default) the ``napalm.`` prefix is added automatically
@@ -112,7 +114,7 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
 
         >>> get_network_driver('junos')
         <class 'napalm.junos.junos.JunOSDriver'>
-        >>> get_network_driver('iosxr')
+        >>> get_network_driver('IOS-XR')
         <class 'napalm.iosxr.iosxr.IOSXRDriver'>
         >>> get_network_driver('napalm.eos')
         <class 'napalm.eos.eos.EOSDriver'>
@@ -130,11 +132,8 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     name = name.lower()
     # Try to not raise error when users requests IOS-XR for e.g.
     module_install_name = name.replace("-", "")
-
-    # Basical validation of name including allowed package namespaces
     _validate_driver_name(module_install_name, name)
 
-    # prepend = False -> the name must start with "napalm"
     if not prepend and "napalm" not in module_install_name:
         raise ModuleImportError(
             f'Invalid driver name "{name}": when prepend=False the name must '
