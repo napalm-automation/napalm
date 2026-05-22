@@ -114,6 +114,12 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     module_install_name = name.replace("-", "")
     _validate_driver_name(module_install_name, name)
 
+    if not prepend and "napalm" not in module_install_name:
+        raise ModuleImportError(
+            f'Invalid driver name "{name}": when prepend=False the name must '
+            'already contain "napalm" (e.g. "napalm.eos" or "napalm_eos").'
+        )
+
     if "." in module_install_name:
         # Caller supplied an explicit dotted module path (e.g. "napalm.eos" or
         # "custom_napalm.mydriver").
@@ -122,7 +128,7 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
         community_install_name = f"napalm_{module_install_name}"
         custom_install_name = f"custom_napalm.{module_install_name}"
         # Can also request using napalm_[SOMETHING]
-        if "napalm" not in module_install_name and prepend is True:
+        if "napalm" not in module_install_name:
             module_install_name = f"napalm.{module_install_name}"
         # Order is custom_napalm_os (local only) ->  napalm.os (core) ->  napalm_os (community)
         candidates = [

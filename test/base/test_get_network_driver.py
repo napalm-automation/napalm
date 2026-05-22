@@ -74,6 +74,21 @@ class TestGetNetworkDriverUnit(unittest.TestCase):
         ):
             self.assertRaises(ModuleImportError, get_network_driver, driver, prepend=False)
 
+    # --- prepend=False behaviour ---
+
+    @data("eos", "ios", "junos", "fake00001")
+    def test_prepend_false_without_napalm_raises(self, driver):
+        """prepend=False with a bare name (no 'napalm' in it) must raise immediately."""
+        self.assertRaises(ModuleImportError, get_network_driver, driver, prepend=False)
+
+    @data("napalm.eos", "napalm_eos", "napalm.junos", "napalm_junos")
+    def test_prepend_false_with_napalm_name_accepted(self, driver):
+        """prepend=False with a name that already contains 'napalm' is accepted."""
+        with patch("napalm.base.importlib.import_module", return_value=_FAKE_MODULE) as mock_import:
+            result = get_network_driver(driver, prepend=False)
+        self.assertTrue(issubclass(result, NetworkDriver))
+        mock_import.assert_called()
+
 
 @ddt
 class TestValidateDriverName(unittest.TestCase):
