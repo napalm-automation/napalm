@@ -26,6 +26,11 @@ _FAKE_MODULE = types.ModuleType("fake_driver_module")
 _FAKE_MODULE.FakeDriver = _FakeDriver
 
 
+def _fail_import(mod_name: str) -> None:
+    """side_effect helper: always raises ImportError for the given module name."""
+    raise ImportError(f"No module named {mod_name}")
+
+
 # ---------------------------------------------------------------------------
 # Integration tests — require all driver packages to be installed
 # ---------------------------------------------------------------------------
@@ -66,12 +71,7 @@ class TestGetNetworkDriverUnit(unittest.TestCase):
     @data("fake00001", "network00001", "driver00001")
     def test_get_wrong_network_driver(self, driver):
         """get_network_driver raises ModuleImportError when all candidate imports fail."""
-        with patch(
-            "napalm.base.importlib.import_module",
-            side_effect=lambda mod_name: (_ for _ in ()).throw(
-                ImportError(f"No module named {mod_name}")
-            ),
-        ):
+        with patch("napalm.base.importlib.import_module", side_effect=_fail_import):
             self.assertRaises(ModuleImportError, get_network_driver, driver, prepend=False)
 
     # --- prepend=False behaviour ---
