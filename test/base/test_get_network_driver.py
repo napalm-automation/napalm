@@ -1,6 +1,8 @@
 """Test the method get_network_driver."""
 
+import types
 import unittest
+from unittest.mock import patch
 from ddt import ddt, data
 
 import napalm
@@ -11,19 +13,66 @@ from napalm.base.exceptions import ModuleImportError
 from napalm.base import _validate_driver_name
 
 
+# ---------------------------------------------------------------------------
+# Shared mock helpers
+# ---------------------------------------------------------------------------
+
+
+class _FakeDriver(NetworkDriver):
+    """Minimal NetworkDriver subclass used as a stand-in by unit tests."""
+
+
+_FAKE_MODULE = types.ModuleType("fake_driver_module")
+_FAKE_MODULE.FakeDriver = _FakeDriver
+
+
+# ---------------------------------------------------------------------------
+# Integration tests — require all driver packages to be installed
+# ---------------------------------------------------------------------------
+
+
 @ddt
-class TestGetNetworkDriver(unittest.TestCase):
-    """Test the method get_network_driver."""
+class TestGetNetworkDriverIntegration(unittest.TestCase):
+    """Integration tests for get_network_driver: exercises real driver imports."""
 
     @data(*napalm.SUPPORTED_DRIVERS)
     def test_get_network_driver(self, driver):
-        """Check that we can get the desired driver and is instance of NetworkDriver."""
+        """Check that we can get the desired driver and it is a subclass of NetworkDriver."""
         self.assertTrue(issubclass(get_network_driver(driver), NetworkDriver))
 
-    @data("fake", "network", "driver", "sys", 1)
+    @data("fake00001", "network00001", "driver00001")
     def test_get_wrong_network_driver(self, driver):
-        """Check that inexisting driver throws ModuleImportError."""
+        """Check that a non-existent driver raises ModuleImportError."""
         self.assertRaises(ModuleImportError, get_network_driver, driver, prepend=False)
+
+
+# ---------------------------------------------------------------------------
+# Unit tests — mock importlib.import_module; no driver installs required
+# ---------------------------------------------------------------------------
+
+
+@ddt
+class TestGetNetworkDriverUnit(unittest.TestCase):
+    """Unit tests for get_network_driver logic, independent of driver installation."""
+
+    @data(*napalm.SUPPORTED_DRIVERS)
+    def test_get_network_driver(self, driver):
+        """get_network_driver returns a NetworkDriver subclass and calls import_module."""
+        with patch("napalm.base.importlib.import_module", return_value=_FAKE_MODULE) as mock_import:
+            result = get_network_driver(driver)
+        self.assertTrue(issubclass(result, NetworkDriver))
+        mock_import.assert_called()
+
+    @data("fake00001", "network00001", "driver00001")
+    def test_get_wrong_network_driver(self, driver):
+        """get_network_driver raises ModuleImportError when all candidate imports fail."""
+        with patch(
+            "napalm.base.importlib.import_module",
+            side_effect=lambda mod_name: (_ for _ in ()).throw(
+                ImportError(f"No module named {mod_name}")
+            ),
+        ):
+            self.assertRaises(ModuleImportError, get_network_driver, driver, prepend=False)
 
 
 @ddt
