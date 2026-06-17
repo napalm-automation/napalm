@@ -12,6 +12,7 @@ FactsDict = TypedDict(
     "FactsDict",
     {
         "os_version": str,
+        "os_arch": str,
         "uptime": float,
         "interface_list": List,
         "vendor": str,

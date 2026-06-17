@@ -944,6 +944,8 @@ class NXOSDriver(NXOSDriverBase):
         if hostname:
             facts["fqdn"] = hostname
 
+        facts["os_arch"] = ""
+
         return facts
 
     def get_interfaces(self) -> Dict[str, models.InterfaceDict]:

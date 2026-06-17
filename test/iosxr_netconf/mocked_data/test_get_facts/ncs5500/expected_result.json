@@ -47,6 +47,7 @@
     ],
     "model": "NCS-5516",
     "os_version": "6.3.2",
+    "os_arch": "",
     "serial_number": "FGE20380TVK",
     "uptime": 358491,
     "vendor": "Cisco"

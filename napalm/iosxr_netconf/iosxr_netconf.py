@@ -321,6 +321,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         facts = {
             "vendor": "Cisco",
             "os_version": "",
+            "os_arch": "",
             "hostname": "",
             "uptime": -1.0,
             "serial_number": "",
