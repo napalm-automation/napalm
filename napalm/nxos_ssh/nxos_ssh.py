@@ -610,6 +610,11 @@ class NXOSSSHDriver(NXOSDriverBase):
                 if match:
                     model = match.group(1).strip()
 
+            if "cisco" in line and "supervisor" in line:
+                match = re.search(r".cisco (.*) \(", line)
+                if match:
+                    model = match.group(1).strip()
+
         hostname = show_hostname.strip()
 
         # Determine domain_name and fqdn
