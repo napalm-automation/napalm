@@ -1046,6 +1046,11 @@ class JunOSDriver(NetworkDriver):
                 exploded_pipe = pipe.split()
                 pipe_oper = exploded_pipe[0]  # always there
                 pipe_args = "".join(exploded_pipe[1:2])
+                enclosed_arg = re.match(r'"(.+)"', " ".join(exploded_pipe[1:]))
+                if enclosed_arg:
+                    pipe_args = enclosed_arg.group().strip('"')
+                else:
+                    pipe_args = "".join(exploded_pipe[1:2])
                 # will not throw error when there's no arg
                 pipe_oper_args[pipe_oper] = pipe_args
             for oper in _OF_MAP.keys():
