@@ -6,7 +6,7 @@ snmp {
   contact "{{contact}}";
   {% endif %}
   {% if (community is defined) and community %}
-  {% for comm_name, comm_details in community.iteritems() %}
+  {% for comm_name, comm_details in community.items() %}
   community {{comm_name}} {
     {% if (comm_details is defined) and comm_details %}
     {% if (comm_details.get('mode') is defined) and comm_details.get('mode') == 'rw' %}

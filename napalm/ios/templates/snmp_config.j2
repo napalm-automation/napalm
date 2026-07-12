@@ -8,7 +8,7 @@ snmp-server contact "{{contact}}"
 snmp-server chassis-id "{{chassis_id}}"
 {% endif %}
 {% if (community is defined) and community %}
-{% for comm_name, comm_details in community.iteritems() %}
+{% for comm_name, comm_details in community.items() %}
 {% if (comm_details is defined) and comm_details %}
 {% if (comm_details.get('mode') is defined) and comm_details.get('mode') == 'rw' %}
 community {{comm_name}} RW
