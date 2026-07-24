@@ -8,9 +8,7 @@ NAPALM_TEST_MOCK = ast.literal_eval(os.getenv("NAPALM_TEST_MOCK", default="1"))
 NAPALM_HOSTNAME = os.getenv("NAPALM_HOSTNAME", default="127.0.0.1")
 NAPALM_USERNAME = os.getenv("NAPALM_USERNAME", default="vagrant")
 NAPALM_PASSWORD = os.getenv("NAPALM_PASSWORD", default="vagrant")
-NAPALM_OPTIONAL_ARGS = json.loads(
-    os.getenv("NAPALM_OPTIONAL_ARGS", default='{"port": 12443}')
-)
+NAPALM_OPTIONAL_ARGS = json.loads(os.getenv("NAPALM_OPTIONAL_ARGS", default='{"port": 12443}'))
 
 
 def set_device_parameters(request):
@@ -33,9 +31,7 @@ def set_device_parameters(request):
 def pytest_generate_tests(metafunc, basefile):
     """Generate test cases dynamically."""
     if metafunc.function.__dict__.get("build_test_cases", False):
-        path = os.path.join(
-            os.path.dirname(basefile), "mocked_data", metafunc.function.__name__
-        )
+        path = os.path.join(os.path.dirname(basefile), "mocked_data", metafunc.function.__name__)
 
         if os.path.exists(path):
             sub_folders = os.listdir(path)

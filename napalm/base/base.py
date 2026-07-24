@@ -117,7 +117,7 @@ class NetworkDriver(object):
                 username=self.username,
                 password=self.password,
                 timeout=self.timeout,
-                **netmiko_optional_args
+                **netmiko_optional_args,
             )
         except NetMikoTimeoutException:
             raise ConnectionException("Cannot connect to {}".format(self.hostname))
@@ -190,7 +190,7 @@ class NetworkDriver(object):
         template_name: str,
         template_source: Optional[str] = None,
         template_path: Optional[str] = None,
-        **template_vars: Any
+        **template_vars: Any,
     ) -> None:
         """
         Will load a templated configuration on the device.
@@ -214,7 +214,7 @@ class NetworkDriver(object):
             template_name,
             template_source=template_source,
             template_path=template_path,
-            **template_vars
+            **template_vars,
         )
 
     def load_replace_candidate(
@@ -321,14 +321,14 @@ class NetworkDriver(object):
         Example::
 
             {
-            'uptime': 151005.57332897186,
-            'vendor': u'Arista',
-            'os_version': u'4.14.3-2329074.gaatlantarel',
-            'serial_number': u'SN0123A34AS',
-            'model': u'vEOS',
-            'hostname': u'eos-router',
-            'fqdn': u'eos-router',
-            'interface_list': [u'Ethernet2', u'Management1', u'Ethernet1', u'Ethernet3']
+                "uptime": 151005.57332897186,
+                "vendor": "Arista",
+                "os_version": "4.14.3-2329074.gaatlantarel",
+                "serial_number": "SN0123A34AS",
+                "model": "vEOS",
+                "hostname": "eos-router",
+                "fqdn": "eos-router",
+                "interface_list": ["Ethernet2", "Management1", "Ethernet1", "Ethernet3"],
             }
 
         """
@@ -541,55 +541,53 @@ class NetworkDriver(object):
         Example::
 
             {
-                u'Ethernet2': {
-                    'tx_multicast_packets': 699,
-                    'tx_discards': 0,
-                    'tx_octets': 88577,
-                    'tx_errors': 0,
-                    'rx_octets': 0,
-                    'tx_unicast_packets': 0,
-                    'rx_errors': 0,
-                    'tx_broadcast_packets': 0,
-                    'rx_multicast_packets': 0,
-                    'rx_broadcast_packets': 0,
-                    'rx_discards': 0,
-                    'rx_unicast_packets': 0
+                "Ethernet2": {
+                    "tx_multicast_packets": 699,
+                    "tx_discards": 0,
+                    "tx_octets": 88577,
+                    "tx_errors": 0,
+                    "rx_octets": 0,
+                    "tx_unicast_packets": 0,
+                    "rx_errors": 0,
+                    "tx_broadcast_packets": 0,
+                    "rx_multicast_packets": 0,
+                    "rx_broadcast_packets": 0,
+                    "rx_discards": 0,
+                    "rx_unicast_packets": 0,
                 },
-                u'Management1': {
-                     'tx_multicast_packets': 0,
-                     'tx_discards': 0,
-                     'tx_octets': 159159,
-                     'tx_errors': 0,
-                     'rx_octets': 167644,
-                     'tx_unicast_packets': 1241,
-                     'rx_errors': 0,
-                     'tx_broadcast_packets': 0,
-                     'rx_multicast_packets': 0,
-                     'rx_broadcast_packets': 80,
-                     'rx_discards': 0,
-                     'rx_unicast_packets': 0
+                "Management1": {
+                    "tx_multicast_packets": 0,
+                    "tx_discards": 0,
+                    "tx_octets": 159159,
+                    "tx_errors": 0,
+                    "rx_octets": 167644,
+                    "tx_unicast_packets": 1241,
+                    "rx_errors": 0,
+                    "tx_broadcast_packets": 0,
+                    "rx_multicast_packets": 0,
+                    "rx_broadcast_packets": 80,
+                    "rx_discards": 0,
+                    "rx_unicast_packets": 0,
                 },
-                u'Ethernet1': {
-                     'tx_multicast_packets': 293,
-                     'tx_discards': 0,
-                     'tx_octets': 38639,
-                     'tx_errors': 0,
-                     'rx_octets': 0,
-                     'tx_unicast_packets': 0,
-                     'rx_errors': 0,
-                     'tx_broadcast_packets': 0,
-                     'rx_multicast_packets': 0,
-                     'rx_broadcast_packets': 0,
-                     'rx_discards': 0,
-                     'rx_unicast_packets': 0
-                }
+                "Ethernet1": {
+                    "tx_multicast_packets": 293,
+                    "tx_discards": 0,
+                    "tx_octets": 38639,
+                    "tx_errors": 0,
+                    "rx_octets": 0,
+                    "tx_unicast_packets": 0,
+                    "rx_errors": 0,
+                    "tx_broadcast_packets": 0,
+                    "rx_multicast_packets": 0,
+                    "rx_broadcast_packets": 0,
+                    "rx_discards": 0,
+                    "rx_unicast_packets": 0,
+                },
             }
         """
         raise NotImplementedError
 
-    def get_lldp_neighbors_detail(
-        self, interface: str = ""
-    ) -> models.LLDPNeighborsDetailDict:
+    def get_lldp_neighbors_detail(self, interface: str = "") -> models.LLDPNeighborsDetailDict:
         """
         Returns a detailed view of the LLDP neighbors as a dictionary
         containing lists of dictionaries for each interface.
@@ -618,28 +616,26 @@ class NetworkDriver(object):
         Example::
 
             {
-                'TenGigE0/0/0/8': [
+                "TenGigE0/0/0/8": [
                     {
-                        'parent_interface': u'Bundle-Ether8',
-                        'remote_chassis_id': u'8c60.4f69.e96c',
-                        'remote_system_name': u'switch',
-                        'remote_port': u'Eth2/2/1',
-                        'remote_port_description': u'Ethernet2/2/1',
-                        'remote_system_description': u'''Cisco Nexus Operating System (NX-OS)
+                        "parent_interface": "Bundle-Ether8",
+                        "remote_chassis_id": "8c60.4f69.e96c",
+                        "remote_system_name": "switch",
+                        "remote_port": "Eth2/2/1",
+                        "remote_port_description": "Ethernet2/2/1",
+                        "remote_system_description": '''Cisco Nexus Operating System (NX-OS)
                               Software 7.1(0)N1(1a)
                               TAC support: http://www.cisco.com/tac
                               Copyright (c) 2002-2015, Cisco Systems, Inc. All rights reserved.''',
-                        'remote_system_capab': ['bridge', 'repeater'],
-                        'remote_system_enable_capab': ['bridge']
+                        "remote_system_capab": ["bridge", "repeater"],
+                        "remote_system_enable_capab": ["bridge"],
                     }
                 ]
             }
         """
         raise NotImplementedError
 
-    def get_bgp_config(
-        self, group: str = "", neighbor: str = ""
-    ) -> models.BGPConfigGroupDict:
+    def get_bgp_config(self, group: str = "", neighbor: str = "") -> models.BGPConfigGroupDict:
         """
         Returns a dictionary containing the BGP configuration.
         Can return either the whole config, either the config only for a group or neighbor.
@@ -748,7 +744,7 @@ class NetworkDriver(object):
         Example::
 
             {
-                u'show version and haiku':  u'''Hostname: re0.edge01.arn01
+                "show version and haiku": '''Hostname: re0.edge01.arn01
                                                 Model: mx480
                                                 Junos: 13.3R6.5
 
@@ -756,14 +752,14 @@ class NetworkDriver(object):
                                                         I just saw Episode Two
                                                         You're my only hope
                                             ''',
-                u'show chassis fan'     :   u'''
+                "show chassis fan": '''
                     Item               Status  RPM     Measurement
                     Top Rear Fan       OK      3840    Spinning at intermediate-speed
                     Bottom Rear Fan    OK      3840    Spinning at intermediate-speed
                     Top Middle Fan     OK      3900    Spinning at intermediate-speed
                     Bottom Middle Fan  OK      3840    Spinning at intermediate-speed
                     Top Front Fan      OK      3810    Spinning at intermediate-speed
-                    Bottom Front Fan   OK      3840    Spinning at intermediate-speed'''
+                    Bottom Front Fan   OK      3840    Spinning at intermediate-speed''',
             }
         """
         raise NotImplementedError
@@ -820,43 +816,43 @@ class NetworkDriver(object):
         Example::
 
             {
-                'global': {
+                "global": {
                     8121: [
                         {
-                            'up'                        : True,
-                            'local_as'                  : 13335,
-                            'remote_as'                 : 8121,
-                            'local_address'             : u'172.101.76.1',
-                            'local_address_configured'  : True,
-                            'local_port'                : 179,
-                            'routing_table'             : u'inet.0',
-                            'remote_address'            : u'192.247.78.0',
-                            'remote_port'               : 58380,
-                            'multihop'                  : False,
-                            'multipath'                 : True,
-                            'remove_private_as'         : True,
-                            'import_policy'             : u'4-NTT-TRANSIT-IN',
-                            'export_policy'             : u'4-NTT-TRANSIT-OUT',
-                            'input_messages'            : 123,
-                            'output_messages'           : 13,
-                            'input_updates'             : 123,
-                            'output_updates'            : 5,
-                            'messages_queued_out'       : 23,
-                            'connection_state'          : u'Established',
-                            'previous_connection_state' : u'EstabSync',
-                            'last_event'                : u'RecvKeepAlive',
-                            'suppress_4byte_as'         : False,
-                            'local_as_prepend'          : False,
-                            'holdtime'                  : 90,
-                            'configured_holdtime'       : 90,
-                            'keepalive'                 : 30,
-                            'configured_keepalive'      : 30,
-                            'active_prefix_count'       : 132808,
-                            'received_prefix_count'     : 566739,
-                            'accepted_prefix_count'     : 566479,
-                            'suppressed_prefix_count'   : 0,
-                            'advertised_prefix_count'   : 0,
-                            'flap_count'                : 27
+                            "up": True,
+                            "local_as": 13335,
+                            "remote_as": 8121,
+                            "local_address": "172.101.76.1",
+                            "local_address_configured": True,
+                            "local_port": 179,
+                            "routing_table": "inet.0",
+                            "remote_address": "192.247.78.0",
+                            "remote_port": 58380,
+                            "multihop": False,
+                            "multipath": True,
+                            "remove_private_as": True,
+                            "import_policy": "4-NTT-TRANSIT-IN",
+                            "export_policy": "4-NTT-TRANSIT-OUT",
+                            "input_messages": 123,
+                            "output_messages": 13,
+                            "input_updates": 123,
+                            "output_updates": 5,
+                            "messages_queued_out": 23,
+                            "connection_state": "Established",
+                            "previous_connection_state": "EstabSync",
+                            "last_event": "RecvKeepAlive",
+                            "suppress_4byte_as": False,
+                            "local_as_prepend": False,
+                            "holdtime": 90,
+                            "configured_holdtime": 90,
+                            "keepalive": 30,
+                            "configured_keepalive": 30,
+                            "active_prefix_count": 132808,
+                            "received_prefix_count": 566739,
+                            "accepted_prefix_count": 566479,
+                            "suppressed_prefix_count": 0,
+                            "advertised_prefix_count": 0,
+                            "flap_count": 27,
                         }
                     ]
                 }
@@ -882,17 +878,17 @@ class NetworkDriver(object):
 
             [
                 {
-                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5C:5E:AB:DA:3C:F0',
-                    'ip'        : '172.17.17.1',
-                    'age'       : 1454496274.84
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "5C:5E:AB:DA:3C:F0",
+                    "ip": "172.17.17.1",
+                    "age": 1454496274.84,
                 },
                 {
-                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5C:5E:AB:DA:3C:FF',
-                    'ip'        : '172.17.17.2',
-                    'age'       : 1435641582.49
-                }
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "5C:5E:AB:DA:3C:FF",
+                    "ip": "172.17.17.2",
+                    "age": 1435641582.49,
+                },
             ]
 
         """
@@ -907,10 +903,10 @@ class NetworkDriver(object):
         Example::
 
             {
-                '192.168.0.1': {},
-                '17.72.148.53': {},
-                '37.187.56.220': {},
-                '162.158.20.18': {}
+                "192.168.0.1": {},
+                "17.72.148.53": {},
+                "37.187.56.220": {},
+                "162.158.20.18": {},
             }
 
         """
@@ -926,21 +922,20 @@ class NetworkDriver(object):
         Example::
 
             {
-                '192.168.0.1':
-                {
-                    'address': '192.168.0.1',
-                    'port': 123,
-                    'version': 4,
-                    'association_type': 'SERVER',
-                    'iburst': False,
-                    'prefer': False,
-                    'network_instance': 'default',
-                    'source_address': '192.0.2.1',
-                    'key_id': -1,
+                "192.168.0.1": {
+                    "address": "192.168.0.1",
+                    "port": 123,
+                    "version": 4,
+                    "association_type": "SERVER",
+                    "iburst": False,
+                    "prefer": False,
+                    "network_instance": "default",
+                    "source_address": "192.0.2.1",
+                    "key_id": -1,
                 },
-                '17.72.148.53': {},
-                '37.187.56.220': {},
-                '162.158.20.18': {}
+                "17.72.148.53": {},
+                "37.187.56.220": {},
+                "162.158.20.18": {},
             }
 
         """
@@ -967,17 +962,17 @@ class NetworkDriver(object):
 
             [
                 {
-                    'remote'        : u'188.114.101.4',
-                    'referenceid'   : u'188.114.100.1',
-                    'synchronized'  : True,
-                    'stratum'       : 4,
-                    'type'          : u'-',
-                    'when'          : u'107',
-                    'hostpoll'      : 256,
-                    'reachability'  : 377,
-                    'delay'         : 164.228,
-                    'offset'        : -13.866,
-                    'jitter'        : 2.695
+                    "remote": "188.114.101.4",
+                    "referenceid": "188.114.100.1",
+                    "synchronized": True,
+                    "stratum": 4,
+                    "type": "-",
+                    "when": "107",
+                    "hostpoll": 256,
+                    "reachability": 377,
+                    "delay": 164.228,
+                    "offset": -13.866,
+                    "jitter": 2.695,
                 }
             ]
         """
@@ -997,41 +992,17 @@ class NetworkDriver(object):
         Example::
 
             {
-                u'FastEthernet8': {
-                    u'ipv4': {
-                        u'10.66.43.169': {
-                            'prefix_length': 22
-                        }
-                    }
-                },
-                u'Loopback555': {
-                    u'ipv4': {
-                        u'192.168.1.1': {
-                            'prefix_length': 24
-                        }
+                "FastEthernet8": {"ipv4": {"10.66.43.169": {"prefix_length": 22}}},
+                "Loopback555": {
+                    "ipv4": {"192.168.1.1": {"prefix_length": 24}},
+                    "ipv6": {
+                        "1::1": {"prefix_length": 64},
+                        "2001:DB8:1::1": {"prefix_length": 64},
+                        "2::": {"prefix_length": 64},
+                        "FE80::3": {"prefix_length": "N/A"},
                     },
-                    u'ipv6': {
-                        u'1::1': {
-                            'prefix_length': 64
-                        },
-                        u'2001:DB8:1::1': {
-                            'prefix_length': 64
-                        },
-                        u'2::': {
-                            'prefix_length': 64
-                        },
-                        u'FE80::3': {
-                            'prefix_length': u'N/A'
-                        }
-                    }
                 },
-                u'Tunnel0': {
-                    u'ipv4': {
-                        u'10.63.100.9': {
-                            'prefix_length': 24
-                        }
-                    }
-                }
+                "Tunnel0": {"ipv4": {"10.63.100.9": {"prefix_length": 24}}},
             }
         """
         raise NotImplementedError
@@ -1056,32 +1027,32 @@ class NetworkDriver(object):
 
             [
                 {
-                    'mac'       : '00:1C:58:29:4A:71',
-                    'interface' : 'Ethernet47',
-                    'vlan'      : 100,
-                    'static'    : False,
-                    'active'    : True,
-                    'moves'     : 1,
-                    'last_move' : 1454417742.58
+                    "mac": "00:1C:58:29:4A:71",
+                    "interface": "Ethernet47",
+                    "vlan": 100,
+                    "static": False,
+                    "active": True,
+                    "moves": 1,
+                    "last_move": 1454417742.58,
                 },
                 {
-                    'mac'       : '00:1C:58:29:4A:C1',
-                    'interface' : 'xe-1/0/1',
-                    'vlan'       : 100,
-                    'static'    : False,
-                    'active'    : True,
-                    'moves'     : 2,
-                    'last_move' : 1453191948.11
+                    "mac": "00:1C:58:29:4A:C1",
+                    "interface": "xe-1/0/1",
+                    "vlan": 100,
+                    "static": False,
+                    "active": True,
+                    "moves": 2,
+                    "last_move": 1453191948.11,
                 },
                 {
-                    'mac'       : '00:1C:58:29:4A:C2',
-                    'interface' : 'ae7.900',
-                    'vlan'      : 900,
-                    'static'    : False,
-                    'active'    : True,
-                    'moves'     : None,
-                    'last_move' : None
-                }
+                    "mac": "00:1C:58:29:4A:C2",
+                    "interface": "ae7.900",
+                    "vlan": 900,
+                    "static": False,
+                    "active": True,
+                    "moves": None,
+                    "last_move": None,
+                },
             ]
         """
         raise NotImplementedError
@@ -1133,29 +1104,29 @@ class NetworkDriver(object):
             {
                 "1.0.0.0/24": [
                     {
-                        "protocol"          : u"BGP",
-                        "inactive_reason"   : u"Local Preference",
-                        "last_active"       : False,
-                        "age"               : 105219,
-                        "next_hop"          : u"172.17.17.17",
-                        "selected_next_hop" : True,
-                        "preference"        : 170,
-                        "current_active"    : False,
-                        "outgoing_interface": u"ae9.0",
-                        "routing_table"     : "inet.0",
+                        "protocol": "BGP",
+                        "inactive_reason": "Local Preference",
+                        "last_active": False,
+                        "age": 105219,
+                        "next_hop": "172.17.17.17",
+                        "selected_next_hop": True,
+                        "preference": 170,
+                        "current_active": False,
+                        "outgoing_interface": "ae9.0",
+                        "routing_table": "inet.0",
                         "protocol_attributes": {
-                            "local_as"          : 13335,
-                            "as_path"           : u"2914 8403 54113 I",
-                            "communities"       : [
-                                u"2914:1234",
-                                u"2914:5678",
-                                u"8403:1717",
-                                u"54113:9999"
+                            "local_as": 13335,
+                            "as_path": "2914 8403 54113 I",
+                            "communities": [
+                                "2914:1234",
+                                "2914:5678",
+                                "8403:1717",
+                                "54113:9999",
                             ],
-                            "preference2"       : -101,
-                            "remote_as"         : 2914,
-                            "local_preference"  : 100
-                        }
+                            "preference2": -101,
+                            "remote_as": 2914,
+                            "local_preference": 100,
+                        },
                     }
                 ]
             }
@@ -1180,27 +1151,15 @@ class NetworkDriver(object):
         Example::
 
             {
-                'chassis_id': u'Asset Tag 54670',
-                'community': {
-                    u'private': {
-                        'acl': u'12',
-                        'mode': u'rw'
-                    },
-                    u'public': {
-                        'acl': u'11',
-                        'mode': u'ro'
-                    },
-                    u'public_named_acl': {
-                        'acl': u'ALLOW-SNMP-ACL',
-                        'mode': u'ro'
-                    },
-                    u'public_no_acl': {
-                        'acl': u'N/A',
-                        'mode': u'ro'
-                    }
+                "chassis_id": "Asset Tag 54670",
+                "community": {
+                    "private": {"acl": "12", "mode": "rw"},
+                    "public": {"acl": "11", "mode": "ro"},
+                    "public_named_acl": {"acl": "ALLOW-SNMP-ACL", "mode": "ro"},
+                    "public_no_acl": {"acl": "N/A", "mode": "ro"},
                 },
-                'contact' : u'Joe Smith',
-                'location': u'123 Anytown USA Rack 404'
+                "contact": "Joe Smith",
+                "location": "123 Anytown USA Rack 404",
             }
         """
         raise NotImplementedError
@@ -1223,21 +1182,21 @@ class NetworkDriver(object):
         Example::
 
             {
-                'probe1':{
-                    'test1': {
-                        'probe_type'   : 'icmp-ping',
-                        'target'       : '192.168.0.1',
-                        'source'       : '192.168.0.2',
-                        'probe_count'  : 13,
-                        'test_interval': 3
+                "probe1": {
+                    "test1": {
+                        "probe_type": "icmp-ping",
+                        "target": "192.168.0.1",
+                        "source": "192.168.0.2",
+                        "probe_count": 13,
+                        "test_interval": 3,
                     },
-                    'test2': {
-                        'probe_type'   : 'http-ping',
-                        'target'       : '172.17.17.1',
-                        'source'       : '192.17.17.2',
-                        'probe_count'  : 5,
-                        'test_interval': 60
-                    }
+                    "test2": {
+                        "probe_type": "http-ping",
+                        "target": "172.17.17.1",
+                        "source": "192.17.17.2",
+                        "probe_count": 5,
+                        "test_interval": 60,
+                    },
                 }
             }
         """
@@ -1365,31 +1324,23 @@ class NetworkDriver(object):
         Example::
 
             {
-                'success': {
-                    'probes_sent': 5,
-                    'packet_loss': 0,
-                    'rtt_min': 72.158,
-                    'rtt_max': 72.433,
-                    'rtt_avg': 72.268,
-                    'rtt_stddev': 0.094,
-                    'results': [
-                        {
-                            'ip_address': u'1.1.1.1',
-                            'rtt': 72.248
-                        },
-                        {
-                            'ip_address': '2.2.2.2',
-                            'rtt': 72.299
-                        }
-                    ]
+                "success": {
+                    "probes_sent": 5,
+                    "packet_loss": 0,
+                    "rtt_min": 72.158,
+                    "rtt_max": 72.433,
+                    "rtt_avg": 72.268,
+                    "rtt_stddev": 0.094,
+                    "results": [
+                        {"ip_address": "1.1.1.1", "rtt": 72.248},
+                        {"ip_address": "2.2.2.2", "rtt": 72.299},
+                    ],
                 }
             }
 
             OR
 
-            {
-                'error': 'unknown host 8.8.8.8'
-            }
+            {"error": "unknown host 8.8.8.8"}
 
         """
         raise NotImplementedError
@@ -1430,86 +1381,89 @@ class NetworkDriver(object):
         Example::
 
             {
-                'success': {
+                "success": {
                     1: {
-                        'probes': {
+                        "probes": {
                             1: {
-                                'rtt': 1.123,
-                                'ip_address': u'206.223.116.21',
-                                'host_name': u'eqixsj-google-gige.google.com'
+                                "rtt": 1.123,
+                                "ip_address": "206.223.116.21",
+                                "host_name": "eqixsj-google-gige.google.com",
                             },
                             2: {
-                                'rtt': 1.9100000000000001,
-                                'ip_address': u'206.223.116.21',
-                                'host_name': u'eqixsj-google-gige.google.com'
+                                "rtt": 1.9100000000000001,
+                                "ip_address": "206.223.116.21",
+                                "host_name": "eqixsj-google-gige.google.com",
                             },
                             3: {
-                                'rtt': 3.347,
-                                'ip_address': u'198.32.176.31',
-                                'host_name': u'core2-1-1-0.pao.net.google.com'}
-                            }
-                        },
-                        2: {
-                            'probes': {
-                                1: {
-                                    'rtt': 1.586,
-                                    'ip_address': u'209.85.241.171',
-                                    'host_name': u'209.85.241.171'
-                                    },
-                                2: {
-                                    'rtt': 1.6300000000000001,
-                                    'ip_address': u'209.85.241.171',
-                                    'host_name': u'209.85.241.171'
-                                },
-                                3: {
-                                    'rtt': 1.6480000000000001,
-                                    'ip_address': u'209.85.241.171',
-                                    'host_name': u'209.85.241.171'}
-                                }
+                                "rtt": 3.347,
+                                "ip_address": "198.32.176.31",
+                                "host_name": "core2-1-1-0.pao.net.google.com",
                             },
-                        3: {
-                            'probes': {
-                                1: {
-                                    'rtt': 2.529,
-                                    'ip_address': u'216.239.49.123',
-                                    'host_name': u'216.239.49.123'},
-                                2: {
-                                    'rtt': 2.474,
-                                    'ip_address': u'209.85.255.255',
-                                    'host_name': u'209.85.255.255'
-                                },
-                                3: {
-                                    'rtt': 7.813,
-                                    'ip_address': u'216.239.58.193',
-                                    'host_name': u'216.239.58.193'}
-                                }
-                            },
-                        4: {
-                            'probes': {
-                                1: {
-                                    'rtt': 1.361,
-                                    'ip_address': u'8.8.8.8',
-                                    'host_name': u'google-public-dns-a.google.com'
-                                },
-                                2: {
-                                    'rtt': 1.605,
-                                    'ip_address': u'8.8.8.8',
-                                    'host_name': u'google-public-dns-a.google.com'
-                                },
-                                3: {
-                                    'rtt': 0.989,
-                                    'ip_address': u'8.8.8.8',
-                                    'host_name': u'google-public-dns-a.google.com'}
-                                }
-                            }
                         }
-                    }
+                    },
+                    2: {
+                        "probes": {
+                            1: {
+                                "rtt": 1.586,
+                                "ip_address": "209.85.241.171",
+                                "host_name": "209.85.241.171",
+                            },
+                            2: {
+                                "rtt": 1.6300000000000001,
+                                "ip_address": "209.85.241.171",
+                                "host_name": "209.85.241.171",
+                            },
+                            3: {
+                                "rtt": 1.6480000000000001,
+                                "ip_address": "209.85.241.171",
+                                "host_name": "209.85.241.171",
+                            },
+                        }
+                    },
+                    3: {
+                        "probes": {
+                            1: {
+                                "rtt": 2.529,
+                                "ip_address": "216.239.49.123",
+                                "host_name": "216.239.49.123",
+                            },
+                            2: {
+                                "rtt": 2.474,
+                                "ip_address": "209.85.255.255",
+                                "host_name": "209.85.255.255",
+                            },
+                            3: {
+                                "rtt": 7.813,
+                                "ip_address": "216.239.58.193",
+                                "host_name": "216.239.58.193",
+                            },
+                        }
+                    },
+                    4: {
+                        "probes": {
+                            1: {
+                                "rtt": 1.361,
+                                "ip_address": "8.8.8.8",
+                                "host_name": "google-public-dns-a.google.com",
+                            },
+                            2: {
+                                "rtt": 1.605,
+                                "ip_address": "8.8.8.8",
+                                "host_name": "google-public-dns-a.google.com",
+                            },
+                            3: {
+                                "rtt": 0.989,
+                                "ip_address": "8.8.8.8",
+                                "host_name": "google-public-dns-a.google.com",
+                            },
+                        }
+                    },
+                }
+            }
 
             OR
 
-            {
-                'error': 'unknown host 8.8.8.8'
-            }
+            {"error": "unknown host 8.8.8.8"}
         """
         raise NotImplementedError
 
@@ -1576,31 +1530,31 @@ class NetworkDriver(object):
         Example::
 
             {
-                'et1': {
-                    'physical_channels': {
-                        'channel': [
+                "et1": {
+                    "physical_channels": {
+                        "channel": [
                             {
-                                'index': 0,
-                                'state': {
-                                    'input_power': {
-                                        'instant': 0.0,
-                                        'avg': 0.0,
-                                        'min': 0.0,
-                                        'max': 0.0,
+                                "index": 0,
+                                "state": {
+                                    "input_power": {
+                                        "instant": 0.0,
+                                        "avg": 0.0,
+                                        "min": 0.0,
+                                        "max": 0.0,
                                     },
-                                    'output_power': {
-                                        'instant': 0.0,
-                                        'avg': 0.0,
-                                        'min': 0.0,
-                                        'max': 0.0,
+                                    "output_power": {
+                                        "instant": 0.0,
+                                        "avg": 0.0,
+                                        "min": 0.0,
+                                        "max": 0.0,
                                     },
-                                    'laser_bias_current': {
-                                        'instant': 0.0,
-                                        'avg': 0.0,
-                                        'min': 0.0,
-                                        'max': 0.0,
+                                    "laser_bias_current": {
+                                        "instant": 0.0,
+                                        "avg": 0.0,
+                                        "min": 0.0,
+                                        "max": 0.0,
                                     },
-                                }
+                                },
                             }
                         ]
                     }
@@ -1639,9 +1593,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_network_instances(
-        self, name: str = ""
-    ) -> Dict[str, models.NetworkInstanceDict]:
+    def get_network_instances(self, name: str = "") -> Dict[str, models.NetworkInstanceDict]:
         """
         Return a dictionary of network instances (VRFs) configured, including default/global
 
@@ -1715,21 +1667,23 @@ class NetworkDriver(object):
         Example::
 
             {
-                'policy_name': [{
-                    'position': 1,
-                    'packet_hits': 200,
-                    'byte_hits': 83883,
-                    'id': '230',
-                    'enabled': True,
-                    'schedule': 'Always',
-                    'log': 'all',
-                    'l3_src': 'any',
-                    'l3_dst': 'any',
-                    'service': 'HTTP',
-                    'src_zone': 'port2',
-                    'dst_zone': 'port3',
-                    'action': 'Permit'
-                }]
+                "policy_name": [
+                    {
+                        "position": 1,
+                        "packet_hits": 200,
+                        "byte_hits": 83883,
+                        "id": "230",
+                        "enabled": True,
+                        "schedule": "Always",
+                        "log": "all",
+                        "l3_src": "any",
+                        "l3_dst": "any",
+                        "service": "HTTP",
+                        "src_zone": "port2",
+                        "dst_zone": "port3",
+                        "action": "Permit",
+                    }
+                ]
             }
         """
         raise NotImplementedError
@@ -1750,19 +1704,19 @@ class NetworkDriver(object):
 
             [
                 {
-                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5c:5e:ab:da:3c:f0',
-                    'ip'        : '2001:db8:1:1::1',
-                    'age'       : 1454496274.84,
-                    'state'     : 'REACH'
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "5c:5e:ab:da:3c:f0",
+                    "ip": "2001:db8:1:1::1",
+                    "age": 1454496274.84,
+                    "state": "REACH",
                 },
                 {
-                    'interface': 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '66:0e:94:96:e0:ff',
-                    'ip'        : '2001:db8:1:1::2',
-                    'age'       : 1435641582.49,
-                    'state'     : 'STALE'
-                }
+                    "interface": "MgmtEth0/RSP0/CPU0/0",
+                    "mac": "66:0e:94:96:e0:ff",
+                    "ip": "2001:db8:1:1::2",
+                    "age": 1435641582.49,
+                    "state": "STALE",
+                },
             ]
         """
         raise NotImplementedError
@@ -1779,12 +1733,9 @@ class NetworkDriver(object):
             {
                 1: {
                     "name": "default",
-                    "interfaces": ["GigabitEthernet0/0/1", "GigabitEthernet0/0/2"]
+                    "interfaces": ["GigabitEthernet0/0/1", "GigabitEthernet0/0/2"],
                 },
-                2: {
-                    "name": "vlan2",
-                    "interfaces": []
-                }
+                2: {"name": "vlan2", "interfaces": []},
             }
         """
         raise NotImplementedError

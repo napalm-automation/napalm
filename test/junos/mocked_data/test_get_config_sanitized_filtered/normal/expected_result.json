@@ -1,0 +1,5 @@
+{
+    "startup": "",
+    "running": "\nversion 18.1;\nsystem {\n    host-name some-switch;\n    domain-name example.com;\n    time-zone UTC;\n    authentication-order [ password radius ];\n    root-authentication {\n        encrypted-password <removed>;\n    }\n    radius-server {\n        10.0.0.1 {\n            secret <removed>;\n            timeout 3;\n            retry 1;\n        }\n    }\n    login {\n        user test-user {\n            uid 1717;\n            class admin;\n            authentication {\n                encrypted-password <removed>;\n            }\n            }\n        }\n    }\n    services {\n        ssh {\n            protocol-version v2;\n        }\n        netconf {\n            ssh;\n        }\n    }\n    ntp {\n        server 10.17.0.1;\n    }\n}\nsnmp {\n    location napalm;\n    contact \"contact@napalm-automation.net\";\n    community <removed>;\n    community <removed> {\n        authorization read-only;\n    }\n}\n",
+    "candidate": ""
+}

@@ -29,9 +29,7 @@ def test_build_payload(mock_pynxos_device):
 def test_build_payload_list(mock_pynxos_device):
     """Payload with list of commands (jsonrpc)"""
     mock_device = mock_pynxos_device
-    payload = mock_device.api._build_payload(
-        ["show hostname", "show version"], method="cli"
-    )
+    payload = mock_device.api._build_payload(["show hostname", "show version"], method="cli")
     payload = json.loads(payload)
     assert len(payload) == 2
     payload_dict = payload[0]
@@ -85,9 +83,7 @@ def test_build_payload_xml(mock_pynxos_device_xml):
 def test_build_payload_xml_list(mock_pynxos_device_xml):
     """Build payload with list of commands (XML)."""
     mock_device = mock_pynxos_device_xml
-    payload = mock_device.api._build_payload(
-        ["show hostname", "show version"], method="cli_show"
-    )
+    payload = mock_device.api._build_payload(["show hostname", "show version"], method="cli_show")
     xml_root = etree.fromstring(payload)
     assert xml_root.tag == "ins_api"
     version = xml_root.find("./version")
@@ -105,9 +101,7 @@ def test_build_payload_xml_list(mock_pynxos_device_xml):
 def test_build_payload_xml_config(mock_pynxos_device_xml):
     """Build payload with list of commands (XML)."""
     mock_device = mock_pynxos_device_xml
-    payload = mock_device.api._build_payload(
-        ["logging history size 200"], method="cli_conf"
-    )
+    payload = mock_device.api._build_payload(["logging history size 200"], method="cli_conf")
     xml_root = etree.fromstring(payload)
     api_method = xml_root.find("./type")
     api_cmd = xml_root.find("./input")

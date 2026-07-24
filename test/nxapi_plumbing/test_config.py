@@ -48,17 +48,13 @@ def test_config_xml_list(mock_pynxos_device_xml):
 def test_config_jsonrpc_raises_NXAPICommandError_on_non_200_config_error(
     mock_pynxos_device,
 ):
-    with pytest.raises(
-        NXAPICommandError, match='The command "bogus command" gave the error'
-    ):
+    with pytest.raises(NXAPICommandError, match='The command "bogus command" gave the error'):
         mock_pynxos_device.config("bogus command")
 
 
 @pytest.mark.parametrize("mock_pynxos_device_xml", [500], indirect=True)
 def test_config_xml_raises_NXAPIPostError_on_non_200_post_error(mock_pynxos_device_xml):
-    with pytest.raises(
-        NXAPIPostError, match="Invalid status code returned on NX-API POST"
-    ):
+    with pytest.raises(NXAPIPostError, match="Invalid status code returned on NX-API POST"):
         mock_pynxos_device_xml.config("logging history size 200")
 
 
@@ -66,7 +62,5 @@ def test_config_xml_raises_NXAPIPostError_on_non_200_post_error(mock_pynxos_devi
 def test_config_xml_raises_NXAPICommandError_on_200_config_error(
     mock_pynxos_device_xml,
 ):
-    with pytest.raises(
-        NXAPICommandError, match='The command "bogus command" gave the error'
-    ):
+    with pytest.raises(NXAPICommandError, match='The command "bogus command" gave the error'):
         mock_pynxos_device_xml.config("bogus command")

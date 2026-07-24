@@ -19,9 +19,7 @@ import logging
 logger = logging.getLogger("cl-napalm-config.py")
 
 
-def run(
-    vendor, hostname, user, password, strategy, optional_args, config_file, dry_run
-):
+def run(vendor, hostname, user, password, strategy, optional_args, config_file, dry_run):
     logger.debug('Getting driver for OS "{driver}"'.format(driver=vendor))
     driver = get_network_driver(vendor)
 
@@ -32,11 +30,7 @@ def run(
         )
     )
     with driver(hostname, user, password, optional_args=optional_args) as device:
-        logger.debug(
-            'Strategy for loading configuration is "{strategy}"'.format(
-                strategy=strategy
-            )
-        )
+        logger.debug('Strategy for loading configuration is "{strategy}"'.format(strategy=strategy))
         if strategy == "replace":
             strategy_method = device.load_replace_candidate
         elif strategy == "merge":

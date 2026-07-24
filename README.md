@@ -1,14 +1,14 @@
 [![PyPI](https://img.shields.io/pypi/v/napalm.svg)](https://pypi.python.org/pypi/napalm)
 [![PyPI versions](https://img.shields.io/pypi/pyversions/napalm.svg)](https://pypi.python.org/pypi/napalm)
 [![Actions Build](https://github.com/napalm-automation/napalm/actions/workflows/commit.yaml/badge.svg?branch=develop)](https://github.com/napalm-automation/napalm/actions/workflows/commit.yaml)
-[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 
 NAPALM
 ======
 NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support) is a Python library that implements a set of functions to interact with different router vendor devices using a unified API.
 
-![NAPALM logo](static/logo.png?raw=true "NAPALM logo")
+![NAPALM logo](https://raw.githubusercontent.com/napalm-automation/napalm/develop/static/logo.png "NAPALM logo")
 
 NAPALM supports several methods to connect to the devices, to manipulate configurations or to retrieve data.
 
@@ -141,6 +141,7 @@ Authors
  * Mircea Ulinic ([ping@mirceaulinic.net](mailto:ping@mirceaulinic.net))
  * Kirk Byers ([ktbyers@twb-tech.com](mailto:ktbyers@twb-tech.com))
  * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
+ * Brandon Ewing ([brandon.ewing@warningg.com](mailto: brandon.ewing@warningg.com))
  * Many others, check the [contributors](https://github.com/napalm-automation/napalm/graphs/contributors) page for details.
 
 

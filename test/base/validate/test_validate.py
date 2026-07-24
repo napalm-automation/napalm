@@ -33,9 +33,7 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(
-            os.path.join(mocked_data, "validate.yml")
-        )
+        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -45,9 +43,7 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(
-            os.path.join(mocked_data, "validate.yml")
-        )
+        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -68,9 +64,7 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(
-            os.path.join(mocked_data, "validate.yml")
-        )
+        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -91,9 +85,7 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(
-            os.path.join(mocked_data, "validate.yml")
-        )
+        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -114,9 +106,7 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(
-            os.path.join(mocked_data, "validate.yml")
-        )
+        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -137,9 +127,7 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(
-            os.path.join(mocked_data, "validate.yml")
-        )
+        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 

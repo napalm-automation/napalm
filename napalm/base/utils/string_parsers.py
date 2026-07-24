@@ -1,4 +1,4 @@
-""" Common methods to normalize a string """
+"""Common methods to normalize a string"""
 
 import re
 import struct
@@ -22,9 +22,7 @@ def sorted_nicely(sort_me: Iterable) -> Iterable:
     return sorted(sort_me, key=alphanum_key)
 
 
-def colon_separated_string_to_dict(
-    string: str, separator: str = ":"
-) -> Dict[str, Optional[str]]:
+def colon_separated_string_to_dict(string: str, separator: str = ":") -> Dict[str, Optional[str]]:
     """
     Converts a string in the format:
 
@@ -51,9 +49,7 @@ def colon_separated_string_to_dict(
         elif len(line_data) == 1:
             dictionary[line_data[0].strip()] = None
         else:
-            raise Exception(
-                f"Something went wrong parsing the colon separated string:\n\n{line}"
-            )
+            raise Exception(f"Something went wrong parsing the colon separated string:\n\n{line}")
     return dictionary
 
 
@@ -74,9 +70,7 @@ def hyphen_range(string: str) -> List[int]:
             for number in range(int(sub_element[0]), int(sub_element[1]) + 1):
                 list_numbers.append(number)
         else:
-            raise Exception(
-                "Something went wrong expanding the range {}".format(string)
-            )
+            raise Exception("Something went wrong expanding the range {}".format(string))
 
     return list_numbers
 
@@ -127,9 +121,7 @@ def convert_uptime_string_seconds(uptime: str) -> int:
             elif unit == "seconds":
                 uptime_seconds += int(value)
             else:
-                raise Exception(
-                    'Unrecognized unit "{}" in uptime:{}'.format(unit, uptime)
-                )
+                raise Exception('Unrecognized unit "{}" in uptime:{}'.format(unit, uptime))
 
     if not uptime_dict:
         raise Exception("Unrecognized uptime string:{}".format(uptime))

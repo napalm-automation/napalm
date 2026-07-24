@@ -41,14 +41,16 @@ class TestMockDriver(object):
         assert "connection closed" in str(excinfo.value)
 
     def test_context_manager(self):
-        with pytest.raises(napalm.base.exceptions.ConnectionException) as e, driver(
-            "blah", "bleh", "blih", optional_args=fail_args
-        ) as d:
+        with (
+            pytest.raises(napalm.base.exceptions.ConnectionException) as e,
+            driver("blah", "bleh", "blih", optional_args=fail_args) as d,
+        ):
             pass
         assert "You told me to do this" in str(e.value)
-        with pytest.raises(AttributeError) as e, driver(
-            "blah", "bleh", "blih", optional_args=optional_args
-        ) as d:
+        with (
+            pytest.raises(AttributeError) as e,
+            driver("blah", "bleh", "blih", optional_args=optional_args) as d,
+        ):
             assert d.is_alive() == {"is_alive": True}
             d.__fake_call()
         assert d.is_alive() == {"is_alive": False}
@@ -95,9 +97,7 @@ class TestMockDriver(object):
 
         with pytest.raises(TypeError) as excinfo:
             d.get_route_to(proto=2)
-        assert "get_route_to got an unexpected keyword argument 'proto'" in str(
-            excinfo.value
-        )
+        assert "get_route_to got an unexpected keyword argument 'proto'" in str(excinfo.value)
 
         d.close()
 

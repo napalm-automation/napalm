@@ -88,9 +88,7 @@ class FakeJunOSDevice:
 
     def cli(self, command="", encoding="text"):
         return self.read_txt_file(
-            "junos/mock_data/{parsed_command}.txt".format(
-                parsed_command=command.replace(" ", "_")
-            )
+            "junos/mock_data/{parsed_command}.txt".format(parsed_command=command.replace(" ", "_"))
         )
 
 

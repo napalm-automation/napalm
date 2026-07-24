@@ -7,7 +7,6 @@ import sys
 import time
 import unittest
 from lxml import etree as ET
-from six import binary_type
 
 # ~~~ import pyIOSXR modules ~~~
 from napalm.pyIOSXR import IOSXR
@@ -66,6 +65,9 @@ class _MockedNetMikoDevice(object):
 
     def find_prompt(self):
         return self.get_mock_file("\n", format="txt")
+
+    def read_channel_timing(self):
+        return ""
 
     def send_command(
         self,
@@ -192,9 +194,7 @@ class TestIOSXRDevice(unittest.TestCase):
         """Testing private method _execute_rpc"""
 
         self.assertIsInstance(
-            self.device._execute_rpc(
-                "<Get><Configuration><NTP></NTP></Configuration></Get>"
-            ),
+            self.device._execute_rpc("<Get><Configuration><NTP></NTP></Configuration></Get>"),
             ET._Element,
             msg="Privat emethod _execute_rpc did not return a valid XML object.",
         )
@@ -262,10 +262,8 @@ class TestIOSXRDevice(unittest.TestCase):
         """Test if public method make_rpc_call returns str"""
 
         self.assertIsInstance(
-            self.device.make_rpc_call(
-                "<Get><Configuration><NTP></NTP></Configuration></Get>"
-            ),
-            binary_type,
+            self.device.make_rpc_call("<Get><Configuration><NTP></NTP></Configuration></Get>"),
+            bytes,
         )
 
     def test_acquired_xml_agent(self):
@@ -302,9 +300,7 @@ class TestIOSXRDevice(unittest.TestCase):
         if self.MOCK:
             # hard to reproduce without mock data
             # as this event is not deterministic
-            self.assertRaises(
-                TimeoutError, self.device.make_rpc_call, "<Empty/><Reply/>"
-            )
+            self.assertRaises(TimeoutError, self.device.make_rpc_call, "<Empty/><Reply/>")
 
     def test_iterator_id_raises_IteratorIDError(self):
         """Testing if reply containing the IteratorID attribute raises IteratorIDError"""
@@ -395,9 +391,7 @@ class TestIOSXRDevice(unittest.TestCase):
     def test_execute_invalid_config_show_raises_InvalidInputError(self):
         """Testing if invalid config show command raises InvalidInputError"""
 
-        self.assertRaises(
-            InvalidInputError, self.device._execute_config_show, "sh run fake"
-        )
+        self.assertRaises(InvalidInputError, self.device._execute_config_show, "sh run fake")
 
     def test_lock_raises_LockError(self):
         """Tests if DB already locked raises LockError"""
@@ -485,9 +479,7 @@ class TestIOSXRDevice(unittest.TestCase):
         self.assertRaises(
             InvalidInputError,
             self.device.load_candidate_config,
-            filename=os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "mock", "bad.cfg"
-            ),
+            filename=os.path.join(os.path.dirname(os.path.abspath(__file__)), "mock", "bad.cfg"),
         )
 
     def test_load_config(self):
@@ -528,9 +520,7 @@ class TestIOSXRDevice(unittest.TestCase):
 
         if not self.MOCK:
             # will get the same mock file as above
-            self.assertEqual(
-                len(self.device.compare_config()), 0, msg="Unable to discard changes"
-            )
+            self.assertEqual(len(self.device.compare_config()), 0, msg="Unable to discard changes")
 
     def test_commit_config(self):
         """Testing commit config"""
@@ -665,9 +655,7 @@ class TestIOSXRDevice(unittest.TestCase):
     def test_commit_replace_config_confirmed_raise_InvalidInputError(self):
         """Testing if incorrect value for confirmed replace commit time raises InvalidInputError"""
 
-        self.assertRaises(
-            InvalidInputError, self.device.commit_replace_config, confirmed=500
-        )
+        self.assertRaises(InvalidInputError, self.device.commit_replace_config, confirmed=500)
 
 
 if __name__ == "__main__":

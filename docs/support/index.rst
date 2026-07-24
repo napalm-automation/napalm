@@ -118,25 +118,36 @@ ____________________________________
 * :code:`alt_key_file` (ios, iosxr, nxos_ssh) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`auto_probe` (junos) - A timeout in seconds, for which to probe the device. Probing determines if the device accepts remote connections. If `auto_probe` is set to ``0``, no probing will be done. (default: ``0``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
+* :code:`auto_file_prompt` (ios) - Control automatic execution of 'file prompt quiet' for file operations (default: ``True``).
 * :code:`config_lock` (iosxr_netconf, iosxr, junos) - Lock the config during open() (default: ``False``).
-* :code:`lock_disable` (junos) - Disable all configuration locking for management by an external system (default: ``False``).
+* :code:`lock_disable` (eos, junos) - Disable all configuration locking for management by an external system (default: ``False``).
 * :code:`config_private` (junos) - Configure private, no DB locking (default: ``False``).
 * :code:`canonical_int` (ios) - Convert operational interface's returned name to canonical name (fully expanded name) (default: ``False``).
-* :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
+* :code:`candidate_cfg` (ios) - Filename for candidate configuration when using config replace (default: ``candidate_config.txt``).
+* :code:`dest_file_system` (ios, nxos) - Destination file system for SCP transfers (default: auto-detected for ios, ``bootflash:`` for nxos).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
-* :code:`force_no_enable` (ios, nxos_ssh) - Do not automatically enter enable-mode on connect (default: ``False``).
+* :code:`force_no_enable` (eos, ios, nxos, nxos_ssh) - Do not automatically enter enable-mode on connect (default: ``False``).
 * :code:`global_delay_factor` (ios, nxos_ssh) - Allow for additional delay in command execution (default: ``1``).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
+* :code:`inline_transfer` (ios) - Enable inline transfers for file operations; automatically set to ``True`` when using telnet transport (default: ``False``).
+* :code:`junos_config_database` (junos) - Junos configuration database to use (default: ``committed``).
+* :code:`junos_config_groups` (junos) - Junos configuration groups setting (default: ``groups``).
+* :code:`junos_config_inherit` (junos) - Junos configuration inheritance setting (default: ``inherit``).
+* :code:`junos_config_options` (junos) - Dictionary to override all Junos configuration options (database, inherit, groups) at once.
 * :code:`keepalive` (iosxr, junos) - SSH keepalive interval, in seconds (default: ``30`` seconds).
 * :code:`key_file` (ios, iosxr_netconf, iosxr, junos, nxos_ssh) - Path to a private key file. (default: ``False``).
+* :code:`merge_cfg` (ios) - Filename for merge configuration operations (default: ``merge_config.txt``).
 * :code:`port` (eos, ios, iosxr_netconf, iosxr, junos, nxos, nxos_ssh) - Allows you to specify a port other than the default.
 * :code:`secret` (ios, nxos_ssh) - Password required to enter privileged exec (enable) (default: ``''``).
-* :code:`ssh_config_file` (ios, iosxr, junos, nxos_ssh) - File name of OpenSSH configuration file.
+* :code:`rollback_cfg` (ios) - Filename for rollback configuration operations (default: ``rollback_config.txt``).
+* :code:`ssh_config_file` (ios, iosxr, iosxr_netconf, junos, nxos_ssh) - File name of OpenSSH configuration file.
 * :code:`ssh_strict` (ios, iosxr, nxos_ssh) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
 * :code:`ssl_verify` (nxos) - Requests argument, enable the SSL certificates verification. See requests ssl-cert-verification for valid values (default: ``None`` equivalent to ``False``).
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
+* :code:`eos_transport` (eos) - Protocol to connect with (backwards compatibility, use ``transport`` instead). (default: ``https``)
+* :code:`nxos_protocol` (nxos) - Protocol to connect with (backwards compatibility, use ``transport`` instead). (default: ``https``)
 * :code:`config_encoding` (iosxr_netconf) - Set encoding to either ``"xml"`` or ``"cli"`` for configuration load methods. (default: ``"cli"``)
 * :code:`force_cfg_session_invalid` (eos) - Force the config_session to be cleared in case of issues, like `discard_config` failure. (default: ``False``)
 * :code:`huge_tree` (junos) - Pass on this flag on Juniper devices when 
