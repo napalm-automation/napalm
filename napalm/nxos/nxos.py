@@ -976,11 +976,11 @@ class NXOSDriver(NXOSDriverBase):
             interface_speed = float(float(interface_speed) / 1000.0)
 
             if "admin_state" in interface_details:
-                is_up = interface_details.get("admin_state", "") == "up"
+                is_enabled = interface_details.get("admin_state", "") == "up"
             elif "svi_admin_state" in interface_details:
-                is_up = interface_details.get("svi_admin_state", "") == "up"
+                is_enabled = interface_details.get("svi_admin_state", "") == "up"
             else:
-                is_up = interface_details.get("state", "") == "up"
+                is_enabled = interface_details.get("state", "") == "up"
             if interface_details.get("eth_hw_addr"):
                 mac_address = interface_details["eth_hw_addr"]
             elif interface_details.get("svi_mac"):
@@ -994,11 +994,11 @@ class NXOSDriver(NXOSDriverBase):
             assert isinstance(desc, str)
             desc = desc.strip('"')
             interfaces[interface_name] = {
-                "is_up": is_up,
-                "is_enabled": (
+                "is_up": (
                     interface_details.get("state") == "up"
                     or interface_details.get("svi_admin_state") == "up"
                 ),
+                "is_enabled": is_enabled,
                 "description": desc,
                 "last_flapped": self._compute_timestamp(
                     interface_details.get("eth_link_flapped", "")
