@@ -11,6 +11,7 @@ no username {{user_name}} password
 {%- if user_details.get('level') %}
 no username {{user_name}} role priv-{{user_details.level}}
 {%- endif %}
-{%- endfor %}
 {%- else -%}
+no username {{user_name}}
 {%- endif -%}
+{%- endfor %}
