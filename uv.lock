@@ -1012,7 +1012,7 @@ wheels = [
 
 [[package]]
 name = "napalm"
-version = "5.1.1"
+version = "0.0.0.dev0"
 source = { editable = "." }
 dependencies = [
     { name = "jinja2" },

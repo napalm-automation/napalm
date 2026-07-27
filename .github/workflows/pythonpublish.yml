@@ -18,6 +18,8 @@ jobs:
       uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
     - name: Install Python 3.13
       run: uv python install 3.13
+    - name: Version
+      run: uv version -- ${{ github.ref_name }}
     - name: Build
       run: uv build
     - name: Publish
