@@ -33,7 +33,7 @@ from collections import defaultdict
 # third party libs
 import pyeapi
 from pyeapi.eapilib import ConnectionError, EapiConnection
-from netmiko import ConfigInvalidException
+from netmiko import ConfigInvalidException, NetMikoTimeoutException
 from typing import Dict
 
 # NAPALM base
@@ -217,7 +217,13 @@ class EOSDriver(NetworkDriver):
 
         # endif self.transport
 
-        sh_ver = self._run_commands(["show version"])
+        try:
+            sh_ver = self._run_commands(["show version"])
+        except (ConnectionError, NetMikoTimeoutException) as ce:
+            # The connection above may succeed without raising an error (e.g. the TCP
+            # handshake completes) while the device is actually unreachable or too slow
+            # to respond; that only surfaces once we send the first real command.
+            raise ConnectionException(str(ce))
         self._eos_version = EOSVersion(sh_ver[0]["version"])
         if self._eos_version < EOSVersion("4.23.0"):
             raise UnsupportedVersion(self._eos_version)
