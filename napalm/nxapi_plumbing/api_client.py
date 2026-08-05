@@ -5,6 +5,7 @@ Reimplemented by ktbyers to support XML-RPC in addition to JSON-RPC
 """
 
 from builtins import super
+from ipaddress import ip_address
 from typing import Optional, List, Dict, Any
 
 import requests
@@ -48,7 +49,7 @@ class RPCBase(object):
             elif transport == "https":
                 port = 443
 
-        self.url = "{}://{}:{}/ins".format(transport, host, port)
+        self.url = "{}://{}:{}/ins".format(transport, self._format_host(host), port)
         self.username = username
         self.password = password
         self.timeout = timeout
@@ -57,6 +58,17 @@ class RPCBase(object):
         self.cmd_method_conf: str
         self.cmd_method_raw: str
         self.headers: Dict
+
+    @staticmethod
+    def _format_host(host: str) -> str:
+        """Wrap literal IPv6 addresses in brackets as required by RFC 3986 section 3.2.2."""
+        if host.startswith("["):
+            return host
+        try:
+            is_ipv6 = ip_address(host).version == 6
+        except ValueError:
+            return host
+        return "[{}]".format(host) if is_ipv6 else host
 
     def _process_api_response(
         self, response: Response, commands: List[str], raw_text: bool = False
