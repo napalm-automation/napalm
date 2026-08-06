@@ -798,7 +798,20 @@ class IOSXRDriver(NetworkDriver):
 
         rpc_command = "<Get><Operational><LLDP><NodeTable></NodeTable></LLDP></Operational></Get>"
 
-        result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+        try:
+            result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+        except napalm.pyIOSXR.exceptions.XMLCLIError:
+            logger.info(
+                "Attempting more specific ASR9K rpc call for LLDP neighbors query"
+            )
+            rpc_command = (
+                "<Get><Operational>"
+                "<LLDP><NodeTable><Node><Naming><NodeName>"
+                "<Rack>0</Rack><Slot>0</Slot><Instance>CPU0</Instance>"
+                "</NodeName></Naming></Node></NodeTable></LLDP>"
+                "</Operational></Get>"
+            )
+            result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
         for neighbor in result_tree.xpath(".//Neighbors/DetailTable/Detail/Entry"):
             interface_name = napalm.base.helpers.convert(
