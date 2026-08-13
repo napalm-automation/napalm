@@ -2340,7 +2340,10 @@ class IOSDriver(NetworkDriver):
                 m = re_temp_value.match(line)
                 if m is not None:
                     temp_name = m.group(1).lower()
-                    temp_value = float(line.split(":")[1].split()[0])
+                    try:
+                        temp_value = float(line.split(":")[1].split()[0])
+                    except (ValueError, IndexError):
+                        continue
                     env_value = {
                         "is_alert": False,
                         "is_critical": False,
