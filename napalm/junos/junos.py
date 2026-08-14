@@ -16,10 +16,11 @@
 """Driver for JunOS devices."""
 
 # import stdlib
-import re
+import collections
+import ipaddress
 import json
 import logging
-import collections
+import re
 from copy import deepcopy
 from collections import OrderedDict, defaultdict
 
@@ -56,6 +57,17 @@ from napalm.junos.utils import junos_views
 log = logging.getLogger(__file__)
 
 
+def _format_hostname(hostname):
+    """Bracket IPv6 literals for PyEZ while leaving other hostnames unchanged."""
+    if hostname.startswith("[") and hostname.endswith("]"):
+        return hostname
+    try:
+        address = ipaddress.ip_address(hostname)
+    except ValueError:
+        return hostname
+    return f"[{hostname}]" if address.version == 6 else hostname
+
+
 class JunOSDriver(NetworkDriver):
     """JunOSDriver class - inherits NetworkDriver from napalm.base."""
 
@@ -77,6 +89,7 @@ class JunOSDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
+        hostname = _format_hostname(hostname)
         self.config_replace = False
         self.locked = False
 

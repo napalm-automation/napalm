@@ -14,11 +14,20 @@
 # the License.
 
 import unittest
-
-from napalm.junos.junos import JunOSDriver
-from napalm.base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from unittest.mock import patch
 
 import lxml
+
+from napalm.base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm.junos.junos import JunOSDriver
+
+
+class TestJunOSDriverInitialization(unittest.TestCase):
+    @patch("napalm.junos.junos.Device")
+    def test_brackets_ipv6_literal_hostname(self, device):
+        JunOSDriver("2001:db8:6:20::54", "admin", "secret")
+
+        self.assertEqual(device.call_args.args[0], "[2001:db8:6:20::54]")
 
 
 class TestConfigJunOSDriver(unittest.TestCase, TestConfigNetworkDriver):
