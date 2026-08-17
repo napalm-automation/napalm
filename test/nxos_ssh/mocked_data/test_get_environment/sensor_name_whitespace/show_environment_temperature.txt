@@ -1,0 +1,9 @@
+Temperature:
+-------------------------------------------------------------------------
+Module  Sensor             MajorThresh   MinorThres   CurTemp     Status
+                           (Celsius)     (Celsius)   (Celsius)
+-------------------------------------------------------------------------
+1        Back-Right (D0)   70            44            27         Ok
+1        Back-Left  (D1)   70            42            28         Ok
+1        Front-Right(D2)   70            47            29         Ok
+1        Front-Left (D3)   70            49            35         Ok
