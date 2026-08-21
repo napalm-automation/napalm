@@ -38,8 +38,7 @@ Start
   ^\s+Last event was ${last_event}
   ^\s+Updates:\s+${output_updates}\s+${input_updates}
   ^\s+Total messages:\s+${output_messages}\s+${input_messages}
-  ^\s+IPv4 Unicast:\s+${advertised_prefix_count}\s+${received_prefix_count}
-  ^\s+IPv6 Unicast:\s+${advertised_ipv6_prefix_count}\s+${received_ipv6_prefix_count}
+  ^\s+Prefix Statistics: -> PrefixStats
   ^\s+Inbound route map is ${import_policy}
   ^\s+Outbound route map is ${export_policy}
   ^\s+Nexthop matches local IP address: ${multihop}
@@ -49,3 +48,8 @@ Start
   ^.*, remote port is ${remote_port}
   ^\s+Send-Q:\s+${messages_queued_out}/.*
   ^$$ -> Next.Record
+
+PrefixStats
+  ^\s+IPv4 Unicast:\s+${advertised_prefix_count}\s+${received_prefix_count}
+  ^\s+IPv6 Unicast:\s+${advertised_ipv6_prefix_count}\s+${received_ipv6_prefix_count}
+  ^\s+Configured maximum total number of routes.* -> Start
