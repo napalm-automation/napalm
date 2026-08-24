@@ -1,0 +1,7 @@
+DNS lookup enabled
+Vrf Name: default Default domain is y.z.a.com
+Name servers are   8.8.8.4 8.8.8.8
+
+
+
+Host            Address
