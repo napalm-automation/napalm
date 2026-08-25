@@ -4,6 +4,7 @@
     "hostname": "nxos-spine1", 
     "fqdn": "nxos-spine1.domain.com", 
     "os_version": "7.3(1)D1(1) [build 7.3(1)D1(0.10)]", 
+    "os_arch": "",
     "serial_number": "TM6017D760B", 
     "model": "NX-OSv Chassis", 
     "interface_list": [

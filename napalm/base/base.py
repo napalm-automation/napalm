@@ -315,22 +315,23 @@ class NetworkDriver(object):
          * hostname - Hostname of the device
          * fqdn - Fqdn of the device
          * os_version - String with the OS version running on the device.
+         * os_arch - String with the OS architecture running on the device.
          * serial_number - Serial number of the device
          * interface_list - List of the interfaces of the device
 
         Example::
 
             {
-                "uptime": 151005.57332897186,
+                "hostname": "ceos2",
+                "fqdn": "ceos2",
                 "vendor": "Arista",
-                "os_version": "4.14.3-2329074.gaatlantarel",
-                "serial_number": "SN0123A34AS",
-                "model": "vEOS",
-                "hostname": "eos-router",
-                "fqdn": "eos-router",
-                "interface_list": ["Ethernet2", "Management1", "Ethernet1", "Ethernet3"],
+                "model": "cEOSLab",
+                "serial_number": "FE01F674C71D863770F88B78A2A21A52",
+                "os_version": "4.34.3M-44102239.4343M",
+                "os_arch": "aarch64",
+                "uptime": 11278.020601511002,
+                "interface_list": ["Ethernet1", "Management0"],
             }
-
         """
         raise NotImplementedError
 

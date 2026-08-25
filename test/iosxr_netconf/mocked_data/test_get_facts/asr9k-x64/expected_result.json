@@ -52,6 +52,7 @@
     ],
     "model": "ASR-9904",
     "os_version": "6.3.2",
+    "os_arch": "",
     "serial_number": "FOX2004GHX6",
     "uptime": 361954,
     "vendor": "Cisco"

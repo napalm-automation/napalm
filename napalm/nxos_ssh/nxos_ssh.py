@@ -645,6 +645,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             "uptime": float(uptime),
             "vendor": vendor,
             "os_version": str(os_version),
+            "os_arch": "",
             "serial_number": str(serial_number),
             "model": str(model),
             "hostname": str(hostname),

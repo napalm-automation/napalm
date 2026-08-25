@@ -43,6 +43,7 @@
     ],
     "model": "8201-SYS",
     "os_version": "7.0.12",
+    "os_arch": "",
     "serial_number": "FOC2217WVYE",
     "uptime": 93073,
     "vendor": "Cisco"

@@ -10,6 +10,7 @@
     ],
     "model": "R-IOSXRV9000-CC",
     "os_version": "6.3.2",
+    "os_arch": "",
     "serial_number": "A8C4DEB4C9B",
     "uptime": 1727550,
     "vendor": "Cisco"
