@@ -22,6 +22,10 @@ class _FakeDriver(NetworkDriver):
     """Minimal NetworkDriver subclass used as a stand-in by unit tests."""
 
 
+class _FakeSubclassDriver(_FakeDriver):
+    """A driver that extends another driver, the way custom drivers usually do."""
+
+
 _FAKE_MODULE = types.ModuleType("fake_driver_module")
 _FAKE_MODULE.FakeDriver = _FakeDriver
 
@@ -73,6 +77,24 @@ class TestGetNetworkDriverUnit(unittest.TestCase):
         """get_network_driver raises ModuleImportError when all candidate imports fail."""
         with patch("napalm.base.importlib.import_module", side_effect=_fail_import):
             self.assertRaises(ModuleImportError, get_network_driver, driver, prepend=False)
+
+    # --- driver class selection ---
+
+    def test_subclass_preferred_over_imported_parent(self):
+        """A driver that extends another driver wins over the parent it imports (#2269)."""
+        module = types.ModuleType("custom_napalm.ios")
+        module.IOSDriver = _FakeDriver  # the imported parent sorts first by name
+        module.WirelessIOSDriver = _FakeSubclassDriver
+        with patch("napalm.base.importlib.import_module", return_value=module):
+            self.assertIs(get_network_driver("ios"), _FakeSubclassDriver)
+
+    def test_imported_base_class_is_not_returned(self):
+        """NetworkDriver imported into a driver module is never returned in place of the driver."""
+        module = types.ModuleType("custom_napalm.acme")
+        module.NetworkDriver = NetworkDriver  # sorts before SomeDriver
+        module.SomeDriver = _FakeDriver
+        with patch("napalm.base.importlib.import_module", return_value=module):
+            self.assertIs(get_network_driver("acme"), _FakeDriver)
 
     # --- prepend=False behaviour ---
 
