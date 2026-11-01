@@ -104,7 +104,9 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     :param prepend:      when ``True`` (default) the ``napalm.`` prefix is added automatically
                          for plain names.  Set to ``False`` only when *name* already contains
                          ``"napalm"``.
-    :return:             the first class derived from NetworkDriver found in the resolved module.
+    :return:             the class derived from NetworkDriver found in the resolved module. When
+                         the module also exposes a driver it inherits from (e.g. a custom driver
+                         built on ``IOSDriver``), the most-derived class is returned.
     :raise ModuleImportError:   when the name is invalid, the library is not installed, or no
                                 class derived from NetworkDriver was found.
 
@@ -172,9 +174,17 @@ def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     else:
         raise ModuleImportError(f'Cannot import "{name}". Is the library installed?')
 
-    for name, obj in inspect.getmembers(module):
-        if inspect.isclass(obj) and issubclass(obj, NetworkDriver):
-            return obj
+    drivers = [
+        obj
+        for _, obj in inspect.getmembers(module, inspect.isclass)
+        if issubclass(obj, NetworkDriver)
+    ]
+    # A driver that extends another one (e.g. a custom driver inheriting from IOSDriver) shares
+    # its module with the parent class it imports. inspect.getmembers() sorts by name, so pick
+    # the most-derived class instead of whichever name sorts first.
+    for driver in drivers:
+        if not any(other is not driver and issubclass(other, driver) for other in drivers):
+            return driver
 
     # looks like you don't have any Driver class in your module...
     raise ModuleImportError(
