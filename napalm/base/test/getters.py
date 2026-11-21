@@ -116,7 +116,7 @@ class BaseTestGetters(object):
         errors = {}
         cls = self.driver
         # Create fictional driver instance (py3 needs bound methods)
-        tmp_obj = cls(hostname="test", username="admin", password="pwd")
+        tmp_obj = cls(hostname="test", username="admin", password="pwd")  # noqa: S106
         attrs = [m for m, v in inspect.getmembers(tmp_obj)]
         for attr in attrs:
             func = getattr(tmp_obj, attr)

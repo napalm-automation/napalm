@@ -9,10 +9,17 @@ if [ -d "napalm_ansible_repo" ]; then
     rm -rf napalm_ansible_repo
 fi
 
-git clone https://github.com/napalm-automation/napalm-ansible.git napalm_ansible_repo
+# Pinned release (tag + commit SHA, since tags can be moved)
+NAPALM_ANSIBLE_TAG="1.1.0"
+NAPALM_ANSIBLE_SHA="150ddb3a87e37c36a7077bc8b39521bdbd8c8e1b"
+
+git clone --depth 1 --branch "$NAPALM_ANSIBLE_TAG" https://github.com/napalm-automation/napalm-ansible.git napalm_ansible_repo
 cd napalm_ansible_repo
 
-git checkout develop
+if [ "$(git rev-parse HEAD)" != "$NAPALM_ANSIBLE_SHA" ]; then
+    echo "napalm-ansible $NAPALM_ANSIBLE_TAG does not match pinned SHA $NAPALM_ANSIBLE_SHA" >&2
+    exit 1
+fi
 
 uv pip install .
 # Needed until this is fixed: 

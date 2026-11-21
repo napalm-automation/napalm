@@ -1278,7 +1278,7 @@ class EOSDriver(NetworkDriver):
                         "jitter": float(line_groups[10]),
                     }
                 )
-            except Exception:
+            except Exception:  # noqa: S112
                 continue  # jump to next line
 
         return ntp_stats
@@ -1307,7 +1307,7 @@ class EOSDriver(NetworkDriver):
                 interfaces_ip[interface_name]["ipv6"] = {}
 
             iface_details = interface_details.get("interfaceAddress", {})
-            if iface_details.get("primaryIp", {}).get("address") != "0.0.0.0":
+            if iface_details.get("primaryIp", {}).get("address") != "0.0.0.0":  # noqa: S104
                 ipv4_list.append(
                     {
                         "address": napalm.base.helpers.ip(

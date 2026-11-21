@@ -109,7 +109,8 @@ def load_template(
                 search_path = ["{}/templates".format(s) for s in search_path]
 
             loader = jinja2.FileSystemLoader(search_path)
-            environment = jinja2.Environment(loader=loader)
+            # Renders device configuration (not HTML); autoescape would corrupt it.
+            environment = jinja2.Environment(loader=loader)  # noqa: S701
 
             for filter_name, filter_function in itertools.chain(
                 CustomJinjaFilters.filters().items(), jinja_filters.items()

@@ -11,29 +11,29 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5
+      - name: Install uv and Python 3.13
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
         with:
+          version: "0.13.9"
+          python-version: '3.13'
           enable-cache: true
 
-      - name: Set up Python
-        run: uv python install 3.13
-
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --locked --all-groups
 
       - name: Run ruff check
-        run: uv run --no-project ruff check .
+        run: uv run --locked ruff check .
 
       - name: Run ruff format
-        run: uv run --no-project ruff format .
+        run: uv run --locked ruff format --check .
 
       - name: Run type checker
-        env:
-          MYPYC_OPT_LEVEL: 0  # Fixes the Python 3.13 symbol crash
         run: |
-          uv run --no-project mypy --version
-          uv run --no-project mypy -p napalm --config-file mypy.ini
+          uv run --locked mypy --version
+          uv run --locked mypy -p napalm --config-file mypy.ini
+
+      - name: Run dependency vulnerability audit
+        run: uv audit --locked --preview-features audit-command
 
   std_tests:
     name: std_tests
@@ -46,16 +46,17 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
         with:
+          version: "0.13.9"
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --locked
 
       - name: Run Tests
-        run: uv run pytest --cov=napalm --cov-report term-missing -vs
+        run: uv run --locked pytest --cov=napalm --cov-report term-missing -vs
 
   std_tests_macos:
     name: std_tests_macos
@@ -68,16 +69,17 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
         with:
+          version: "0.13.9"
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --locked
 
       - name: Run Tests
-        run: uv run pytest --cov=napalm --cov-report term-missing -vs
+        run: uv run --locked pytest --cov=napalm --cov-report term-missing -vs
 
   build_docs:
     name: build_docs
@@ -87,13 +89,14 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
         with:
+          version: "0.13.9"
           python-version: '3.13'
           enable-cache: true
 
       - name: Install dependencies
-        run: uv sync --all-groups
+        run: uv sync --locked --all-groups
 
       - name: Doctests
-        run: uv run make doctest
+        run: uv run --locked make doctest

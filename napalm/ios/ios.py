@@ -2551,7 +2551,7 @@ class IOSDriver(NetworkDriver):
                         "jitter": float(disp),
                     }
                 )
-            except Exception:
+            except Exception:  # noqa: S112
                 continue
 
         return ntp_stats

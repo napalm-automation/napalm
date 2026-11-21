@@ -1649,7 +1649,7 @@ class JunOSDriver(NetworkDriver):
                         "jitter": float(line_groups[10]),
                     }
                 )
-            except Exception:
+            except Exception:  # noqa: S112
                 continue  # jump to next line
 
         return ntp_stats
