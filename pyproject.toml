@@ -80,6 +80,7 @@ docs = [
 [tool.uv]
 managed = true
 required-version = ">=0.13.4"
+exclude-newer = "7 days"
 package = true
 
 [tool.uv.build-backend]
