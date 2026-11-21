@@ -17,11 +17,11 @@ Parameters
 		<th>Description</th>
 	{% for p in doc['options']|sort %}
 			<tr>
-				<td>{{ p }}</td>
-				<td>{{ doc['options'][p]['required'] }}</td>
+				<td>{{ p|e }}</td>
+				<td>{{ doc['options'][p]['required']|e }}</td>
 				<td>N/A</td>
 				<td>N/A</td>
-				<td>{{ doc['options'][p]['description'][0] }}</td>
+				<td>{{ doc['options'][p]['description'][0]|e }}</td>
 			</tr>
 	{% endfor %}
 
@@ -51,11 +51,11 @@ Return
 		<th>Sample</th>
 	{% for value in return_values %}
 			<tr>
-				<td>{{ value }}</td>
-				<td>{{ return_values[value].description }}</td>
-				<td>{{ return_values[value].returned }}</td>
-				<td>{{ return_values[value].type }}</td>
-				<td>{{ return_values[value].sample|replace('\n', '\\n') }}</td>
+				<td>{{ value|e }}</td>
+				<td>{{ return_values[value].description|e }}</td>
+				<td>{{ return_values[value].returned|e }}</td>
+				<td>{{ return_values[value].type|e }}</td>
+				<td>{{ return_values[value].sample|replace('\n', '\\n')|e }}</td>
 			</tr>
 	{% endfor %}
 	</table>

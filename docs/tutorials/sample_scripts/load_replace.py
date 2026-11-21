@@ -27,7 +27,7 @@ def main(config_file):
     device = driver(
         hostname="127.0.0.1",
         username="vagrant",
-        password="vagrant",
+        password="vagrant",  # noqa: S106
         optional_args={"port": 12443},
     )
 
