@@ -36,7 +36,7 @@ def provision_eos(port, username, password):
         transport="https",
         host="localhost",
         username="vagrant",
-        password="vagrant",
+        password="vagrant",  # noqa: S106
         port=port,
     )
     device = pyeapi.client.Node(connection)

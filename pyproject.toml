@@ -141,8 +141,6 @@ exclude = [
 extend-select = ["S"]
 ignore = [
     "S101",  # assert: only stripped under python -O
-    "S105",  # hardcoded password string: false positives on names/prompts
-    "S106",  # hardcoded password func arg: false positives
     "S108",  # hardcoded /tmp paths
     "S110",  # try/except/pass: intentional in cleanup code
 ]

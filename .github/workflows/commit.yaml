@@ -28,8 +28,6 @@ jobs:
         run: uv run --locked ruff format --check .
 
       - name: Run type checker
-        env:
-          MYPYC_OPT_LEVEL: 0  # Fixes the Python 3.13 symbol crash
         run: |
           uv run --locked mypy --version
           uv run --locked mypy -p napalm --config-file mypy.ini

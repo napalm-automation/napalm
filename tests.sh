@@ -9,7 +9,7 @@ uv sync --locked --all-groups
 uv run --locked ruff check .
 uv run --locked ruff format --check .
 uv run --locked mypy --version
-MYPYC_OPT_LEVEL=0 uv run --locked mypy -p napalm --config-file mypy.ini
+uv run --locked mypy -p napalm --config-file mypy.ini
 uv audit --locked --preview-features audit-command
 
 # std_tests

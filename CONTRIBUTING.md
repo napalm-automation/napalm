@@ -66,11 +66,6 @@ uv run --locked mypy --version
 uv run --locked mypy -p napalm --config-file mypy.ini
 ```
 
-> **Note:** If you are on Python 3.13, set `MYPYC_OPT_LEVEL=0` to avoid a known symbol crash:
-> ```bash
-> MYPYC_OPT_LEVEL=0 uv run --locked mypy -p napalm --config-file mypy.ini
-> ```
-
 ### Dependency vulnerability audit
 
 ```bash
