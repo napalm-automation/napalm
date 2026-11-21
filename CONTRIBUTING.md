@@ -20,7 +20,7 @@ This project uses [uv](https://github.com/astral-sh/uv) for dependency and envir
 2. **Install dependencies:**
 
    ```bash
-   uv sync --all-groups
+   uv sync --locked --all-groups
    ```
 
 ## Code Style & Linting
@@ -30,25 +30,25 @@ All code must pass the following checks before a pull request will be accepted. 
 ### Ruff (linting)
 
 ```bash
-uv run --no-project ruff check .
+uv run --locked ruff check .
 ```
 
 ### Ruff (formatting)
 
 ```bash
-uv run --no-project ruff format .
+uv run --locked ruff format .
 ```
 
 ### Mypy (type checking)
 
 ```bash
-uv run --no-project mypy --version
-uv run --no-project mypy -p napalm --config-file mypy.ini
+uv run --locked mypy --version
+uv run --locked mypy -p napalm --config-file mypy.ini
 ```
 
 > **Note:** If you are on Python 3.13, set `MYPYC_OPT_LEVEL=0` to avoid a known symbol crash:
 > ```bash
-> MYPYC_OPT_LEVEL=0 uv run --no-project mypy -p napalm --config-file mypy.ini
+> MYPYC_OPT_LEVEL=0 uv run --locked mypy -p napalm --config-file mypy.ini
 > ```
 
 ## Running Tests
@@ -56,7 +56,7 @@ uv run --no-project mypy -p napalm --config-file mypy.ini
 Tests are run with `pytest` and coverage reporting is enabled:
 
 ```bash
-uv run pytest --cov=napalm --cov-report term-missing -vs
+uv run --locked pytest --cov=napalm --cov-report term-missing -vs
 ```
 
 Tests are executed in CI against the following matrix:
@@ -71,7 +71,7 @@ Tests are executed in CI against the following matrix:
 Documentation doctests are run after the standard test suite passes:
 
 ```bash
-uv run make doctest
+uv run --locked make doctest
 ```
 
 ## CI Pipeline Summary
