@@ -2,17 +2,17 @@
 {%- if text == "passed" -%}&#x2705;
 {%- elif text == "failed" -%}&#x2620;
 {%- elif text == "skipped" -%}&#x274c;
-{%- else -%}{{ text }}
+{%- else -%}{{ text|e }}
 {%- endif -%}
 {%- endmacro -%}
 
 .. raw:: html
 
 	<table border="1" class="docutils">
-		<th></th>{% for driver in drivers %}<th>{{driver|upper}}</th>{% endfor %}
+		<th></th>{% for driver in drivers %}<th>{{driver|upper|e}}</th>{% endfor %}
 		{% for method in sorted_methods %}
 		<tr>
-			<td><strong>{{ method }}</strong></td>{% for driver in drivers %}<td>{{ parse(matrix[method][driver]) }}</td>{% endfor %}
+			<td><strong>{{ method|e }}</strong></td>{% for driver in drivers %}<td>{{ parse(matrix[method][driver]) }}</td>{% endfor %}
 		</tr>{% endfor %}
 	</table>
 	<ul>
