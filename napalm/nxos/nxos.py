@@ -142,6 +142,7 @@ class NXOSDriverBase(NetworkDriver):
                 raise ReplaceConfigException("File {} not found".format(filename))
 
         try:
+            assert self._netmiko_device is not None
             transfer_result = file_transfer(
                 self._netmiko_device,
                 source_file=filename,
@@ -300,7 +301,8 @@ class NXOSDriverBase(NetworkDriver):
 
             try:
                 # If hostname changes ensure Netmiko state is updated properly
-                self._netmiko_device.set_base_prompt()
+                if self._netmiko_device is not None:
+                    self._netmiko_device.set_base_prompt()
             except AttributeError:
                 pass
 

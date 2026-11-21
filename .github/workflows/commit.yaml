@@ -33,6 +33,9 @@ jobs:
           uv run --locked mypy --version
           uv run --locked mypy -p napalm --config-file mypy.ini
 
+      - name: Run dependency vulnerability audit
+        run: uv audit --locked --preview-features audit-command
+
   std_tests:
     name: std_tests
     strategy:

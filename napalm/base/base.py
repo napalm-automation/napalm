@@ -18,7 +18,7 @@ from typing import Optional, Dict, Type, Any, List, Union
 
 from typing_extensions import Literal
 
-from netmiko import ConnectHandler, NetMikoTimeoutException
+from netmiko import BaseConnection, ConnectHandler, NetMikoTimeoutException
 from netutils.interface import canonical_interface_name
 
 # local modules
@@ -106,12 +106,12 @@ class NetworkDriver(object):
 
     def _netmiko_open(
         self, device_type: str, netmiko_optional_args: Optional[Dict] = None
-    ) -> ConnectHandler:
+    ) -> BaseConnection:
         """Standardized method of creating a Netmiko connection using napalm attributes."""
         if netmiko_optional_args is None:
             netmiko_optional_args = {}
         try:
-            self._netmiko_device = ConnectHandler(
+            self._netmiko_device: Optional[BaseConnection] = ConnectHandler(
                 device_type=device_type,
                 host=self.hostname,
                 username=self.username,
@@ -134,10 +134,12 @@ class NetworkDriver(object):
 
     def _netmiko_close(self) -> None:
         """Standardized method of closing a Netmiko connection."""
-        if getattr(self, "_netmiko_device", None):
-            self._netmiko_device.disconnect()
+        netmiko_device = getattr(self, "_netmiko_device", None)
+        if netmiko_device:
+            netmiko_device.disconnect()
             self._netmiko_device = None
-        self.device: Optional[ConnectHandler] = None
+        # Device type is driver-specific (Netmiko, pyeapi, NX-API, mock, ...).
+        self.device: Any = None
 
     def open(self) -> None:
         """

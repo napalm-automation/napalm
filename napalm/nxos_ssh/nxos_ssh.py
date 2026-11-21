@@ -407,7 +407,7 @@ def bgp_summary_parser(bgp_summary):
         bgp_data["address_family"][afi] = prefixes_dict
         bgp_data["local_as"] = local_as
         # FIX, hard-coding
-        bgp_data["remote_id"] = "0.0.0.0"
+        bgp_data["remote_id"] = "0.0.0.0"  # noqa: S104
         bgp_new_dict[neighbor] = bgp_data
 
     bgp_return_dict[vrf]["peers"] = bgp_new_dict
