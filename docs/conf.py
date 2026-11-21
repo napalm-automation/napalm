@@ -330,7 +330,7 @@ def build_napalm_ansible_module_docs(app):
         print("Something bad happened when processing the Ansible modules.")
         sys.exit(-1)
 
-    # Renders reStructuredText (not HTML) from local templates; autoescape would corrupt it.
+    # Renders RST (incl. raw HTML tables, escaped via |e); autoescape would corrupt RST/code blocks.
     env = Environment(loader=FileSystemLoader("."))  # noqa: S701
 
     modules_dir = "./integrations/ansible/modules/source"
@@ -395,7 +395,7 @@ def build_getters_support_matrix(app):
 
     sorted_methods = sorted(matrix.keys())
     drivers = sorted(drivers)
-    # Renders reStructuredText (not HTML) from local templates; autoescape would corrupt it.
+    # Renders RST (incl. raw HTML tables, escaped via |e); autoescape would corrupt RST/code blocks.
     env = Environment(loader=FileSystemLoader("."))  # noqa: S701
     template_file = env.get_template("matrix.j2")
     rendered_template = template_file.render(
