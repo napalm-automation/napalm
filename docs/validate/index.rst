@@ -89,6 +89,27 @@ A few notes:
       example, we are validating that only that BGP neighbor is present on that vrf but we are not
       validating that other vrfs don't exist. We are not validating all the data inside the BGP
       neighbor either, we are only validating the ones we specified.
+    * ``_mode`` takes one setting from each of two pairs. The first of each pair is the default:
+
+      ============= ==================================== ===========
+      ``_mode``     Meaning                              Applies to
+      ============= ==================================== ===========
+      ``nonstrict`` extra items are allowed (default)    lists/dicts
+      ``strict``    no extra items or keys               lists/dicts
+      ``partial``   the pattern may match part of the    strings
+                    value (default)
+      ``exact``     the pattern must match the whole     strings
+                    value
+      ============= ==================================== ===========
+
+      Values are still regular expressions, so ``exact`` is a full match of the pattern. For
+      example, with ``os_version: 15\.9``, the default ``partial`` mode accepts both ``15.9`` and
+      ``15.9(3)M3``, while ``exact`` accepts only ``15.9``. In the same way, ``Vlan5`` in a list
+      matches ``Vlan5554`` by default but not with ``_mode: exact``. Combine them with a space,
+      for example ``_mode: strict exact``. Like ``strict``, ``exact`` is specific to a level: it
+      applies to the string values and list items at that level, and nested dictionaries need
+      their own ``_mode``. Numeric comparisons (``<15``, ``10<->20``, ``10%20``) are not
+      affected.
     * Lists of objects to be validated require an extra key ``list``. You can see an example with
       the ``get_facts`` getter. Lists can be strict as well. In this case, we want to make sure the
       device has only those two interfaces.
