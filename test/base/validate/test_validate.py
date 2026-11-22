@@ -153,6 +153,36 @@ class TestValidate:
 
         assert source == witness, yaml.safe_dump(source)
 
+    def test_exact_mode_end_to_end(self, tmp_path):
+        """An exact list does not accept Vlan5554 for Vlan5 (napalm issue 2029)."""
+        (tmp_path / "get_facts.json").write_text(
+            json.dumps({"interface_list": ["Vlan5554", "Vlan100"], "os_version": "15.9(3)M3"})
+        )
+        device = FakeDriver(str(tmp_path))
+        source = [
+            {"get_facts": {"_name": "default", "interface_list": {"list": ["Vlan5"]}}},
+            {
+                "get_facts": {
+                    "_name": "exact",
+                    "interface_list": {"_mode": "exact", "list": ["Vlan5"]},
+                }
+            },
+            {
+                "get_facts": {
+                    "_name": "exact_ok",
+                    "interface_list": {"_mode": "exact", "list": ["Vlan100"]},
+                }
+            },
+            {"get_facts": {"_name": "version", "_mode": "exact", "os_version": r"15\.9"}},
+        ]
+        report = device.compliance_report(validation_source=source)
+
+        assert report["default"]["complies"] is True
+        assert report["exact"]["present"]["interface_list"]["diff"]["missing"] == ["Vlan5"]
+        assert report["exact_ok"]["complies"] is True
+        assert report["version"]["complies"] is False
+        assert report["complies"] is False
+
 
 class FakeDriver(NetworkDriver):
     """This is a fake NetworkDriver."""

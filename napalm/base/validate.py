@@ -33,14 +33,26 @@ def _get_validation_file(validation_file: str) -> Dict[str, Dict]:
     return validation_source
 
 
-def _mode(mode_string: str) -> Dict[str, bool]:
-    mode = {"strict": False}
+# Each group holds two opposite settings. The first one is the default.
+_MODE_GROUPS = (("nonstrict", "strict"), ("partial", "exact"))
 
-    for m in mode_string.split():
-        if m not in mode.keys():
+
+def _mode(mode_string: str) -> Dict[str, bool]:
+    """Parse a ``_mode`` string such as ``"strict exact"``.
+
+    ``nonstrict``/``strict`` control whether extra list items or dict keys are allowed.
+    ``partial``/``exact`` control whether a string pattern may match part of the value
+    or must match all of it. Defaults are ``nonstrict`` and ``partial``.
+    """
+    known = {m for group in _MODE_GROUPS for m in group}
+    requested = mode_string.split()
+    for m in requested:
+        if m not in known:
             raise ValidationException("mode '{}' not recognized".format(m))
-        mode[m] = True
-    return mode
+    for default, other in _MODE_GROUPS:
+        if default in requested and other in requested:
+            raise ValidationException("modes '{}' and '{}' conflict".format(default, other))
+    return {"strict": "strict" in requested, "exact": "exact" in requested}
 
 
 def _compare_getter_list(
@@ -58,7 +70,7 @@ def _compare_getter_list(
         i = 0
         while True:
             try:
-                intermediate_match = compare(src_element, dst[i])
+                intermediate_match = compare(src_element, dst[i], mode)
                 if (
                     isinstance(intermediate_match, dict)
                     and intermediate_match["complies"]
@@ -100,7 +112,7 @@ def _compare_getter_dict(
         try:
             dst_element = dst.pop(key)
             result["present"][key] = {}
-            intermediate_result = compare(src_element, dst_element)
+            intermediate_result = compare(src_element, dst_element, mode)
 
             if isinstance(intermediate_result, dict):
                 nested = True
@@ -136,7 +148,7 @@ CompareInput = TypeVar("CompareInput", str, Dict, List)
 
 
 def compare(
-    src: CompareInput, dst: CompareInput
+    src: CompareInput, dst: CompareInput, mode: Optional[Dict[str, bool]] = None
 ) -> Union[bool, models.DictValidationResult, models.ListValidationResult]:
     if isinstance(src, str):
         src = str(src)
@@ -162,7 +174,10 @@ def compare(
             cmp_result = _compare_tolerance(src, dst)
             return cmp_result
         else:
-            m = re.search(src, str(dst))
+            if mode and mode["exact"]:
+                m = re.fullmatch(src, str(dst))
+            else:
+                m = re.search(src, str(dst))
             if m:
                 return bool(m)
             else:
@@ -170,8 +185,9 @@ def compare(
 
     elif isinstance(src, list) and isinstance(dst, list):
         pairs = zip(src, dst)
+        match = re.fullmatch if mode and mode["exact"] else re.search
         diff_lists = [
-            [(k, x[k], y[k]) for k in x if not re.search(x[k], y[k])] for x, y in pairs if x != y
+            [(k, x[k], y[k]) for k in x if not match(x[k], y[k])] for x, y in pairs if x != y
         ]
         return empty_tree(diff_lists)
 
