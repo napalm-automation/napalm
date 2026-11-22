@@ -7,7 +7,7 @@ name = "napalm"
 version = "0.0.0.dev0"
 description = "Network Automation and Programmability Abstraction Layer with Multivendor support"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [
     { name = "David Barroso", email = "dbarrosop@dravetech.com" },
@@ -19,11 +19,11 @@ classifiers = [
     "Topic :: Utilities",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS",
 ]
@@ -74,7 +74,7 @@ docs = [
     "jinja2==3.1.6",
     "MarkupSafe==3.0.3",
     "pytest==9.0.3",
-    "ansible==12.2.0; python_version >= '3.11'",
+    "ansible==12.2.0",
 ]
 
 [tool.uv]
@@ -117,8 +117,8 @@ omit = [
 [tool.ruff]
 line-length = 100
 
-# Specify your floor Python version (i.e. minimum version Netmiko supports)
-target-version = "py310"
+# Floor Python version (must match requires-python)
+target-version = "py311"
 
 # Files or directories to exclude from linting and formatting
 exclude = [
