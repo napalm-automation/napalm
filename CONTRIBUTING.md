@@ -87,8 +87,8 @@ Tests are executed in CI against the following matrix:
 | Platform             | Python versions              |
 |----------------------|------------------------------|
 | Ubuntu 24.04         | 3.11, 3.12, 3.13, 3.14, 3.15 |
-| macOS 15 (Intel)     | 3.12, 3.13, 3.14, 3.15       |
-| macOS 26             | 3.12, 3.13, 3.14, 3.15       |
+| macOS 15 (Intel)     | 3.13                         |
+| macOS 26             | 3.11, 3.15                   |
 
 ## Documentation
 
@@ -107,8 +107,8 @@ The following jobs run automatically via GitHub Actions on every push and pull r
 |--------------------|--------------------------------------------------|
 | `linters`          | Runs ruff (lint incl. `S` + format check), mypy, uv audit |
 | `std_tests`        | Runs pytest on Ubuntu across all Python versions |
-| `std_tests_macos_intel` | Runs pytest on macOS 15 (Intel) for Python 3.12–3.15 |
-| `std_tests_macos`  | Runs pytest on macOS 26 for Python 3.12–3.15     |
+| `std_tests_macos_intel` | Runs pytest on macOS 15 (Intel) for Python 3.13 |
+| `std_tests_macos`  | Runs pytest on macOS 26 for Python 3.11 and 3.15 |
 | `build_docs`       | Builds documentation (requires std_tests)        |
 
 CI is check-only: it never modifies code and uses `--locked` everywhere. There is no

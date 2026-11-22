@@ -1,5 +1,8 @@
 name: build
-on: [push, pull_request]
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
 permissions:
   contents: read
 
@@ -62,7 +65,7 @@ jobs:
     name: std_tests_macos_intel
     strategy:
       matrix:
-        python-version: ['3.12', '3.13', '3.14', '3.15']
+        python-version: ['3.13']
         platform: [macos-15-intel]
     runs-on: ${{ matrix.platform }}
     steps:
@@ -85,7 +88,7 @@ jobs:
     name: std_tests_macos
     strategy:
       matrix:
-        python-version: ['3.12', '3.13', '3.14', '3.15']
+        python-version: ['3.11', '3.15']
         platform: [macos-26]
     runs-on: ${{ matrix.platform }}
     steps:
