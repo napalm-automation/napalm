@@ -98,6 +98,7 @@ class EOSDriver(NetworkDriver):
                 in case of failure.
             * enable_password (True/False): Enable password for privilege elevation
             * eos_autoComplete (True/False): Allow for shortening of cli commands
+            * eos_sanitized_config (True/False): Read the running config with "sanitized"
             * transport (string): transport, eos_transport is a fallback for compatibility.
                 - ssh (uses Netmiko)
                 - socket
@@ -130,6 +131,7 @@ class EOSDriver(NetworkDriver):
         force_no_enable = self.optional_args.pop("force_no_enable", False)
         self.send_enable = not force_no_enable
         self.eos_autoComplete = self.optional_args.pop("eos_autoComplete", None)
+        self.sanitized_config = self.optional_args.pop("eos_sanitized_config", False)
 
         # Define locking method
         self.lock_disable = self.optional_args.pop("lock_disable", False)
@@ -277,6 +279,10 @@ class EOSDriver(NetworkDriver):
         else:
             kwargs.setdefault("send_enable", self.send_enable)
             return self.device.run_commands(commands, **kwargs)
+
+    def _running_config(self, pipe=""):
+        cmd = "show running-config sanitized" if self.sanitized_config else "show running-config"
+        return f"{cmd} | {pipe}" if pipe else cmd
 
     def _obtain_lock(self, wait_time=None):
         """
@@ -1037,7 +1043,7 @@ class EOSDriver(NetworkDriver):
 
         bgp_config = {}
 
-        commands = ["show running-config | section router bgp"]
+        commands = [self._running_config(pipe="section router bgp")]
         bgp_conf = self._run_commands(commands, encoding="text")[0].get("output", "\n\n")
         bgp_conf_lines = bgp_conf.splitlines()
 
@@ -1163,7 +1169,7 @@ class EOSDriver(NetworkDriver):
     def get_ntp_servers(self):
         result = {}
 
-        commands = ["show running-config | section ntp"]
+        commands = [self._running_config(pipe="section ntp")]
 
         raw_ntp_config = (
             self._run_commands(commands, encoding="text")[0].get("output", "").splitlines()
@@ -1581,13 +1587,20 @@ class EOSDriver(NetworkDriver):
                     # Some EOS versions add extra quotes
                     snmp_dict[k] = v.strip('"')
 
-        commands = ["show running-config | section snmp-server community"]
+        commands = [self._running_config(pipe="section snmp-server community")]
         raw_snmp_config = self._run_commands(commands, encoding="text")[0].get("output", "")
+        removed_count = 0
         for line in raw_snmp_config.splitlines():
             match = self._RE_SNMP_COMM.search(line)
             if match:
                 matches = match.groupdict("")
-                snmp_dict["community"][match.group("community")] = {
+                community = match.group("community")
+                # Sanitized configs replace every community with "<removed>"; number them
+                # so distinct communities don't overwrite each other.
+                if community == "<removed>":
+                    removed_count += 1
+                    community = f"<removed-snmp{removed_count}>"
+                snmp_dict["community"][community] = {
                     "acl": str(matches["v4_acl"]),
                     "mode": str(matches["access"]),
                 }
@@ -1738,8 +1751,8 @@ class EOSDriver(NetworkDriver):
         """Implementation of get_bgp_neighbors_detail"""
 
         # determine if in multi-agent mode to get correct extractor_type
-        is_multi_agent = self.device.run_commands(
-            ["show running-config | include service routing protocols model multi-agent"],
+        is_multi_agent = self._run_commands(
+            [self._running_config(pipe="include service routing protocols model multi-agent")],
             encoding="text",
         )[0].get("output", "")
 
@@ -1945,6 +1958,7 @@ class EOSDriver(NetworkDriver):
 
     def get_config(self, retrieve="all", full=False, sanitized=False, format="text"):
         """get_config implementation for EOS."""
+        sanitized = sanitized or self.sanitized_config
         get_startup = retrieve == "all" or retrieve == "startup"
         get_running = retrieve == "all" or retrieve == "running"
         get_candidate = (retrieve == "all" or retrieve == "candidate") and self.config_session

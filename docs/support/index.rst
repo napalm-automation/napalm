@@ -146,6 +146,7 @@ ____________________________________
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
+* :code:`eos_sanitized_config` (eos) - Read the running config with ``show running-config sanitized``, for roles that may only run the sanitized form. Also applies to ``get_config``. (default: ``False``)
 * :code:`eos_transport` (eos) - Protocol to connect with (backwards compatibility, use ``transport`` instead). (default: ``https``)
 * :code:`nxos_protocol` (nxos) - Protocol to connect with (backwards compatibility, use ``transport`` instead). (default: ``https``)
 * :code:`config_encoding` (iosxr_netconf) - Set encoding to either ``"xml"`` or ``"cli"`` for configuration load methods. (default: ``"cli"``)
