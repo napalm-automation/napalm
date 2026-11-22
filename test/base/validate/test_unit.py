@@ -4,6 +4,7 @@ import pytest
 import copy
 
 from napalm.base import validate
+from napalm.base.exceptions import ValidationException
 
 _compare_getter = [
     (
@@ -425,3 +426,67 @@ class TestValidate:
             assert validate._compare_numeric("<1", "asdasd2")
         with pytest.raises(ValueError):
             assert validate._compare_numeric("<1", "2asdasd")
+
+
+class TestMatchMode:
+    """Tests for the nonstrict/strict and partial/exact modes."""
+
+    def test_mode_parsing(self):
+        assert validate._mode("") == {"strict": False, "exact": False}
+        assert validate._mode("nonstrict partial") == {"strict": False, "exact": False}
+        assert validate._mode("strict") == {"strict": True, "exact": False}
+        assert validate._mode("exact") == {"strict": False, "exact": True}
+        assert validate._mode("strict exact") == {"strict": True, "exact": True}
+
+    @pytest.mark.parametrize(
+        "mode", ["fullmatch", "strict strict2", "strict nonstrict", "partial exact"]
+    )
+    def test_mode_errors(self, mode):
+        with pytest.raises(ValidationException):
+            validate._mode(mode)
+
+    def test_list_partial_is_default(self):
+        """Without a mode, a list pattern still matches part of an element."""
+        result = validate.compare({"list": ["Vlan5"]}, ["Vlan5554"])
+        assert result["complies"] is True
+
+    def test_list_exact(self):
+        """The case from issue 2029: Vlan5 must not match Vlan5554."""
+        result = validate.compare({"_mode": "exact", "list": ["Vlan5"]}, ["Vlan5554"])
+        assert result == {"complies": False, "present": [], "missing": ["Vlan5"], "extra": []}
+        result = validate.compare({"_mode": "exact", "list": ["Vlan5"]}, ["Vlan5554", "Vlan5"])
+        assert result["complies"] is True
+
+    def test_list_exact_keeps_regex(self):
+        result = validate.compare({"_mode": "exact", "list": [r"Vlan\d+"]}, ["Vlan5554"])
+        assert result["complies"] is True
+
+    def test_dict_value_exact(self):
+        src = {"_mode": "exact", "os_version": r"15\.9"}
+        assert (
+            validate.compare(copy.deepcopy(src), {"os_version": "15.9(3)M3"})["complies"] is False
+        )
+        assert validate.compare(copy.deepcopy(src), {"os_version": "15.9"})["complies"] is True
+        src = {"os_version": r"15\.9"}
+        assert validate.compare(copy.deepcopy(src), {"os_version": "15.9(3)M3"})["complies"] is True
+
+    def test_exact_and_strict_together(self):
+        src = {"_mode": "strict exact", "list": ["Vlan5"]}
+        assert validate.compare(copy.deepcopy(src), ["Vlan5"])["complies"] is True
+        result = validate.compare(copy.deepcopy(src), ["Vlan5", "Vlan6"])
+        assert result["complies"] is False
+        assert result["extra"] == ["Vlan6"]
+
+    def test_exact_applies_to_current_level_only(self):
+        """Like strict, exact is set per level and is not inherited by nested dicts."""
+        src = {"_mode": "exact", "outer": "abc", "inner": {"value": "abc"}}
+        dst = {"outer": "abc", "inner": {"value": "abcdef"}}
+        result = validate.compare(copy.deepcopy(src), dst)
+        assert result["complies"] is True
+        src["inner"]["_mode"] = "exact"
+        result = validate.compare(copy.deepcopy(src), dst)
+        assert result["complies"] is False
+
+    def test_numeric_operators_unchanged_in_exact(self):
+        src = {"_mode": "exact", "cpu": "<15.0", "mem": "10.0<->20.0", "x": "10%20"}
+        assert validate.compare(src, {"cpu": 5, "mem": 15, "x": 19})["complies"] is True
