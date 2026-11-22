@@ -14,6 +14,7 @@
 
 """Tests for the eos_sanitized_config optional arg."""
 
+import re
 from textwrap import dedent
 
 from pyeapi.eapilib import CommandError
@@ -32,6 +33,7 @@ BGP = dedent(
     """
 )
 RUNNING_CONFIG = NTP + SNMP + BGP
+REMOVED_SNMP = re.compile(r"<removed-snmp\d+>")
 SECTIONS = {
     "section router bgp": BGP,
     "section ntp": NTP,
@@ -43,7 +45,11 @@ SECTIONS = {
 class SanitizedOnlyDevice:
     """Rejects any running-config read that is not sanitized."""
 
+    def __init__(self):
+        self.commands = []
+
     def run_commands(self, commands, encoding="json", send_enable=True):
+        self.commands.extend(commands)
         result = []
         for command in commands:
             cmd, _, pipe = command.partition(" | ")
@@ -62,6 +68,35 @@ def test_getters_use_sanitized_config():
 
     assert driver.get_bgp_config()["PEERS"]["authentication_key"] == "<removed>"
     assert list(driver.get_ntp_servers()) == ["192.0.2.10"]
-    assert list(driver.get_snmp_information()["community"]) == ["<removed>"]
+    communities = list(driver.get_snmp_information()["community"])
+    assert len(communities) == 1
+    assert REMOVED_SNMP.fullmatch(communities[0])
     assert driver.get_config(retrieve="running")["running"] == RUNNING_CONFIG
-    driver.get_bgp_neighbors_detail()
+    assert driver.get_bgp_neighbors_detail() == {}
+    assert (
+        "show running-config sanitized | include service routing protocols model multi-agent"
+        in driver.device.commands
+    )
+
+
+def test_snmp_sanitized_communities_are_not_collapsed(monkeypatch):
+    """Each sanitized community must keep its own entry (not collapse into one)."""
+    snmp = dedent(
+        """\
+        snmp-server community <removed> ro
+        snmp-server community <removed> rw
+        snmp-server community <removed> ro ACL-MGMT
+        """
+    )
+    monkeypatch.setitem(SECTIONS, "section snmp-server community", snmp)
+    driver = EOSDriver("192.0.2.1", "user", "pass", optional_args={"eos_sanitized_config": True})
+    driver.device = SanitizedOnlyDevice()
+
+    communities = driver.get_snmp_information()["community"]
+    assert len(communities) == 3
+    assert all(REMOVED_SNMP.fullmatch(name) for name in communities)
+    assert list(communities.values()) == [
+        {"acl": "", "mode": "ro"},
+        {"acl": "", "mode": "rw"},
+        {"acl": "ACL-MGMT", "mode": "ro"},
+    ]

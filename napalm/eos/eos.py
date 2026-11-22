@@ -1043,7 +1043,7 @@ class EOSDriver(NetworkDriver):
 
         bgp_config = {}
 
-        commands = [self._running_config("section router bgp")]
+        commands = [self._running_config(pipe="section router bgp")]
         bgp_conf = self._run_commands(commands, encoding="text")[0].get("output", "\n\n")
         bgp_conf_lines = bgp_conf.splitlines()
 
@@ -1169,7 +1169,7 @@ class EOSDriver(NetworkDriver):
     def get_ntp_servers(self):
         result = {}
 
-        commands = [self._running_config("section ntp")]
+        commands = [self._running_config(pipe="section ntp")]
 
         raw_ntp_config = (
             self._run_commands(commands, encoding="text")[0].get("output", "").splitlines()
@@ -1587,13 +1587,20 @@ class EOSDriver(NetworkDriver):
                     # Some EOS versions add extra quotes
                     snmp_dict[k] = v.strip('"')
 
-        commands = [self._running_config("section snmp-server community")]
+        commands = [self._running_config(pipe="section snmp-server community")]
         raw_snmp_config = self._run_commands(commands, encoding="text")[0].get("output", "")
+        removed_count = 0
         for line in raw_snmp_config.splitlines():
             match = self._RE_SNMP_COMM.search(line)
             if match:
                 matches = match.groupdict("")
-                snmp_dict["community"][match.group("community")] = {
+                community = match.group("community")
+                # Sanitized configs replace every community with "<removed>"; number them
+                # so distinct communities don't overwrite each other.
+                if community == "<removed>":
+                    removed_count += 1
+                    community = f"<removed-snmp{removed_count}>"
+                snmp_dict["community"][community] = {
                     "acl": str(matches["v4_acl"]),
                     "mode": str(matches["access"]),
                 }
@@ -1745,7 +1752,7 @@ class EOSDriver(NetworkDriver):
 
         # determine if in multi-agent mode to get correct extractor_type
         is_multi_agent = self._run_commands(
-            [self._running_config("include service routing protocols model multi-agent")],
+            [self._running_config(pipe="include service routing protocols model multi-agent")],
             encoding="text",
         )[0].get("output", "")
 
