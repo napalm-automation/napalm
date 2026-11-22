@@ -38,7 +38,7 @@ releases are ignored for 7 days (`exclude-newer` cooldown) as supply-chain prote
 
 ## Code Style & Linting
 
-All code must pass the following checks before a pull request will be accepted. These run automatically in CI on every push and pull request.
+All code must pass the following checks before a pull request will be accepted. These run automatically in CI on every pull request and on pushes to `develop`/`master`.
 
 ### Ruff (linting + security)
 
@@ -101,7 +101,7 @@ uv run --locked make doctest
 
 ## CI Pipeline Summary
 
-The following jobs run automatically via GitHub Actions on every push and pull request:
+The following jobs run automatically via GitHub Actions on every pull request and on pushes to `develop`/`master`:
 
 | Job                | Description                                      |
 |--------------------|--------------------------------------------------|
