@@ -31,6 +31,9 @@ Install
 pip install napalm
 ```
 
+*Note*: Beginning with release 5.3.0 and later, NAPALM offers support for
+Python 3.11+ only.
+
 *Note*: Beginning with release 5.1.0 and later, NAPALM offers support for
 Python 3.9+ only.
 
