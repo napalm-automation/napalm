@@ -867,7 +867,9 @@ class NXOSSSHDriver(NXOSDriverBase):
             # Module   Sensor        MajorThresh   MinorThres   CurTemp     Status
             # 1        Intake          70              42          28         Ok
             if re.match(r"^[0-9]", line):
-                module, sensor, is_critical, is_alert, temp, _ = line.split()
+                module_sensor, is_critical, is_alert, temp, _ = line.rsplit(maxsplit=4)
+                module, sensor = module_sensor.split(maxsplit=1)
+                sensor = " ".join(sensor.split())
                 is_critical = float(is_critical)
                 is_alert = float(is_alert)
                 temp = float(temp)
