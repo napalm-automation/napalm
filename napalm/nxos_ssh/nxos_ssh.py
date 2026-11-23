@@ -930,8 +930,8 @@ class NXOSSSHDriver(NXOSDriverBase):
         arp_entries = arp_list[1].strip()
         for line in arp_entries.splitlines():
             if len(line.split()) >= 4:
-                # Search for extra characters to strip, currently strip '*', '+', '#', 'D'
-                line = re.sub(r"\s+[\*\+\#D]{1,4}\s*$", "", line, flags=re.M)
+                # NX-OS can show the static down-interface flag as D or (D).
+                line = re.sub(r"\s+(?:[*+#D]{1,4}|\(D\))\s*$", "", line)
                 address, age, mac, interface = line.split()
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
