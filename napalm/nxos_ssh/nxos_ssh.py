@@ -1164,9 +1164,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                 "last_move": -1.0,
             }
 
-        # Skip the header lines
+        # Skip the headers while preserving indentation on unmarked entries.
         output = re.split(r"^----.*", output, flags=re.M)[1:]
-        output = "\n".join(output).strip()
+        output = "\n".join(output)
         # Strip any leading characters
         output = re.sub(r"^[\*\+GOCE]", "", output, flags=re.M)
         output = re.sub(r"^\(R\)", "", output, flags=re.M)

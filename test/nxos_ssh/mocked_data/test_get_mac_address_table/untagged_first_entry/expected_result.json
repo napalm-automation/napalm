@@ -1,0 +1,20 @@
+[
+  {
+    "vlan": 33,
+    "last_move": -1.0,
+    "interface": "vPC-Peer-Link",
+    "mac": "AA:AA:BB:BB:00:01",
+    "static": false,
+    "active": true,
+    "moves": -1
+  },
+  {
+    "vlan": 44,
+    "last_move": -1.0,
+    "interface": "Port-channel1",
+    "mac": "AA:AA:BB:BB:00:03",
+    "static": false,
+    "active": true,
+    "moves": -1
+  }
+]
