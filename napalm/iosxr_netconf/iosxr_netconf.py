@@ -38,9 +38,12 @@ from napalm.iosxr_netconf import constants as C
 from napalm.iosxr.utilities import strip_config_header
 from napalm.base.base import NetworkDriver
 import napalm.base.helpers
-from napalm.base.exceptions import ConnectionException
-from napalm.base.exceptions import MergeConfigException
-from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.exceptions import (
+    ConnectionException,
+    MergeConfigException,
+    ReplaceConfigException,
+    CommitConfirmException,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -273,10 +276,27 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
-        if revert_in is not None:
-            raise NotImplementedError("Commit confirm has not been implemented on this platform.")
+        commit_args = {}
+
         if message:
             raise NotImplementedError("Commit message not implemented for this platform")
+
+        if revert_in:
+            revert_time_seconds = int(revert_in)
+            if revert_time_seconds < 30 or revert_time_seconds > 65535:
+                raise CommitConfirmException(
+                    "For Cisco IOS XR devices revert_in must be between 30 and 65535 seconds."
+                )
+            else:
+                commit_args["confirmed"] = True
+                commit_args["timeout"] = str(revert_time_seconds)
+
+        self.device.commit(**commit_args)
+        self.pending_changes = False
+        self._unlock()
+
+    def confirm_commit(self):
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
         self.device.commit()
         self.pending_changes = False
         self._unlock()
