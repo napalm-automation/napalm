@@ -1,0 +1,69 @@
+{
+  "TABLE_inv": {
+    "ROW_inv": [
+      {
+        "name": "Chassis",
+        "desc": "Nexus C93180YC-FX Chassis",
+        "productid": "N9K-C93180YC-FX",
+        "vendorid": "V04",
+        "serialnum": "FD123456789"
+      },
+      {
+        "name": "Slot 1 ",
+        "desc": "48x10/25G",
+        "productid": "N9K-C93180YC-FX",
+        "vendorid": "V04",
+        "serialnum": "FOC11111111"
+      },
+      {
+        "name": "GEM    ",
+        "desc": "6x40/100G Switch",
+        "productid": "N9K-C93180YC-FX",
+        "vendorid": "V04",
+        "serialnum": "FOC11111111"
+      },
+      {
+        "name": "power Supply 1", 
+        "desc": "PSU    ",            
+        "productid": "NXA-PAC-500W-PI",
+        "vendorid": "V01",
+        "serialnum": "FOC11111111"
+      },
+      {
+        "name": "power Supply 2",    
+        "desc": "PSU    ",         
+        "productid": "NXA-PAC-500W-PI",
+        "vendorid": "V01",
+        "serialnum": "FOC11111111"
+      },
+      {
+        "name": "Fan 1",
+        "desc": "fan    ",
+        "productid": "NXA-FAN-30CFM-B",
+        "vendorid": "N/A",
+        "serialnum": "N/A"
+      },
+      {
+        "name": "Fan 2",
+        "desc": "fan    ",           
+        "productid": "NXA-FAN-30CFM-B",
+        "vendorid": "N/A",
+        "serialnum": "N/A"
+      },
+      {
+        "name": "Fan 3",
+        "desc": "fan    ",           
+        "productid": "NXA-FAN-30CFM-B",
+        "vendorid": "N/A",
+        "serialnum": "N/A"
+      },
+      {
+        "name": "Fan 4",
+        "desc": "fan    ",           
+        "productid": "NXA-FAN-30CFM-B",
+        "vendorid": "N/A",
+        "serialnum": "N/A"
+      }
+    ]
+  }
+}
