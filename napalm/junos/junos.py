@@ -423,6 +423,7 @@ class JunOSDriver(NetworkDriver):
             # The dictionary values will end up being tuples instead of dictionaries
             interfaces = dict(interfaces)
             for iface, iface_data in interfaces.items():
+
                 result[iface] = {
                     "is_up": iface_data["is_up"],
                     # For physical interfaces <admin-status> will always be there, so just
@@ -446,7 +447,18 @@ class JunOSDriver(NetworkDriver):
 
                 match_mtu = re.search(r"(\w+)", str(iface_data["mtu"]) or "")
                 mtu = napalm.base.helpers.convert(int, match_mtu.group(0), 0)
-                result[iface]["mtu"] = mtu
+
+                # For logical interfaces, parsing out each addr family MTU and,
+                # if they are set, using the lowest value
+                if "addr_family" in iface_data.keys():
+                    af_mtus = [
+                        napalm.base.helpers.convert(int, af["af_mtu"], mtu)
+                        for af in dict(iface_data["addr_family"]).values()
+                    ]
+                    result[iface]["mtu"] = min(af_mtus) if af_mtus else mtu
+
+                else:
+                    result[iface]["mtu"] = mtu
                 match = re.search(r"(\d+|[Aa]uto)(\w*)", iface_data["speed"] or "")
                 if match and match.group(1).lower() == "auto":
                     match = re.search(r"(\d+)(\w*)", iface_data["negotiated_speed"] or "")

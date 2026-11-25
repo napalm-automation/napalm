@@ -36,8 +36,19 @@ junos_logical_iface_view:
     last_flapped: { ../interface-flapped/@seconds: int }
     speed: ../speed
     negotiated_speed: ../ethernet-autonegotiation/link-partner-speed
-    mtu: ../mtu
     mac_address: ../current-physical-address
+    mtu: ../mtu
+    addr_family: junos_logical_iface_af_table
+
+junos_logical_iface_af_table:
+  item: address-family
+  key: address-family-name
+  view: junos_logical_iface_af_view
+
+junos_logical_iface_af_view:
+  fields:
+    af_mtu: mtu
+
 
 ####
 #### BGP tables
