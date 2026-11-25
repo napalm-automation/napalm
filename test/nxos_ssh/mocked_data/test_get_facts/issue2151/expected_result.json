@@ -1,5 +1,6 @@
 {
   "os_version": "10.3(5)",
+  "os_arch": "",
   "uptime": 4338547,
   "interface_list": [
     "Management0",

@@ -10,6 +10,7 @@
   ],
   "model": "vEOS",
   "os_version": "4.15.5M-3054042.4155M",
+  "os_arch": "i386",
   "serial_number": "",
   "uptime": "...",
   "vendor": "Arista"

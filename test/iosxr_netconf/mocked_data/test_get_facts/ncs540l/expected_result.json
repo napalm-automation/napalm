@@ -39,6 +39,7 @@
     ],
     "model": "N540-12Z20G-SYS-A",
     "os_version": "7.0.2",
+    "os_arch": "",
     "serial_number": "FOC2351NJ1F",
     "uptime": 296217,
     "vendor": "Cisco"
